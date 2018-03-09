@@ -32,7 +32,7 @@
 		{
 			// 页面信息
 			$data = array(
-				'title' => '进来商家中心', // 页面标题
+				'title' => SITE_NAME, // 页面标题
 				'class' => $this->class_name, // 页面body标签的class属性值
 			);
 
@@ -67,7 +67,6 @@
 			// 载入视图
 			$this->load->view('templates/header', $data);
 			$this->load->view('home', $data);
-			$this->load->view('templates/nav-main', $data);
 			$this->load->view('templates/footer', $data);
 		} // end index
 

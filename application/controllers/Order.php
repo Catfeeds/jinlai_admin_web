@@ -82,7 +82,6 @@
 			// 输出视图
 			$this->load->view('templates/header', $data);
 			$this->load->view($this->view_root.'/index', $data);
-			$this->load->view('templates/nav-main', $data);
 			$this->load->view('templates/footer', $data);
 		} // end index
 
