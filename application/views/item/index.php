@@ -6,7 +6,8 @@
 	/* 宽度在750像素以上的设备 */
 	@media only screen and (min-width:751px)
 	{
-
+        body {margin-bottom:0;}
+        .action_bottom{bottom:0;}
 	}
 
 	/* 宽度在960像素以上的设备 */
@@ -49,6 +50,23 @@
         <a class="btn <?php echo $this->input->get('status') === 'suspend'? 'btn-primary': 'btn-default' ?>" title="已下架商品" href="<?php echo base_url('item?status=suspend') ?>">已下架</a>
 	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
 	</div>
+
+    <div id=primary_actions class=action_bottom>
+        <?php if (count($items) > 1): ?>
+        <span id=enter_bulk>
+            <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
+        </span>
+        <?php endif ?>
+
+        <ul class=horizontal>
+            <li>
+                <a class=bg_second title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
+            </li>
+            <li>
+                <a class=bg_primary title="快速创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create_quick') ?>">快速创建</a>
+            </li>
+        </ul>
+    </div>
 	<?php endif ?>
 
 	<?php if ( empty($this->session->biz_id) ): ?>
@@ -57,29 +75,6 @@
 	</blockquote>
 
 	<?php else: ?>
-        <div id=primary_actions class=action_bottom>
-            <?php if ( isset($items) && count($items) > 1): ?>
-            <span id=enter_bulk>
-                <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
-            </span>
-            <?php endif ?>
-            <ul class=horizontal>
-                <li>
-                    <a class=bg_second title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
-                </li>
-                <li>
-                    <a class=bg_primary title="快速创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create_quick') ?>">快速创建</a>
-                </li>
-            </ul>
-        </div>
-
-		<?php if ( $count['biz_freight_templates'] === 0 ): ?>
-		<blockquote class=row>
-			<p>您未添加运费模板，将为买家包邮。</p>
-			<a class="col-xs-12 col-sm-6 col-md-3 btn btn-default btn-lg" href="<?php echo base_url('freight_template_biz') ?>">创建运费模板</a>
-		</blockquote>
-		<?php endif ?>
-
 		<?php if ( empty($items) ): ?>
 		<blockquote class=row>
 			<p>您的货架空空如也，快点添加商品吧！</p>
@@ -113,8 +108,11 @@
                     <span class=item-status><?php echo $item['status'] ?></span>
                     <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                         <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
-                        <p>商品名称 <?php echo $item['name'] ?></p>
-                        <p>商城现价 ￥<?php echo $item['price'] ?></p>
+                        <p><?php echo $item['name'] ?></p>
+                        <p>
+                            ￥<?php echo $item['price'] ?>
+                            <?php if ($item['tag_price'] !== '0.00') echo '<del>￥ '.$item['tag_price'].'</del>' ?>
+                        </p>
                     </a>
 
                     <div class="item-actions">
@@ -129,16 +127,14 @@
                             // 需要特定角色和权限进行该操作
                             if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                         ?>
-                            <?php if ( !empty($item['time_publish']) ): ?>
-                            <li><a title="下架" href="<?php echo base_url($this->class_name.'/suspend?ids='.$item[$this->id_name]) ?>" target=_blank>下架</a></li>
+                            <?php if ( empty($item['time_delete']) ): ?>
+                            <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
                             <?php endif ?>
 
-                            <?php if ( !empty($item['time_suspend']) ): ?>
+                            <?php if ( empty($item['time_publish']) ): ?>
                             <li><a title="上架" href="<?php echo base_url($this->class_name.'/publish?ids='.$item[$this->id_name]) ?>" target=_blank>上架</a></li>
-
-                                <?php if ( empty($item['time_delete']) ): ?>
-                            <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-                                <?php endif ?>
+                            <?php else: ?>
+                            <li><a title="下架" href="<?php echo base_url($this->class_name.'/suspend?ids='.$item[$this->id_name]) ?>" target=_blank>下架</a></li>
                             <?php endif ?>
 
                             <li class=color_primary><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>

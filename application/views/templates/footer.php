@@ -1,4 +1,6 @@
-		</main>
+
+            <p class="text-center">使用中如发现问题，请联系刘亚杰<a class="btn btn-info" href="tel:+8617664073966">+86 176-6407-3966</a></p>
+        </main>
 <!-- End #maincontainer -->
 
 		<footer id=footer role=contentinfo>
@@ -14,7 +16,7 @@
 				</div>
 			</div>
 
-			<a id=totop title="回到页首" href="#"><i class="fa fa-chevron-up" aria-hidden=true></i></a>
+			<a id=totop title="回到页首" href="#"><i class="far fa-chevron-up" aria-hidden=true></i></a>
 		</footer>
 
 		<script>

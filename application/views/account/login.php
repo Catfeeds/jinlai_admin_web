@@ -3,8 +3,8 @@
 	form {padding-top:2rem;}
 	fieldset {padding:0;}
 	
-	#captcha-image {padding:0;min-width:100px;}
-		#captcha-image img {width:100%;height:100%;display:block;}
+	#captcha-image {padding:0;min-width:100px;height:70px;border-top-right-radius:12px;border-bottom-right-radius:12px;overflow:hidden;}
+        #captcha-image img {height:100%;}
 	
 	#actions {margin-top:4rem;}
 		#actions>li {margin-bottom:2rem;}
@@ -28,13 +28,9 @@
 	}
 </style>
 
-<script src="/js/form.js"></script>
+<script src="/js/form.js" data-captcha_assess="<?php echo ($this->captcha_assess === FALSE)? 'false': 'true' ?>"></script>
 
 <div id=content class=container>
-	<section class="bg-info text-info">
-		<p><em>RC0.10.1</em>当前系统为beta/RC版本，仅供技术研究及开发；在不以任何形式告知的情况下，数据、功能、页面样式都将不定时变更；任何数据、业务、功能均无实际意义，且均不构成任何责任。</p>
-	</section>
-	
 	<div class="btn-group btn-group-justified" role=group>
 		<span class="btn btn-primary">密码登录</span>
 		<a class="btn btn-default" href="<?php echo base_url('login_sms') ?>">短信登录/注册</a>
@@ -50,31 +46,33 @@
 				<div class=form-group>
 					<label for=mobile>手机号</label>
 					<div class=input-group>
-						<span class="input-group-addon"><i class="fa fa-mobile fa-fw" aria-hidden=true></i></span>
+						<span class=input-group-addon><i class="far fa-mobile-alt fa-fw"></i></span>
 						<input class=form-control name=mobile type=tel value="<?php echo $this->input->post('mobile')? set_value('mobile'): $this->input->cookie('mobile') ?>" size=11 pattern="\d{11}" placeholder="手机号" required>
 					</div>
 				</div>
 
-				<div class=form-group>
+                <?php if ($this->captcha_assess === TRUE): ?>
+                <div class=form-group>
 					<label for=captcha_verify>图片验证码</label>
 					<div class=input-group>
-						<input id=captcha-verify class=form-control name=captcha_verify type=number max=9999 step=1 size=4 placeholder="请输入图片验证码" required>
-						<span id=captcha-image class="input-group-addon">
+						<input id=captcha-verify class=form-control name=captcha_verify type=number max=9999 step=1 size=4 placeholder="请输入图片验证码"<?php echo (!empty($this->input->post('mobile')) || !empty($this->input->cookie('mobile')))? ' autofocus': NULL ?> required>
+						<span id=captcha-image class=input-group-addon>
 							<img src="<?php echo base_url('captcha') ?>">
 						</span>
 					</div>
 				</div>
+                <?php endif ?>
 
 				<div class=form-group>
 					<label for=password>密码</label>
 					<div class=input-group>
-						<span class="input-group-addon"><i class="fa fa-key fa-fw" aria-hidden=true></i></span>
-						<input class=form-control name=password type=password <?php if ($this->input->cookie('mobile')) echo 'autofocus '; ?> placeholder="密码" required>
+						<span class=input-group-addon><i class="far fa-key fa-fw" aria-hidden=true></i></span>
+						<input class=form-control name=password type=password <?php if ($this->input->cookie('mobile')) echo 'autofocus'; ?> placeholder="密码" required>
 					</div>
 				</div>
 			</fieldset>
 		
-			<small class="text-center">点击“确定”，即表示您已完整阅读并同意最新版<a title="查看用户协议详细内容" href="<?php echo base_url('article/user-agreement') ?>" target=_blank>《用户协议》</a>。</small>
+			<p class=text-center>点击“确定”，即表示您已完整阅读并同意最新版<a title="查看用户协议详细内容" href="<?php echo base_url('article/user-agreement') ?>" target=_blank>《用户协议》</a>。</p>
 
 			<div class=row>
 			    <div class="col-xs-12 col-sm-offset-2 col-sm-2">

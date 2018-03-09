@@ -18,13 +18,6 @@
 			'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
-		);
-
 		public function __construct()
 		{
 			parent::__construct();
@@ -38,25 +31,16 @@
 			$this->table_name = 'order'; // 和这里……
 			$this->id_name = 'order_id'; // 还有这里，OK，这就可以了
 			$this->view_root = $this->class_name; // 视图文件所在目录
-			$this->media_root = MEDIA_URL. 'item/'; // 媒体文件所在目录
+			$this->media_root = MEDIA_URL. 'item/'; // 媒体文件所在目录，默认为商品信息
 
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
-				'subtotal' => '小计',
+				'subtotal' => '商品小计',
 				'total' => '应支付',
 				'total_payed' => '已支付',
 				'status' => '状态',
 			);
-		}
-
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -70,7 +54,7 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
+            $condition = array();
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -87,13 +71,13 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 			
 			// 根据状态筛选值确定页面标题
-			if ( !empty($condition['status'] ) ):
-				$data['title'] = $condition['status']. '订单';
-			endif;
+			if ( !empty($condition['status'] ) )
+			    $data['title'] = $condition['status']. '订单';
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -111,7 +95,6 @@
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
 			if ( !empty($id) ):
 				$params['id'] = $id;
-				$params['biz_id'] = $this->session->biz_id;
 			else:
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
@@ -121,13 +104,18 @@
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['item'] = $result['content']; // 清除空元素
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
 
-			// 页面信息
-			$data['title'] = '商品订单'. $data['item']['order_id'];
-			$data['class'] = $this->class_name.' detail';
+                // 获取相关用户信息
+                $data['user'] = $this->get_user($data['item']['user_id']);
+
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['class'] = $this->class_name.' detail';
+
+			else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+			endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -150,7 +138,7 @@
 
 			// 页面信息
 			$data = array(
-				'title' => $op_name. $this->class_name_cn,
+				'title' => $op_name,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
 			);
@@ -163,7 +151,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -180,7 +167,7 @@
 			$this->form_validation->set_error_delimiters('', '；');
 			$this->form_validation->set_rules('ids', '待操作数据ID们', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
 			$this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
-			$this->form_validation->set_rules('note_stuff', '员工留言', 'trim|required');
+			$this->form_validation->set_rules('note_stuff', '员工备注', 'trim|required');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -206,7 +193,6 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
@@ -255,7 +241,7 @@
 
 			// 页面信息
 			$data = array(
-				'title' => $op_name. $this->class_name_cn,
+				'title' => $op_name,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
 			);
@@ -268,7 +254,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -286,6 +271,7 @@
 			$this->form_validation->set_rules('ids', '待操作数据ID们', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
 			$this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
 			$this->form_validation->set_rules('discount_reprice', '改价折扣金额', 'trim|required|greater_than[0.01]|less_than_equal_to[99999.99]');
+            $this->form_validation->set_rules('note_stuff', '员工备注', 'trim');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -311,13 +297,13 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
 					'operation' => $op_view, // 操作名称
 
 					'discount_reprice' => $this->input->post('discount_reprice'),
+                    'note_stuff' => $this->input->post('note_stuff'),
 				);
 
 				// 向API服务器发送待创建数据
@@ -360,7 +346,7 @@
 
 			// 页面信息
 			$data = array(
-				'title' => $op_name. $this->class_name_cn,
+				'title' => $op_name,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
 			);
@@ -373,7 +359,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -390,6 +375,7 @@
 			$this->form_validation->set_error_delimiters('', '；');
 			$this->form_validation->set_rules('ids', '待操作数据ID们', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
 			$this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
+            $this->form_validation->set_rules('note_stuff', '员工备注', 'trim');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -415,11 +401,12 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
 					'operation' => $op_view, // 操作名称
+
+                    'note_stuff' => $this->input->post('note_stuff'),
 				);
 
 				// 向API服务器发送待创建数据
@@ -462,7 +449,7 @@
 
 			// 页面信息
 			$data = array(
-				'title' => $op_name. $this->class_name_cn,
+				'title' => $op_name,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
 			);
@@ -475,7 +462,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -517,7 +503,6 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
@@ -548,12 +533,10 @@
 
 			endif;
 		} // end accept
-		
-		/**
-		 * TODO 发货已接单订单
-		 *
-		 * 需添加特有字段
-		 */
+
+        /**
+         * 发货已付款订单
+         */
 		public function deliver()
 		{
             // 操作可能需要检查操作权限
@@ -566,7 +549,7 @@
 
 			// 页面信息
 			$data = array(
-				'title' => $op_name. $this->class_name_cn,
+				'title' => $op_name,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
 			);
@@ -579,7 +562,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -597,8 +579,20 @@
 			$this->form_validation->set_rules('ids', '待操作数据ID们', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
 			$this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
 			$this->form_validation->set_rules('deliver_method', '发货方式', 'trim|required|max_length[30]');
-			$this->form_validation->set_rules('deliver_biz', '物流服务商', 'trim|required|max_length[30]');
-			$this->form_validation->set_rules('waybill_id', '物流运单号', 'trim|max_length[30]');
+
+            // 若用户自提，不需要填写服务商
+            if ($this->input->post('deliver_method') === '用户自提'):
+                $this->form_validation->set_rules('deliver_biz', '物流服务商', 'trim|max_length[30]');
+            else:
+                $this->form_validation->set_rules('deliver_biz', '物流服务商', 'trim|required|max_length[30]');
+            endif;
+
+			// 用户自提，或同城配送的服务商选择自营时，不需要填写运单号
+			if ($this->input->post('deliver_method') === '用户自提' || $this->input->post('deliver_biz') === '自营'):
+                $this->form_validation->set_rules('waybill_id', '物流运单号', 'trim|max_length[30]');
+            else:
+                $this->form_validation->set_rules('waybill_id', '物流运单号', 'trim|required|max_length[30]');
+            endif;
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -624,7 +618,6 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
@@ -659,7 +652,7 @@
 
 			endif;
 		} // end deliver
-		
+
 		/**
 		 * TODO 商家验证
 		 *
@@ -667,28 +660,28 @@
 		 */
 		public function valid()
 		{
-			
+
 		} // end valid
 
         /**
-         * 删除订单
+         * 删除
          *
-         * 商家不可删除订单
+         * 商家不可删除
          */
         public function delete()
         {
-            exit('商家不可删除用户的订单；您意图删除用户订单的操作记录已被发送到安全中心。');
-        } // end valid
+            exit('商家不可删除用户的'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+        } // end delete
 
         /**
-         * 找回订单
+         * 找回
          *
-         * 商家不可找回订单
+         * 商家不可找回
          */
         public function restore()
         {
-            exit('商家不可恢复用户的订单；您意图删除用户订单的操作记录已被发送到安全中心。');
-        } // end valid
+            exit('商家不可找回用户的'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+        } // end restore
 
 	} // end class Order
 

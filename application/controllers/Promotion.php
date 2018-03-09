@@ -31,20 +31,6 @@
 		protected $names_edit_required = array(
 			'id', 'name',
 		);
-		
-		/**
-		 * 编辑单行特定字段时必要的字段名
-		 */
-		protected $names_edit_certain_required = array(
-			'id', 'name', 'value',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
-		);
 
 		public function __construct()
 		{
@@ -66,16 +52,7 @@
 				'name' => '名称',
 				'description' => '说明',
 			);
-		}
-		
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -90,7 +67,6 @@
 
 			// 筛选条件
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -108,6 +84,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -133,18 +110,19 @@
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
 
-			// 从API服务器获取相应详情信息
-			$url = api_url($this->class_name. '/detail');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
+            // 从API服务器获取相应详情信息
+            $url = api_url($this->class_name. '/detail');
+            $result = $this->curl->go($url, $params, 'array');
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['class'] = $this->class_name.' detail';
 
-			// 页面信息
-			$data['title'] = $data['item']['name'];
-			$data['class'] = $this->class_name.' detail';
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -153,12 +131,12 @@
 		} // end detail
 		
 		/**
-		 * 平台活动报名
+		 * TODO 平台活动报名
 		 */
 		public function apply()
 		{
 
-		}
+		} // end apply
 
 	} // end class Promotion
 

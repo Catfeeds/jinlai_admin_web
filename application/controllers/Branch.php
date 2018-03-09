@@ -30,20 +30,6 @@
 		protected $names_edit_required = array(
 			'id', 'name', 'province', 'city', 'street',
 		);
-		
-		/**
-		 * 编辑单行特定字段时必要的字段名
-		 */
-		protected $names_edit_certain_required = array(
-			'id', 'name', 'value',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
-		);
 
 		public function __construct()
 		{
@@ -62,21 +48,12 @@
 
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
-				'name' => '名称',
+				'name' => '店名',
 				'province' => '省',
 				'city' => '市',
 				'county' => '区/县',
 			);
-		}
-
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -90,9 +67,7 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -110,6 +85,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -131,24 +107,23 @@
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
 			if ( !empty($id) ):
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 			else:
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
 
-			// 从API服务器获取相应详情信息
-			$url = api_url($this->class_name. '/detail');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
+            // 从API服务器获取相应详情信息
+            $url = api_url($this->class_name. '/detail');
+            $result = $this->curl->go($url, $params, 'array');
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item']['name'];
+                $data['class'] = $this->class_name.' detail';
 
-			// 页面信息
-			$data['title'] = $data['item']['name'];
-			$data['class'] = $this->class_name.' detail';
-			//$data['keywords'] = $this->class_name.','. $data['item']['name'];
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -173,17 +148,15 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'IS NOT NULL';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->post($sorter)) )
-					$condition[$sorter] = $this->input->post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by['time_delete'] = 'DESC';
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -192,6 +165,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -224,7 +198,7 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-			$this->form_validation->set_rules('name', '名称', 'trim|required');
+			$this->form_validation->set_rules('name', '店名', 'trim|required');
 			$this->form_validation->set_rules('description', '说明', 'trim');
 			$this->form_validation->set_rules('tel_public', '消费者联系电话', 'trim');
 			$this->form_validation->set_rules('tel_protected_biz', '商务联系手机号', 'trim');
@@ -257,7 +231,6 @@
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
 					'user_id' => $this->session->user_id,
-					'biz_id' => $this->session->biz_id,
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
@@ -321,7 +294,6 @@
 			
 			// 从API服务器获取相应详情信息
 			$params['id'] = $id;
-			$params['biz_id'] = $this->session->biz_id;
 			$url = api_url($this->class_name. '/detail');
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
@@ -332,7 +304,7 @@
 
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
-			$this->form_validation->set_rules('name', '名称', 'trim|required');
+			$this->form_validation->set_rules('name', '店名', 'trim|required');
 			$this->form_validation->set_rules('description', '说明', 'trim');
 			$this->form_validation->set_rules('tel_public', '消费者联系电话', 'trim');
 			$this->form_validation->set_rules('tel_protected_biz', '商务联系手机号', 'trim');

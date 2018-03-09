@@ -70,7 +70,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | The $query_builder variables lets you determine whether or not to load
 | the query builder class.
 */
-$active_group = 'aliyun_jinlai';
+$active_group = 'aliyun_jinlai_sandbox';
 $query_builder = TRUE;
 
 $db['aliyun_jinlai'] = array(
@@ -93,6 +93,28 @@ $db['aliyun_jinlai'] = array(
 	'stricton' => FALSE,
 	'failover' => array(),
 	'save_queries' => TRUE,
+);
+
+$db['aliyun_jinlai_sandbox'] = array(
+    'dsn' => 'mysqli://jinlai:Yibang2017@sensestrong.mysql.rds.aliyuncs.com/jinlai',
+    'hostname' => 'sensestrong.mysql.rds.aliyuncs.com', // 数据库URL，以阿里云为例
+    'username' => 'jinlai', // 数据库用户名
+    'password' => 'Yibang2017', // 数据库密码
+    'database' => 'jinlai', //数据库名
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE,
 );
 
 /* End of file database.php */

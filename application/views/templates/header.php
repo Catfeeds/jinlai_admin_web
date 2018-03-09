@@ -1,12 +1,6 @@
 <?php
 	defined('BASEPATH') OR exit('No direct script access allowed');
 
-	// 检查当前设备信息
-	$user_agent = $_SERVER['HTTP_USER_AGENT'];
-	$is_wechat = strpos($user_agent, 'MicroMessenger')? TRUE: FALSE;
-	$is_ios = strpos($user_agent, 'iPhone')? TRUE: FALSE;
-	$is_android = strpos($user_agent, 'Android')? TRUE: FALSE;
-
 	// 生成SEO相关变量，一般为页面特定信息与在config/config.php中设置的站点通用信息拼接
 	$title = isset($title)? $title: SITE_NAME.' - '.SITE_SLOGAN;
 	$keywords = isset($keywords)? $keywords.',': NULL;
@@ -23,16 +17,28 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20171121">
-		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&amp;技术部">
+		<meta name=version content="revision20180309">
+		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
 
-		<!--<meta name=viewport content="width=device-width,user-scalable=0">-->
+		<?php if ($this->user_agent['is_desktop']): ?>
+        <meta name=viewport content="width=device-width,user-scalable=0">
+        <?php else: ?>
 		<meta name=viewport content="width=750,user-scalable=0">
+        <?php endif ?>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-		<?php //if ($is_wechat): ?>
+        <?php
+            if (!empty($this->session->stuff_id) && empty($this->stuff)):
+        ?>
+        <script>
+            alert('员工关系状态异常，请重新登录')
+            location.href = "<?php echo base_url('logout') ?>";
+        </script>
+        <?php exit();endif; ?>
+
+		<?php if ($this->user_agent['is_wechat']): ?>
 		<script src="https://res.wx.qq.com/open/js/jweixin-1.3.0.js"></script>
 		<script>
 			<?php
@@ -168,36 +174,43 @@
 						alert('您未完成分享');
 				    }
 				});
-
 			});
 		</script>
-		<?php //endif ?>
+		<?php endif ?>
 
-		<script src="<?php echo CDN_URL ?>js/jquery-3.2.1.min.js"></script>
+		<script src="<?php echo CDN_URL ?>js/jquery-3.3.1.min.js"></script>
+        <script src="/js/common.js"></script>
 		<script defer src="<?php echo CDN_URL ?>js/js.cookie.js"></script>
-		<script defer src="<?php echo CDN_URL ?>bootstrap/js/bootstrap.min.js"></script>
+		<script defer src="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.8/fontawesome-all.min.js"></script>
+        <?php if (isset($this->session->time_expire_login) ): ?>
 		<script defer src="/js/file-upload.js"></script>
+        <script defer src="<?php echo CDN_URL ?>js/jquery.qrcode.min.js"></script>
+        <?php endif ?>
+
         <script>
             var user_agent = new Object();
-            user_agent.is_wechat = <?php echo ($is_wechat === TRUE)? 'true': 'false' ?>;
-            user_agent.is_ios = <?php echo ($is_ios === TRUE)? 'true': 'false' ?>;
-            user_agent.is_android = <?php echo ($is_android === TRUE)? 'true': 'false' ?>;
+            user_agent.is_wechat = <?php echo ($this->user_agent['is_wechat'])? 'true': 'false' ?>;
+            user_agent.is_ios = <?php echo ($this->user_agent['is_ios'])? 'true': 'false' ?>;
+            user_agent.is_android = <?php echo ($this->user_agent['is_android'])? 'true': 'false' ?>;
         </script>
 
-		<link rel=stylesheet media=all href="<?php echo CDN_URL ?>css/reset.css">
-		<link rel=stylesheet media=all href="<?php echo CDN_URL ?>bootstrap/css/bootstrap.min.css">
-		<link rel=stylesheet media=all href="<?php echo CDN_URL ?>css/flat-ui.min.css">
-		<link rel=stylesheet media=all href="<?php echo CDN_URL ?>font-awesome/css/font-awesome.min.css">
+        <link rel=stylesheet media=all href="<?php echo CDN_URL ?>css/reset.css">
+        <link rel=stylesheet media=all href="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.css">
+        <link rel=stylesheet media=all href="<?php echo CDN_URL ?>css/flat-ui.min.css">
 		<link rel=stylesheet media=all href="/css/style.css">
+        <?php if (isset($this->session->time_expire_login) ): ?>
         <link rel=stylesheet media=all href="/css/file-upload.css">
+        <?php endif ?>
 
-		<link rel="shortcut icon" href="<?php echo CDN_URL ?>icon/jinlai_client/icon28@3x.png">
-		<link rel=apple-touch-icon href="<?php echo CDN_URL ?>icon/jinlai_client/icon120@3x.png">
-
-		<link rel=canonical href="<?php echo current_url() ?>">
-
-		<meta name=format-detection content="telephone=yes, address=no, email=no">
-		<meta name=apple-itunes-app content="app-id=1066224229">
+        <?php if ($this->user_agent['is_desktop']): ?>
+        <link rel="shortcut icon" href="<?php echo CDN_URL ?>icon/jinlai_client/icon28@3x.png">
+        <link rel=canonical href="<?php echo current_url() ?>">
+        <?php else: ?>
+        <link rel=apple-touch-icon href="<?php echo CDN_URL ?>icon/jinlai_client/icon120@3x.png">
+        <meta name=format-detection content="telephone=yes, address=no, email=no">
+        <!--<meta name=apple-itunes-app content="app-id=<?php echo IOS_APP_ID ?>">-->
+        <?php endif ?>
 	</head>
 <?php
 	// 将head内容立即输出，让用户浏览器立即开始请求head中各项资源，提高页面加载速度
@@ -205,9 +218,14 @@
 
     // 生成body的class
 	$body_class = ( isset($class) )? $class: NULL;
-    $body_class .= ($is_wechat === TRUE)? ' is_wechat': NULL;
-    $body_class .= ($is_ios === TRUE)? ' is_ios': NULL;
-    $body_class .= ($is_android === TRUE)? ' is_android': NULL;
+    $body_class .= ($this->user_agent['is_wechat'] === TRUE)? ' is_wechat': NULL;
+    $body_class .= ($this->user_agent['is_ios'] === TRUE)? ' is_ios': NULL;
+    $body_class .= ($this->user_agent['is_android'] === TRUE)? ' is_android': NULL;
+    $body_class .= ($this->user_agent['is_mobile'])? ' is_mobile': NULL; // 移动端设备
+
+    $body_class .= ($this->user_agent['is_macos'] === TRUE)? ' is_macos': NULL;
+    $body_class .= ($this->user_agent['is_windows'] === TRUE)? ' is_windows': NULL;
+    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备
 ?>
 
 <!-- 内容开始 -->
@@ -217,69 +235,89 @@
 		</noscript>
 
 		<header id=header class="navbar navbar-fixed-top" role=navigation>
+            <?php
+                // 首页不显示返回按钮
+                if (strpos($class,'home') === FALSE && $class !== 'success'):
+            ?>
 			<a id=return href="javascript:" onclick="history.back()">
-				<i class="fa fa-chevron-left" aria-hidden=true></i>
+				<i class="far fa-chevron-left" aria-hidden=true></i>
 			</a>
+            <?php endif ?>
 
 			<nav class=container-fluid>
 				<div class=navbar-header>
 					<h1>
-						<a id=logo class=ellipsis title="<?php echo SITE_NAME ?>" href="<?php echo base_url() ?>"><?php echo $title ?></a>
+                        <?php
+                            // 移动端仅显当前页面标题，不跳转
+                            if ($this->user_agent['is_mobile']):
+                                echo $title;
+                            else:
+                        ?>
+                        <a id=logo title="<?php echo SITE_NAME ?>" href="<?php echo base_url() ?>">
+                            <?php echo SITE_NAME ?>
+                        </a>
+                        <?php endif ?>
 					</h1>
 					<button class=navbar-toggle data-toggle=collapse data-target=".navbar-collapse">
 						<span class=sr-only>展开/收起菜单</span>
-						<i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+						<i class="far fa-ellipsis-h" aria-hidden="true"></i>
 					</button>
 				</div>
 				<div class="navbar-collapse collapse">
 				    <ul class="nav navbar-nav">
 						<li><a title="回到首页" href="<?php echo base_url() ?>">首页</a></li>
 
-						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>我的 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
-							<ul class=dropdown-menu>
-								<li><a title="个人中心" href="<?php echo base_url('user/edit') ?>">我的资料</a></li>
-								<li><a title="密码修改" href="<?php echo base_url('password_change') ?>">密码修改</a></li>
-								<li><a title="密码重置" href="<?php echo base_url('password_reset') ?>">密码重置</a></li>
-								<?php if ( empty($this->session->password) ): ?>
-								<li><a title="密码设置" href="<?php echo base_url('password_set') ?>">密码设置</a></li>
-								<?php endif ?>
-							</ul>
-						</li>
-				<?php if ( !empty($this->session->biz_id) ): ?>
+                        <li class=dropdown>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>投票 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <ul class=dropdown-menu>
+                                <li><a title="投票活动列表" href="<?php echo base_url('vote') ?>">所有投票活动</a></li>
+                                <li><a title="创建投票活动" href="<?php echo base_url('vote/create') ?>">创建投票活动</a></li>
 
+                                <li role=separator class=divider></li>
+                                <li><a title="候选项标签列表" href="<?php echo base_url('vote_tag') ?>">候选项标签</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a title="候选项列表" href="<?php echo base_url('vote_option') ?>">候选项</a></li>
+
+                                <!--
+                                <li role=separator class=divider></li>
+                                <li><a title="所有选票" href="<?php echo base_url('vote_ballot') ?>">所有选票</a></li>
+                                -->
+                            </ul>
+                        </li>
+
+				<?php if ( !empty($this->session->biz_id) ): ?>
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>商家 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
 								<li><a title="我的店铺" href="<?php echo base_url('biz/detail?id='.$this->session->biz_id) ?>">店铺资料</a></li>
-                                <li role="separator" class="divider"></li>
+                                <li role=separator class=divider></li>
                                 <li><a title="店铺装修列表" href="<?php echo base_url('ornament_biz') ?>">店铺装修</a></li>
-							</ul>
-						</li>
 
-						<?php
-						// 仅获得大于10的权限的管理员可以管理员工
-						if ($this->session->role === '管理员' && $this->session->level > 10):
-						?>
-						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>员工 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
-							<ul class=dropdown-menu>
-								<li><a title="员工列表" href="<?php echo base_url('stuff') ?>">员工列表</a></li>
-								<li><a title="创建员工" href="<?php echo base_url('stuff/create') ?>">创建员工</a></li>
+                                <li role=separator class=divider></li>
+                                <li><a title="门店列表" href="<?php echo base_url('branch') ?>">门店</a></li>
+
+                                <?php
+                                    // 仅获得大于10的权限的管理员可以管理员工
+                                    if ($this->session->role === '管理员' && $this->session->level > 10):
+                                ?>
+                                    <li role=separator class=divider></li>
+                                    <li><a title="员工列表" href="<?php echo base_url('stuff') ?>">所有员工</a></li>
+                                    <li><a title="创建员工" href="<?php echo base_url('stuff/create') ?>">创建员工</a></li>
+                                <?php endif ?>
 							</ul>
 						</li>
-						<?php endif ?>
 
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>商品 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="店内分类列表" href="<?php echo base_url('item_category_biz') ?>">店内分类</a></li>
+								<li><a title="店内分类列表" href="<?php echo base_url('item_category_biz') ?>">所有店内分类</a></li>
 								<li><a title="创建店内分类" href="<?php echo base_url('item_category_biz/create') ?>">创建店内分类</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a title="运费模板列表" href="<?php echo base_url('freight_template_biz') ?>">运费模板</a></li>
+								<li role=separator class=divider></li>
+								<li><a title="运费模板列表" href="<?php echo base_url('freight_template_biz') ?>">所有运费模板</a></li>
 								<li><a title="创建运费模板" href="<?php echo base_url('freight_template_biz/create') ?>">创建运费模板</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a title="商品列表" href="<?php echo base_url('item') ?>">商品列表</a></li>
+								<li role=separator class=divider></li>
+								<li><a title="商品列表" href="<?php echo base_url('item') ?>">所有商品</a></li>
 								<li><a title="创建商品" href="<?php echo base_url('item/create') ?>">创建商品</a></li>
 								<li><a title="快速创建" href="<?php echo base_url('item/create_quick') ?>">快速创建</a></li>
 							</ul>
@@ -288,58 +326,71 @@
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>订单 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="商品订单列表" href="<?php echo base_url('order') ?>">订单列表</a></li>
+								<li><a title="商品订单列表" href="<?php echo base_url('order') ?>">所有订单</a></li>
+                                <li><a title="待接单订单" href="<?php echo base_url('order?status=待接单') ?>">待接单订单</a></li>
+                                <li><a title="待发货订单" href="<?php echo base_url('order?status=待发货') ?>">待发货订单</a></li>
+                                <li role=separator class=divider></li>
+                                <li><a title="退款/售后列表" href="<?php echo base_url('refund') ?>">所有退款/售后</a></li>
 							</ul>
 						</li>
 
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>营销活动 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="店内活动列表" href="<?php echo base_url('promotion_biz') ?>">店内活动列表</a></li>
+								<li><a title="店内活动列表" href="<?php echo base_url('promotion_biz') ?>">所有店内活动</a></li>
 								<li><a title="创建店内活动" href="<?php echo base_url('promotion_biz/create') ?>">创建店内活动</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a title="平台活动列表" href="<?php echo base_url('promotion') ?>">平台活动列表</a></li>
-								<!--<li><a title="平台活动" href="<?php echo base_url('promotion/create') ?>">申请平台活动</a></li>-->
+								<li role=separator class=divider></li>
+								<li><a title="平台活动列表" href="<?php echo base_url('promotion') ?>">所有平台活动</a></li>
+								<!--<li><a title="创建平台活动" href="<?php echo base_url('promotion/create') ?>">创建平台活动</a></li>-->
 							</ul>
 						</li>
 
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>优惠券 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="优惠券模板" href="<?php echo base_url('coupon_template') ?>">优惠券模板</a></li>
+								<li><a title="优惠券模板" href="<?php echo base_url('coupon_template') ?>">所有优惠券模板</a></li>
 								<li><a title="创建优惠券模板" href="<?php echo base_url('coupon_template/create') ?>">创建优惠券模板</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a title="优惠券包" href="<?php echo base_url('coupon_combo') ?>">优惠券包</a></li>
+								<li role=separator class=divider></li>
+								<li><a title="优惠券包" href="<?php echo base_url('coupon_combo') ?>">所有优惠券包</a></li>
 								<li><a title="创建优惠券包" href="<?php echo base_url('coupon_combo/create') ?>">创建优惠券包</a></li>
 							</ul>
 						</li>
 
+                        <li class=dropdown>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>文章 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <ul class=dropdown-menu>
+                                <li><a title="文章列表" href="<?php echo base_url('article_biz') ?>">所有文章</a></li>
+                                <li><a title="创建文章" href="<?php echo base_url('article_biz/create') ?>">创建文章</a></li>
+                            </ul>
+                        </li>
+
 						<!--
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>余额<b class=caret></b></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>余额 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="余额列表" href="<?php echo base_url('balance') ?>">余额列表</a></li>
+								<li><a title="余额列表" href="<?php echo base_url('balance') ?>">所有余额</a></li>
 							</ul>
 						</li>
 						
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown><i class="fa fa-file-image-o" aria-hidden=true></i> 素材<b class=caret></b></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>素材 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="素材列表" href="<?php echo base_url('material') ?>">素材列表</a></li>
+								<li><a title="素材列表" href="<?php echo base_url('material') ?>">所有素材</a></li>
 							</ul>
 						</li>
 						-->
-					
-						<?php if ( $this->session->role === '管理员' && $this->session->level > 30): ?>
-						<!--
+
+                        <!--
+                        <?php if ( $this->session->role === '管理员' && $this->session->level > 30): ?>
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown><i class="fa fa-money" aria-hidden=true></i> 积分<b class=caret></b></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>积分 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a title="积分列表" href="<?php echo base_url('credit') ?>">积分列表</a></li>
+								<li><a title="积分列表" href="<?php echo base_url('credit') ?>">所有积分</a></li>
 							</ul>
 						</li>
-						-->
+
 						<?php endif ?>
+						-->
 			<?php endif ?>
 					</ul>
 

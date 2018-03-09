@@ -32,20 +32,6 @@
 			'id',
 		);
 
-		/**
-		 * 编辑单行特定字段时必要的字段名
-		 */
-		protected $names_edit_certain_required = array(
-			'id', 'name', 'value',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
-		);
-
 		public function __construct()
 		{
 			parent::__construct();
@@ -66,16 +52,7 @@
 				'mobile' => '手机号',
 				'nickname' => '昵称',
 			);
-		}
-
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 我的
@@ -98,6 +75,7 @@
 			if ($result['status'] === 200):
 				$data['item'] = $result['content'];
 			else:
+                $data['item'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -123,9 +101,7 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -143,6 +119,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -156,7 +133,7 @@
 		} // end index
 
 		/**
-		 * DEPRECATED 详情页
+		 * 详情页
 		 */
 		public function detail()
 		{
@@ -168,18 +145,19 @@
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
 
-			// 从API服务器获取相应详情信息
-			$url = api_url($this->class_name. '/detail');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
+            // 从API服务器获取相应详情信息
+            $url = api_url($this->class_name. '/detail');
+            $result = $this->curl->go($url, $params, 'array');
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+                // 页面信息
+                $data['title'] = ( $id === $this->session->user_id )? '我的资料': $data['item']['nickname'];
+                $data['class'] = $this->class_name.' detail';
 
-			// 页面信息
-			$data['title'] = $data['item']['mobile'];
-			$data['class'] = $this->class_name.' detail';
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -204,17 +182,15 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'IS NOT NULL';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->post($sorter)) )
-					$condition[$sorter] = $this->input->post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by['time_delete'] = 'DESC';
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -223,6 +199,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -276,12 +253,13 @@
 
 				// 待验证的表单项
 				$this->form_validation->set_error_delimiters('', '；');
+                $this->form_validation->set_rules('avatar', '头像', 'trim|max_length[255]');
 				$this->form_validation->set_rules('nickname', '昵称', 'trim|max_length[12]');
 				$this->form_validation->set_rules('lastname', '姓氏', 'trim|max_length[9]');
 				$this->form_validation->set_rules('firstname', '名', 'trim|max_length[6]');
 				$this->form_validation->set_rules('gender', '性别', 'trim|in_list[男,女]');
-				$this->form_validation->set_rules('dob', '出生日期', 'trim|exact_length[10]');
-				$this->form_validation->set_rules('avatar', '头像', 'trim|max_length[255]');
+				$this->form_validation->set_rules('dob', '生日（公历/阳历）', 'trim|exact_length[10]|callback_time_dob');
+                $this->form_validation->set_message('time_dob', SITE_NAME.'目前仅面向14-120岁之间的用户进行服务');
 
 				// 若表单提交不成功
 				if ($this->form_validation->run() === FALSE):

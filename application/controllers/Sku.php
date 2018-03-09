@@ -32,20 +32,6 @@
 			'id', 'item_id', 'name_first', 'price', 'stocks',
 		);
 
-		/**
-		 * 编辑单行特定字段时必要的字段名
-		 */
-		protected $names_edit_certain_required = array(
-			'id', 'name', 'value',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
-		);
-
 		public function __construct()
 		{
 			parent::__construct();
@@ -69,16 +55,7 @@
 				'price' => '商城价/现价',
 				'stocks' => '库存',
 			);
-		}
-
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -95,14 +72,16 @@
 			$item_id = $this->input->get_post('item_id')? $this->input->get_post('item_id'): NULL;
 			if ( !empty($item_id) ):
 				$data['comodity'] = $this->get_item($item_id);
-
 				$condition['item_id'] = $item_id;
+
+            else:
+                // 若未传入所属商品ID，转到商品列表
+                redirect( base_url('item') );
+
 			endif;
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -120,6 +99,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -141,7 +121,6 @@
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
 			if ( !empty($id) ):
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 			else:
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
@@ -151,17 +130,18 @@
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['item'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
 
-			// 获取商品信息
-			$data['comodity'] = $this->get_item($data['item']['item_id']);
+                // 获取商品信息
+                $data['comodity'] = $this->get_item($data['item']['item_id']);
 
-			// 页面信息
-			$data['title'] = $data['item']['name_first'];
-			$data['class'] = $this->class_name.' detail';
-			//$data['keywords'] = $this->class_name.','. $data['item']['name'];
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['class'] = $this->class_name.' detail';
+
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -185,26 +165,28 @@
 				'class' => $this->class_name.' trash',
 			);
 
-			// 如已限定所属商品，获取商品信息并限定筛选条件
-			$item_id = $this->input->get_post('item_id')? $this->input->get_post('item_id'): NULL;
-			if ( !empty($item_id) ):
-				$data['comodity'] = $this->get_item($item_id);
+            // 如已限定所属商品，获取商品信息并限定筛选条件
+            $item_id = $this->input->get_post('item_id')? $this->input->get_post('item_id'): NULL;
+            if ( !empty($item_id) ):
+                $data['comodity'] = $this->get_item($item_id);
+                $condition['item_id'] = $item_id;
 
-				$condition['item_id'] = $item_id;
-			endif;
+            else:
+                // 若未传入所属商品ID，转到商品列表
+                redirect( base_url('item') );
+
+            endif;
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'IS NOT NULL';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->post($sorter)) )
-					$condition[$sorter] = $this->input->post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by['time_delete'] = 'DESC';
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -213,6 +195,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -255,10 +238,10 @@
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
 			$this->form_validation->set_rules('item_id', '所属商品', 'trim|required');
 			$this->form_validation->set_rules('url_image', '图片', 'trim|max_length[255]');
-			$this->form_validation->set_rules('name_first', '名称第一部分', 'trim|required|max_length[10]');
-			$this->form_validation->set_rules('name_second', '名称第二部分', 'trim|max_length[10]');
-			$this->form_validation->set_rules('name_third', '名称第三部分', 'trim|max_length[10]');
-			$this->form_validation->set_rules('price', '价格（元）', 'trim|required|greater_than[0]|less_than_equal_to[99999.99]');
+			$this->form_validation->set_rules('name_first', '名称第一部分', 'trim|required|max_length[15]');
+			$this->form_validation->set_rules('name_second', '名称第二部分', 'trim|max_length[15]');
+			$this->form_validation->set_rules('name_third', '名称第三部分', 'trim|max_length[15]');
+			$this->form_validation->set_rules('price', '价格（元）', 'trim|required|greater_than_equal_to[1]|less_than_equal_to[99999.99]');
 			$this->form_validation->set_rules('stocks', '库存量（单位）', 'trim|required|greater_than_equal_to[0]|less_than_equal_to[65535]');
 			$this->form_validation->set_rules('weight_net', '净重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
 			$this->form_validation->set_rules('weight_gross', '毛重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
@@ -276,7 +259,6 @@
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
 					'user_id' => $this->session->user_id,
-					'biz_id' => $this->session->biz_id,
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
@@ -295,6 +277,7 @@
 					$data['content'] = $result['content']['message'];
 					$data['operation'] = 'create';
 					$data['id'] = $result['content']['id']; // 创建后的信息ID
+                    $data['item_id'] = $item_id;
 
 					$this->load->view('templates/header', $data);
 					$this->load->view($this->view_root.'/result', $data);
@@ -339,7 +322,6 @@
 
 			// 从API服务器获取相应详情信息
 			$params['id'] = $id;
-			$params['biz_id'] = $this->session->biz_id;
 			$url = api_url($this->class_name. '/detail');
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
@@ -354,10 +336,10 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			$this->form_validation->set_rules('url_image', '图片', 'trim|max_length[255]');
-			$this->form_validation->set_rules('name_first', '名称第一部分', 'trim|required|max_length[10]');
-			$this->form_validation->set_rules('name_second', '名称第二部分', 'trim|max_length[10]');
-			$this->form_validation->set_rules('name_third', '名称第三部分', 'trim|max_length[10]');
-			$this->form_validation->set_rules('price', '价格（元）', 'trim|required|greater_than[0]|less_than_equal_to[99999.99]');
+            $this->form_validation->set_rules('name_first', '名称第一部分', 'trim|required|max_length[15]');
+            $this->form_validation->set_rules('name_second', '名称第二部分', 'trim|max_length[15]');
+            $this->form_validation->set_rules('name_third', '名称第三部分', 'trim|max_length[15]');
+            $this->form_validation->set_rules('price', '价格（元）', 'trim|required|greater_than_equal_to[1]|less_than_equal_to[99999.99]');
 			$this->form_validation->set_rules('stocks', '库存量（单位）', 'trim|required|greater_than_equal_to[0]|less_than_equal_to[65535]');
 			$this->form_validation->set_rules('weight_net', '净重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
 			$this->form_validation->set_rules('weight_gross', '毛重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
@@ -394,6 +376,7 @@
 					$data['content'] = $result['content']['message'];
 					$data['operation'] = 'edit';
 					$data['id'] = $id;
+                    $data['item_id'] = $data['item']['item_id'];
 
 					$this->load->view('templates/header', $data);
 					$this->load->view($this->view_root.'/result', $data);
@@ -412,7 +395,105 @@
 			endif;
 		} // end edit
 
-	} // end class Sku
+        /**
+         * 复制单行
+         */
+        public function duplicate()
+        {
+            // 检查是否已传入必要参数
+            $id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
+            if ( !empty($id) ):
+                $params['id'] = $id;
+            else:
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endif;
+
+            // 操作可能需要检查操作权限
+            // $role_allowed = array('管理员', '经理'); // 角色要求
+// 			$min_level = 30; // 级别要求
+// 			$this->basic->permission_check($role_allowed, $min_level);
+
+            // 页面信息
+            $data = array(
+                'title' => '复制'.$this->class_name_cn,
+                'class' => $this->class_name.' edit',
+            );
+
+            // 从API服务器获取相应详情信息
+            $params['id'] = $id;
+            $url = api_url($this->class_name. '/detail');
+            $result = $this->curl->go($url, $params, 'array');
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+            else:
+                redirect( base_url('error/code_404') ); // 若未成功获取信息，则转到错误页
+            endif;
+
+            // 获取商品信息
+            $data['comodity'] = $this->get_item($data['item']['item_id']);
+
+            // 待验证的表单项
+            $this->form_validation->set_error_delimiters('', '；');
+            $this->form_validation->set_rules('url_image', '图片', 'trim|max_length[255]');
+            $this->form_validation->set_rules('name_first', '名称第一部分', 'trim|required|max_length[15]');
+            $this->form_validation->set_rules('name_second', '名称第二部分', 'trim|max_length[15]');
+            $this->form_validation->set_rules('name_third', '名称第三部分', 'trim|max_length[15]');
+            $this->form_validation->set_rules('price', '价格（元）', 'trim|required|greater_than_equal_to[1]|less_than_equal_to[99999.99]');
+            $this->form_validation->set_rules('stocks', '库存量（单位）', 'trim|required|greater_than_equal_to[0]|less_than_equal_to[65535]');
+            $this->form_validation->set_rules('weight_net', '净重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
+            $this->form_validation->set_rules('weight_gross', '毛重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
+            $this->form_validation->set_rules('weight_volume', '体积重（KG）', 'trim|greater_than_equal_to[0]|less_than_equal_to[999.99]');
+
+            // 若表单提交不成功
+            if ($this->form_validation->run() === FALSE):
+                $data['error'] = validation_errors();
+
+                $this->load->view('templates/header', $data);
+                $this->load->view($this->view_root.'/duplicate', $data);
+                $this->load->view('templates/footer', $data);
+
+            else:
+                // 需要创建的数据；逐一赋值需特别处理的字段
+                $data_to_create = array(
+                    'user_id' => $this->session->user_id,
+                );
+                // 自动生成无需特别处理的数据
+                $data_need_no_prepare = array(
+                    'item_id', 'url_image', 'name_first', 'name_second', 'name_third', 'price', 'stocks', 'weight_net', 'weight_gross', 'weight_volume',
+                );
+                foreach ($data_need_no_prepare as $name)
+                    $data_to_create[$name] = $this->input->post($name);
+
+                // 向API服务器发送待创建数据
+                $params = $data_to_create;
+                $url = api_url($this->class_name. '/create');
+                $result = $this->curl->go($url, $params, 'array');
+                if ($result['status'] === 200):
+                    $data['title'] = $this->class_name_cn. '复制成功';
+                    $data['class'] = 'success';
+                    $data['content'] = $result['content']['message'];
+                    $data['operation'] = 'create'; // 复制操作标记为创建
+                    $data['id'] = $result['content']['id']; // 创建后的信息ID
+                    $data['item_id'] = $data['item']['item_id'];
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/result', $data);
+                    $this->load->view('templates/footer', $data);
+
+                else:
+                    // 若创建失败，则进行提示
+                    $data['error'] = $result['content']['error']['message'];
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/duplicate', $data);
+                    $this->load->view('templates/footer', $data);
+
+                endif;
+
+            endif;
+        } // end duplicate
+
+    } // end class Sku
 
 /* End of file Sku.php */
 /* Location: ./application/controllers/Sku.php */

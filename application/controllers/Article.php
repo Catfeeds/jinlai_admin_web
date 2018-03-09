@@ -14,14 +14,14 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'article_id', 'category_id', 'biz_id', 'title', 'excerpt', 'content', 'url_name', 'url_images', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
+			'article_id', 'category_id', 'title', 'excerpt', 'content', 'url_name', 'url_images', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
 		/**
 		 * 可被编辑的字段名
 		 */
 		protected $names_edit_allowed = array(
-			'category_id', 'biz_id', 'title', 'excerpt', 'content', 'url_name', 'url_images',
+			'category_id', 'title', 'excerpt', 'content', 'url_name', 'url_images',
 		);
 
 		/**
@@ -29,20 +29,6 @@
 		 */
 		protected $names_edit_required = array(
 			'id', 'title', 'excerpt', 'content'
-		);
-		
-		/**
-		 * 编辑单行特定字段时必要的字段名
-		 */
-		protected $names_edit_certain_required = array(
-			'id', 'name', 'value',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
 		);
 
 		public function __construct()
@@ -62,56 +48,7 @@
 				'title' => '标题',
 				'excerpt' => '摘要',
 			);
-		}
-		
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
-		
-		/**
-		 * 我的
-		 *
-		 * 限定获取的行的user_id（示例为通过session传入的user_id值），一般用于前台
-		 */
-		public function mine()
-		{
-			// 未登录用户转到登录页
-			($this->session->time_expire_login > time()) OR redirect( base_url('login') );
-
-			// 页面信息
-			$data = array(
-				'title' => '我的'. $this->class_name_cn, // 页面标题
-				'class' => $this->class_name.' mine', // 页面body标签的class属性值
-			);
-
-			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
-			$condition['time_delete'] = 'NULL';
-
-			// 排序条件
-			$order_by = NULL;
-			//$order_by['name'] = 'value';
-
-			// 从API服务器获取相应列表信息
-			$params = $condition;
-			$url = api_url($this->class_name. '/index');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['items'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
-
-			// 输出视图
-			$this->load->view('templates/header', $data);
-			$this->load->view($this->view_root.'/index', $data);
-			$this->load->view('templates/footer', $data);
-		} // end mine
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -126,12 +63,11 @@
 
 			// 筛选条件
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->get_post($sorter)) )
-					$condition[$sorter] = $this->input->get_post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by = NULL;
@@ -144,6 +80,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -174,20 +111,17 @@
 			// 从API服务器获取相应详情信息
 			$url = api_url($this->class_name. '/detail');
 			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-				// 页面信息
-				$data['title'] = $data['item']['title'];
-				$data['class'] = $this->class_name.' detail';
-				$data['description'] = $this->class_name.','. $data['item']['excerpt'];
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+                $data['description'] = $this->class_name.','. $data['item']['excerpt'];
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item']['title'];
+                $data['class'] = $this->class_name.' detail';
 
-			else:
-				// 页面信息
-				$data['title'] = $this->class_name_cn. '详情';
-				$data['class'] = $this->class_name.' detail';
-				$data['error'] = $result['content']['error']['message'];
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
 
-			endif;
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -215,17 +149,15 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'IS NOT NULL';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->post($sorter)) )
-					$condition[$sorter] = $this->input->post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by['time_delete'] = 'DESC';
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -234,6 +166,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -288,7 +221,6 @@
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
 					'user_id' => $this->session->user_id,
-					'biz_id' => $this->session->biz_id,
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
@@ -355,7 +287,6 @@
 
 			// 从API服务器获取相应详情信息
 			$params['id'] = $id;
-			$params['biz_id'] = $this->session->biz_id;
 			$url = api_url($this->class_name. '/detail');
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):

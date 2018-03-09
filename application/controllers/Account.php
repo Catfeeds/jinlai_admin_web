@@ -2,28 +2,16 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Account Class
+	 * Account 账户类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
 	 * @copyright ICBG <www.bingshankeji.com>
 	 */
-	class Account extends CI_Controller
+	class Account extends MY_Controller
 	{
-		/* 类名称小写，应用于多处动态生成内容 */
-		public $class_name;
-
-		/* 类名称中文，应用于多处动态生成内容 */
-		public $class_name_cn;
-
-		/* 主要相关表名 */
-		public $table_name;
-
-		/* 主要相关表的主键名*/
-		public $id_name;
-
-		/* 视图文件所在目录名 */
-		public $view_root;
+	    // 是否使用图片验证码
+	    public $captcha_assess = FALSE; // 默认不使用
 
 		public function __construct()
 		{
@@ -99,7 +87,9 @@
 				'class' => $this->class_name.' login',
 			);
 			
-			$this->form_validation->set_rules('captcha_verify', '图片验证码', 'trim|required|exact_length[4]|callback_verify_captcha');
+            // 判断是否需要图片验证码
+			$this->captcha_assess('failed_login_count');
+
 			$this->form_validation->set_rules('mobile', '手机号', 'trim|required|exact_length[11]|is_natural_no_zero');
 			$this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
 
@@ -120,6 +110,9 @@
 
 				if ($result['status'] !== 200):
 					$data['error'] = $result['content']['error']['message'];
+
+				    // 记录失败次数，并判断是否需要验证码
+                    $this->record_failure('failed_login_count');
 
 				else:
 					// 获取用户信息
@@ -167,7 +160,9 @@
 				'class' => $this->class_name.' login-sms',
 			);
 
-			$this->form_validation->set_rules('captcha_verify', '图片验证码', 'trim|required|exact_length[4]|callback_verify_captcha');
+            // 判断是否需要图片验证码
+            $this->captcha_assess('failed_login_count');
+
 			$this->form_validation->set_rules('mobile', '手机号', 'trim|required|exact_length[11]');
 			$this->form_validation->set_rules('sms_id', '短信ID', 'trim|required|is_natural_no_zero');
 			$this->form_validation->set_rules('captcha', '短信验证码', 'trim|required|exact_length[6]|is_natural_no_zero');
@@ -190,6 +185,9 @@
 
 				if ($result['status'] !== 200):
 					$data['error'] = $result['content']['error']['message'];
+
+                    // 记录失败次数
+                    $this->record_failure('failed_login_count');
 
 				else:
 					// 获取用户信息
@@ -372,9 +370,6 @@
 		 */
 		public function password_reset()
 		{
-			//DECREPTAED 若已登录，转到密码修改页
-			//!isset($this->session->time_expire_login) OR redirect( base_url('password_change') );
-
 			// 清除当前SESSION
 			$this->session->sess_destroy();
 
@@ -385,7 +380,7 @@
 			);
 
 			// 待验证的表单项
-			$this->form_validation->set_rules('captcha_verify', '图片验证码', 'trim|required|exact_length[4]|callback_verify_captcha');
+			$this->form_validation->set_rules('captcha_verify', '图片验证码', 'trim|required|exact_length[4]|callback_captcha_verify');
 			$this->form_validation->set_rules('mobile', '手机号', 'trim|required|exact_length[11]');
 			$this->form_validation->set_rules('sms_id', '短信ID', 'trim|required|is_natural_no_zero');
 			$this->form_validation->set_rules('captcha', '短信验证码', 'trim|required|exact_length[6]|is_natural_no_zero');
@@ -445,33 +440,13 @@
 		} // end logout
 
 		/**
-		 * 验证图片验证码是否有效
-		 *
-		 * @params string $captcha 图片验证码内容
-         * @return boolean
-		 */
-		public function verify_captcha($captcha)
-		{
-			// 依次验证是否存在有效期之内的图片验证码、验证码是否正确
-			if (time() > $this->session->captcha_time_expire):
-				$this->form_validation->set_message('verify_captcha', '验证码已失效');
-				return FALSE;
-			elseif ($captcha !== $this->session->captcha):
-				$this->form_validation->set_message('verify_captcha', '验证码错误');
-				return FALSE;
-			else:
-				return TRUE;
-			endif;
-		}
-
-		/**
 		 * TODO 邮箱注册；暂不开放此功能
 		 *
 		 * 使用邮箱及密码进行注册
 		 *
 		 * @return void
 		 */
-		public function register()
+		private function register()
 		{
 			// 若已登录，转到首页
 			!isset($this->session->time_expire_login) OR redirect( base_url() );
@@ -507,7 +482,92 @@
 
 			endif;
 		} // end register
-	}
+
+        /**
+         * 删除
+         *
+         * 商家不可删除
+         */
+        public function delete()
+        {
+            exit('不可删除'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+        } // end delete
+
+        /**
+         * 找回
+         *
+         * 商家不可找回
+         */
+        public function restore()
+        {
+            exit('不可找回'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+        } // end restore
+		
+		/**
+		 * 以下为工具类方法
+		 */
+
+        /**
+         * 记录操作失败次数，并评估是否需要图片验证码
+         *
+         * @param string $session_name 存储失败次数的SESSION项名称
+         * @param int $trigger_count 失败几次之后开始使用图片验证码，默认2
+         */
+        private function record_failure($session_name, $trigger_count = 2)
+        {
+            // 获取已失败次数
+            $origin_data = isset($this->session->{$session_name})? $this->session->{$session_name}: 0;
+
+            // 更新失败次数
+            $failed_count = $origin_data +1;
+
+            $this->session->set_userdata($session_name, $failed_count);
+
+            // 评估是否需要图片验证码
+            $this->captcha_assess($session_name, $trigger_count);
+        } // end record_failure
+
+        /**
+         * 评估是否需要图片验证码
+         *
+         * @param string $session_name 存储失败次数的SESSION项名称
+         * @param int $trigger_count 失败几次之后开始使用图片验证码，默认2
+         */
+        private function captcha_assess($session_name, $trigger_count = 2)
+        {
+            if ($this->session->{$session_name} >= $trigger_count):
+                // 更新类属性，供视图文件判断是否显示图片验证码
+                $this->captcha_assess = TRUE;
+
+                // 设置图片验证码字段的校验规则
+                $this->form_validation->set_rules('captcha_verify', '图片验证码', 'trim|required|exact_length[4]|callback_captcha_verify');
+            endif;
+        } // end captcha_assess
+
+        /**
+         * 验证图片验证码
+         *
+         * @params string $captcha 图片验证码内容
+         * @return boolean
+         */
+        public function captcha_verify($captcha)
+        {
+            // 依次验证是否存在有效期之内的图片验证码、验证码是否正确
+            if (time() > $this->session->captcha_time_expire):
+                $this->form_validation->set_message('captcha_verify', '验证码已过期');
+                return FALSE;
+
+            elseif ($captcha !== $this->session->captcha):
+                $this->form_validation->set_message('captcha_verify', '验证码错误');
+                return FALSE;
+
+            else:
+                return TRUE;
+
+            endif;
+        } // end captcha_verify
+
+	} // end class Account
 
 /* End of file Account.php */
 /* Location: ./application/controllers/Account.php */

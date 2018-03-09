@@ -21,6 +21,8 @@
 	}
 </style>
 
+<script defer src="/js/detail.js"></script>
+
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -44,13 +46,38 @@
 		// 需要特定角色和权限进行该操作
 		if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 		?>
-		<li class="col-xs-12">
-            <a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a>
-        </li>
+
+        <?php if ( empty($item['time_delete']) ): ?>
+        <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
+        <?php endif ?>
+
+        <?php if ( empty($item['time_publish']) ): ?>
+        <li><a title="上架" href="<?php echo base_url($this->class_name.'/publish?ids='.$item[$this->id_name]) ?>" target=_blank>上架</a></li>
+        <?php else: ?>
+            <li><a title="下架" href="<?php echo base_url($this->class_name.'/suspend?ids='.$item[$this->id_name]) ?>" target=_blank>下架</a></li>
+        <?php endif ?>
+
+        <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		<?php endif ?>
 	</ul>
 
 	<dl id=list-info class=dl-horizontal>
+        <?php
+        // 当前项客户端URL
+        $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
+        ?>
+
+        <dt><?php echo $this->class_name_cn ?>链接</dt>
+        <dd>
+            <span><?php echo $item_url ?></span>
+            <a href="<?php echo $item_url ?>" target=_blank>查看</a>
+        </dd>
+
+        <dt><?php echo $this->class_name_cn ?>二维码</dt>
+        <dd>
+            <figure class="qrcode col-xs-12 col-sm-6 col-md-3" data-qrcode-string="<?php echo $item_url ?>"></figure>
+        </dd>
+
 		<dt>主图</dt>
 		<dd>
             <?php $name_to_upload = 'url_image_main' ?>
@@ -67,26 +94,27 @@
         <dd>
             <?php if ( !empty($item['figure_image_urls']) ): ?>
                 <ul class=upload_preview>
-                    <?php
-                    $slides = explode(',', $item['figure_image_urls']);
-                    foreach($slides as $slide):
-                        ?>
-                        <li>
-                            <figure>
-                                <img src="<?php echo $slide ?>">
-                            </figure>
-                        </li>
-                    <?php endforeach ?>
+                <?php
+                $slides = explode(',', $item['figure_image_urls']);
+                foreach($slides as $slide):
+                    ?>
+                    <li>
+                        <figure>
+                            <img src="<?php echo $slide ?>">
+                        </figure>
+                    </li>
+                <?php endforeach ?>
                 </ul>
             <?php else: ?>
                 未上传
             <?php endif ?>
         </dd>
 
-		<dt>形象视频</dt>
-        <dd>高级功能，请联系品类负责人确认开通条件。</dd>
         <!--
+        <dt>形象视频</dt>
 		<dd>
+		    <p>高级功能，请联系品类负责人确认开通条件。</p>
+
 			<?php if ( !empty($item['figure_video_urls']) ): ?>
 			<ul class=row>
 				<?php
@@ -140,51 +168,40 @@
 
 		<?php $unit_name = !empty($item['unit_name'])? $item['unit_name']: '份（默认单位）' ?>
 		<dt>库存量</dt>
-		<dd><strong><?php echo $item['stocks'].' '. $unit_name ?></strong></dd>
+		<dd>
+            <strong><?php echo $item['stocks'].' '. $unit_name ?></strong>
+            <p class="help-block">若商品存在规格，则可销售库存量以各规格相应库存量为准</p>
+        </dd>
+
+        <dt>物流信息</dt>
+        <dd>
+            <ul class="list-horizontal row">
+                <li class="col-xs-12 col-sm-4">毛重 <?php echo ($item['weight_gross'] !== '0.00')? $item['weight_gross'].' KG': '-' ?></li>
+                <li class="col-xs-12 col-sm-4">净重 <?php echo ($item['weight_net'] !== '0.00')? $item['weight_net'].' KG': '-' ?></li>
+                <li class="col-xs-12 col-sm-4">体积重 <?php echo ($item['weight_volume'] !== '0.00')? $item['weight_volume'].' KG': '-' ?></li>
+            </ul>
+        </dd>
 
 		<dt>每单最高限量</dt>
-		<dd><?php echo !empty($item['quantity_max'])? $item['quantity_max'].' 份': '不限'; ?></dd>
+		<dd><?php echo $item['quantity_max'] ?></dd>
 		<dt>每单最低限量</dt>
-		<dd><?php echo !empty($item['quantity_min'])? $item['quantity_min'].' 份': 1; ?></dd>
-		<dt>是否可用优惠券</dt>
-		<dd><?php echo ($item['coupon_allowed'] === '1')? '是': '否'; ?></dd>
+		<dd><?php echo $item['quantity_min'] ?></dd>
+
 		<dt>积分抵扣率</dt>
 		<dd><?php echo $item['discount_credit'] * 100 ?>%</dd>
 		<dt>佣金比例/提成率</dt>
 		<dd><?php echo $item['commission_rate'] * 100 ?>%</dd>
 
-		<?php if ( ! empty($item['time_suspend']) ): ?>
 		<dt>预定上架时间</dt>
 		<dd><?php echo empty($item['time_to_publish'])? '未设置': date('Y-m-d H:i:s', $item['time_to_publish']); ?></dd>
-		<?php endif ?>
 
-		<?php if ( ! empty($item['time_publish']) ): ?>
 		<dt>预定下架时间</dt>
 		<dd><?php echo empty($item['time_to_suspend'])? '未设置': date('Y-m-d H:i:s', $item['time_to_suspend']); ?></dd>
-		<?php endif ?>
 
-		<dt>物流信息</dt>
-		<dd>
-			<p class=help-block>以下3项择一填写即可；若填写多项，将按毛重、净重、体积重的顺序取首个有效值计算运费。</p>
-			<ul class="list-horizontal row">
-				<li class="col-xs-12 col-sm-4">净重 <?php echo ($item['weight_net'] !== '0.00')? $item['weight_net']: '-'; ?> KG</li>
-				<li class="col-xs-12 col-sm-4">毛重 <?php echo ($item['weight_gross'] !== '0.00')? $item['weight_gross']: '-'; ?> KG</li>
-				<li class="col-xs-12 col-sm-4">体积重 <?php echo ($item['weight_volume'] !== '0.00')? $item['weight_volume']: '-'; ?> KG</li>
-			</ul>
-		</dd>
+        <dt>是否可用优惠券</dt>
+        <dd><?php echo ($item['coupon_allowed'] === '1')? '是': '否'; ?></dd>
 
-		<dt>运费模板</dt>
-		<dd>
-			<?php
-				if ( !empty($item['freight_template_id']) ):
-					echo $freight_template['name'];
-				else:
-			?>
-			包邮（免运费）
-			<?php endif ?>
-		</dd>
-
-		<dt>店内活动</dt>
+        <dt>店内活动</dt>
 		<dd>
 			<?php if ( ! empty($item['promotion_id']) ): ?>
 			<strong><?php echo $promotion['name'] ?></strong>
@@ -194,28 +211,36 @@
 		</dd>
 	</dl>
 
-	<?php if ( !empty($skus) ): ?>
 	<section id=skus class=well>
 		<h2>商品规格</h2>
-		<a class="btn btn-info btn-lg" href="<?php echo base_url('sku/index?item_id='.$item['item_id']) ?>" target=_blank>管理规格</a>
-		
+
+        <?php if ( !empty($skus) ): ?>
 		<ul class=row>
 			<?php foreach ($skus as $sku): ?>
-			<li class="col-xs-6 col-sm-4 col-md-3">
+			<li class="col-xs-12 col-sm-6">
 				<a href="<?php echo base_url('sku/detail?id='.$sku['sku_id']) ?>">
-					<h3><?php echo $sku['name_first'].$sku['name_second'].$sku['name_third'] ?></h3>
-					<small>￥<?php echo $sku['price'] ?> / 库存<?php echo $sku['stocks'] ?></small>
-					<?php if ( !empty($sku['url_image']) ): ?>
-					<figure>
-						<img src="<?php echo $sku['url_image'] ?>">
+
+					<figure class="list-item-figure col-xs-4">
+                        <?php if ( !empty($sku['url_image']) ): ?>
+						<img src="<?php echo MEDIA_URL.'sku/'.$sku['url_image'] ?>">
+                        <?php else: ?>
+                        <img src="<?php echo $item['url_image_main'] ?>">
+                        <?php endif ?>
 					</figure>
-					<?php endif ?>
+
+                    <div class="list-item-info col-xs-8">
+                        <h3><?php echo $sku['name_first'].' '.$sku['name_second'].' '.$sku['name_third'] ?></h3>
+                        <p>￥<?php echo $sku['price'] ?> &times; <?php echo $sku['stocks'] ?>单位</p>
+                    </div>
 				</a>
 			</li>
 			<?php endforeach ?>
 		</ul>
+        <?php endif ?>
+
+        <a class="btn btn-default btn-lg btn-block" href="<?php echo base_url('sku/index?item_id='.$item['item_id']) ?>" target=_blank>管理规格</a>
 	</section>
-	<?php endif ?>
+
 
 	<section id=description class=well>
 		<h2>商品描述</h2>

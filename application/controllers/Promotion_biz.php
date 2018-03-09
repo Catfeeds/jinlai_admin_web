@@ -48,20 +48,6 @@
 			'id', 'name', 'time_start', 'time_end',
 		);
 
-		/**
-		 * 编辑单行特定字段时必要的字段名
-		 */
-		protected $names_edit_certain_required = array(
-			'id', 'name', 'value',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
-		);
-
 		public function __construct()
 		{
 			parent::__construct();
@@ -82,16 +68,7 @@
 				'name' => '名称',
 				'type' => '类型',
 			);
-		}
-
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -105,9 +82,7 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -125,6 +100,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -146,23 +122,23 @@
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
 			if ( !empty($id) ):
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 			else:
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
 
-			// 从API服务器获取相应详情信息
-			$url = api_url($this->class_name. '/detail');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
+            // 从API服务器获取相应详情信息
+            $url = api_url($this->class_name. '/detail');
+            $result = $this->curl->go($url, $params, 'array');
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['class'] = $this->class_name.' detail';
 
-			// 页面信息
-			$data['title'] = $data['item']['name'];
-			$data['class'] = $this->class_name.' detail';
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -187,17 +163,15 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'IS NOT NULL';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->post($sorter)) )
-					$condition[$sorter] = $this->input->post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by['time_delete'] = 'DESC';
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -206,6 +180,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -234,13 +209,16 @@
 				'class' => $this->class_name.' create',
 			);
 
+            // 获取当前商家所有优惠券模板数据
+            $data['coupon_templates'] = $this->list_coupon_template();
+
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
 			$this->form_validation->set_rules('type', '活动类型', 'trim|required');
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[20]');
-			$this->form_validation->set_rules('time_start', '开始时间', 'trim|required|exact_length[16]|callback_time_start');
-			$this->form_validation->set_rules('time_end', '结束时间', 'trim|required|exact_length[16]|callback_time_end');
+			$this->form_validation->set_rules('time_start', '开始时间', 'trim|exact_length[16]|callback_time_start');
+			$this->form_validation->set_rules('time_end', '结束时间', 'trim|exact_length[16]|callback_time_end');
 			$this->form_validation->set_message('time_start', '开始时间需详细到分，且晚于当前时间1分钟后');
 			$this->form_validation->set_message('time_end', '结束时间需详细到分，且晚于当前时间1分钟后');
 			$this->form_validation->set_rules('description', '说明', 'trim');
@@ -279,14 +257,13 @@
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
 					'user_id' => $this->session->user_id,
-					'biz_id' => $this->session->biz_id,
-					'time_start' => strtotime( $this->input->post('time_start') ),
-					'time_end' => strtotime( $this->input->post('time_end') ),
-					'time_book_start' => strtotime( $this->input->post('time_book_start') ),
-					'time_book_end' => strtotime( $this->input->post('time_book_end') ),
-					'time_complete_start' => strtotime( $this->input->post('time_complete_start') ),
-					'time_complete_end' => strtotime( $this->input->post('time_complete_end') ),
-				);
+                    'time_start' => empty($this->input->post('time_start'))? time(): $this->strto_minute($this->input->post('time_start')),
+                    'time_end' => empty($this->input->post('time_end'))? time() + 2592000: $this->strto_minute($this->input->post('time_end')),
+                    'time_book_start' => empty($this->input->post('time_book_start'))? NULL: $this->strto_minute($this->input->post('time_book_start')), // 时间仅保留到分钟，下同
+                    'time_book_end' => empty($this->input->post('time_book_end'))? NULL: $this->strto_minute($this->input->post('time_book_end')),
+                    'time_complete_start' => empty($this->input->post('time_complete_start'))? NULL: $this->strto_minute($this->input->post('time_complete_start')),
+                    'time_complete_end' => empty($this->input->post('time_complete_end'))? NULL: $this->strto_minute($this->input->post('time_complete_end')),
+                );
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
 					'name', 'description', 'fold_allowed', 'type', 'discount', 'present_trigger_amount', 'present', 'reduction_trigger_amount', 'reduction_trigger_count', 'reduction_amount', 'reduction_amount_time', 'reduction_discount', 'coupon_id', 'coupon_combo_id', 'deposit', 'balance', 'groupbuy_order_amount', 'groupbuy_quantity_max',
@@ -296,9 +273,7 @@
 
 				// 向API服务器发送待创建数据
 				$params = $data_to_create;
-				//var_dump($params);
 				$url = api_url($this->class_name. '/create');
-				//var_dump($url);
 				$result = $this->curl->go($url, $params, 'array');
 				//var_dump($result);
 				if ($result['status'] === 200):
@@ -352,7 +327,6 @@
 			
 			// 从API服务器获取相应详情信息
 			$params['id'] = $id;
-			$params['biz_id'] = $this->session->biz_id;
 			$url = api_url($this->class_name. '/detail');
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
@@ -361,11 +335,14 @@
 				redirect( base_url('error/code_404') ); // 若未成功获取信息，则转到错误页
 			endif;
 
+            // 获取当前商家所有优惠券模板数据
+            $data['coupon_templates'] = $this->list_coupon_template();
+
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[20]');
-			$this->form_validation->set_rules('time_start', '开始时间', 'trim|required|exact_length[16]|callback_time_start');
-			$this->form_validation->set_rules('time_end', '结束时间', 'trim|required|exact_length[16]|callback_time_end');
+			$this->form_validation->set_rules('time_start', '开始时间', 'trim|exact_length[16]|callback_time_start');
+			$this->form_validation->set_rules('time_end', '结束时间', 'trim|exact_length[16]|callback_time_end');
 			$this->form_validation->set_message('time_start', '开始时间需详细到分，且晚于当前时间1分钟后');
 			$this->form_validation->set_message('time_end', '结束时间需详细到分，且晚于当前时间1分钟后');
 			$this->form_validation->set_rules('description', '说明', 'trim');
@@ -411,12 +388,12 @@
 				$data_to_edit = array(
 					'user_id' => $this->session->user_id,
 					'id' => $id,
-					'time_start' => strtotime( $this->input->post('time_start') ),
-					'time_end' => strtotime( $this->input->post('time_end') ),
-					'time_book_start' => strtotime( $this->input->post('time_book_start') ),
-					'time_book_end' => strtotime( $this->input->post('time_book_end') ),
-					'time_complete_start' => strtotime( $this->input->post('time_complete_start') ),
-					'time_complete_end' => strtotime( $this->input->post('time_complete_end') ),
+                    'time_start' => empty($this->input->post('time_start'))? time(): $this->strto_minute($this->input->post('time_start')),
+                    'time_end' => empty($this->input->post('time_end'))? time() + 2592000: $this->strto_minute($this->input->post('time_end')),
+                    'time_book_start' => empty($this->input->post('time_book_start'))? NULL: $this->strto_minute($this->input->post('time_book_start')), // 时间仅保留到分钟，下同
+                    'time_book_end' => empty($this->input->post('time_book_end'))? NULL: $this->strto_minute($this->input->post('time_book_end')),
+                    'time_complete_start' => empty($this->input->post('time_complete_start'))? NULL: $this->strto_minute($this->input->post('time_complete_start')),
+                    'time_complete_end' => empty($this->input->post('time_complete_end'))? NULL: $this->strto_minute($this->input->post('time_complete_end')),
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
@@ -454,16 +431,16 @@
 		} // end edit
 		
 		/**
-		 * 激活
+		 * 开始
 		 */
-		public function active()
+		public function publish()
 		{
 			// 操作可能需要检查操作权限
 			// $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-			$op_name = '上架'; // 操作的名称
+			$op_name = '开始'; // 操作的名称
 			$op_view = 'publish'; // 视图文件名
 
 			// 页面信息
@@ -573,16 +550,16 @@
 		} // end publish
 		
 		/**
-		 * 禁用
+		 * 结束
 		 */
-		public function deactive()
+		public function suspend()
 		{
 			// 操作可能需要检查操作权限
 			// $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-			$op_name = '下架'; // 操作的名称
+			$op_name = '结束'; // 操作的名称
 			$op_view = 'suspend'; // 视图文件名
 
 			// 页面信息
@@ -690,9 +667,15 @@
 
 			endif;
 		} // end suspend
-		
-		// 检查起始时间
-		public function time_start($value)
+
+        /**
+         * 检查起始时间
+         *
+         * @param string $value
+         * @param bool $later_than_now 是否允许早于当前时间，默认不允许
+         * @return bool
+         */
+		public function time_start($value, $later_than_now = FALSE)
 		{
 			if ( empty($value) ):
 				return true;
@@ -705,7 +688,7 @@
 				$time_to_check = strtotime($value.':00');
 
 				// 该时间不可早于当前时间一分钟以内
-				if ($time_to_check <= time() + 60):
+				if ($later_than_now === FALSE && $time_to_check <= time() + 60):
 					return false;
 				else:
 					return true;
@@ -732,7 +715,7 @@
 					return false;
 
 				// 若已设置开始时间，不可早于开始时间一分钟以内
-				elseif ( !empty($this->input->post('time_start')) && $time_to_check <= strtotime($this->input->post('time_start')) + 60):
+				elseif ( !empty($this->input->post('time_start')) && $time_to_check < strtotime($this->input->post('time_start')) + 60):
 					return false;
 
 				else:
@@ -784,7 +767,7 @@
 					return false;
 
 				// 若已设置开始时间，不可早于开始时间一分钟以内
-				elseif ( !empty($this->input->post('time_book_start')) && $time_to_check <= strtotime($this->input->post('time_book_start')) + 60):
+				elseif ( !empty($this->input->post('time_book_start')) && $time_to_check < strtotime($this->input->post('time_book_start')) + 60):
 					return false;
 
 				else:
@@ -836,7 +819,7 @@
 					return false;
 
 				// 若已设置开始时间，不可早于开始时间一分钟以内
-				elseif ( !empty($this->input->post('time_complete_start')) && $time_to_check <= strtotime($this->input->post('time_complete_start')) + 60):
+				elseif ( !empty($this->input->post('time_complete_start')) && $time_to_check < strtotime($this->input->post('time_complete_start')) + 60):
 					return false;
 
 				else:

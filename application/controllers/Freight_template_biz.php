@@ -13,29 +13,22 @@
 		/**
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
-		protected $names_to_sort = array(
-			'biz_id', 'name', 'type', 'time_valid_from', 'time_valid_end', 'period_valid', 'expire_refund_rate', 'type_actual', 'time_latest_deliver', 'exempt_amount', 'exempt_subtotal', 'max_amount', 'start_amount', 'fee_start', 'fee_unit', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
-		);
+        protected $names_to_sort = array(
+            'biz_id', 'name', 'type', 'time_valid_from', 'time_valid_end', 'period_valid', 'expire_refund_rate', 'nation', 'province', 'city', 'county', 'longitude', 'latitude', 'time_latest_deliver', 'type_actual', 'max_amount', 'start_amount', 'unit_amount', 'fee_start', 'fee_unit', 'exempt_amount', 'exempt_subtotal', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
+        );
 
-		/**
-		 * 可被编辑的字段名
-		 */
-		protected $names_edit_allowed = array(
-			'name', 'time_valid_from', 'time_valid_end', 'period_valid', 'expire_refund_rate', 'type_actual', 'time_latest_deliver', 'exempt_amount', 'exempt_subtotal', 'max_amount', 'start_amount', 'fee_start', 'fee_unit',
-		);
+        /**
+         * 可被编辑的字段名
+         */
+        protected $names_edit_allowed = array(
+            'name', 'time_valid_from', 'time_valid_end', 'period_valid', 'expire_refund_rate', 'nation', 'province', 'city', 'county', 'longitude', 'latitude', 'time_latest_deliver', 'type_actual', 'max_amount', 'start_amount', 'unit_amount', 'fee_start', 'fee_unit', 'exempt_amount', 'exempt_subtotal',
+        );
 
 		/**
 		 * 完整编辑单行时必要的字段名
 		 */
 		protected $names_edit_required = array(
 			'id', 'name', 'type',
-		);
-
-		/**
-		 * 编辑多行特定字段时必要的字段名
-		 */
-		protected $names_edit_bulk_required = array(
-			'ids', 'password',
 		);
 
 		public function __construct()
@@ -57,16 +50,7 @@
 				'name' => '名称',
 				'type' => '类型',
 			);
-		}
-
-		/**
-		 * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法
-		 */
-		public function __destruct()
-		{
-			// 调试信息输出开关
-			// $this->output->enable_profiler(TRUE);
-		}
+		} // end __construct
 
 		/**
 		 * 列表页
@@ -80,9 +64,7 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'NULL';
-			//$condition['name'] = 'value';
 			// （可选）遍历筛选条件
 			foreach ($this->names_to_sort as $sorter):
 				if ( !empty($this->input->get_post($sorter)) )
@@ -100,6 +82,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -121,24 +104,23 @@
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
 			if ( !empty($id) ):
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 			else:
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 			endif;
 
-			// 从API服务器获取相应详情信息
-			$url = api_url($this->class_name. '/detail');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-			else:
-				$data['error'] = $result['content']['error']['message'];
-			endif;
+            // 从API服务器获取相应详情信息
+            $url = api_url($this->class_name. '/detail');
+            $result = $this->curl->go($url, $params, 'array');
+            if ($result['status'] === 200):
+                $data['item'] = $result['content'];
+                // 页面信息
+                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['class'] = $this->class_name.' detail';
 
-			// 页面信息
-			$data['title'] = $data['item']['name'];
-			$data['class'] = $this->class_name.' detail';
-			//$data['keywords'] = $this->class_name.','. $data['item']['name'];
+            else:
+                redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
+
+            endif;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -163,17 +145,15 @@
 			);
 
 			// 筛选条件
-			$condition['biz_id'] = $this->session->biz_id;
 			$condition['time_delete'] = 'IS NOT NULL';
 			// （可选）遍历筛选条件
-			foreach ($this->names_to_sort as $sorter):
-				if ( !empty($this->input->post($sorter)) )
-					$condition[$sorter] = $this->input->post($sorter);
-			endforeach;
+            foreach ($this->names_to_sort as $sorter):
+                if ( !empty($this->input->get_post($sorter)) )
+                    $condition[$sorter] = $this->input->get_post($sorter);
+            endforeach;
 
 			// 排序条件
 			$order_by['time_delete'] = 'DESC';
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -182,6 +162,7 @@
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
 			else:
+                $data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
@@ -214,20 +195,27 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-			$this->form_validation->set_rules('name', '名称', 'trim|required');
-			$this->form_validation->set_rules('type', '类型', 'trim|required');
-			$this->form_validation->set_rules('time_valid_from', '有效期起始时间', 'trim');
-			$this->form_validation->set_rules('time_valid_end', '有效期结束时间', 'trim');
-			$this->form_validation->set_rules('period_valid', '有效期（天）', 'trim');
-			$this->form_validation->set_rules('expire_refund_rate', '过期退款比例', 'trim|less_than_equal_to[1.00]');
-			$this->form_validation->set_rules('type_actual', '运费计算方式', 'trim');
-			$this->form_validation->set_rules('time_latest_deliver', '最晚发货时间', 'trim');
-			$this->form_validation->set_rules('max_amount', '每单最高配送量', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('start_amount', '起始量', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('fee_start', '起始量运费', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('fee_unit', '超出后运费', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('exempt_amount', '包邮量', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('exempt_subtotal', '包邮小计', 'trim|less_than_equal_to[99999.99]');
+            $this->form_validation->set_rules('name', '名称', 'trim|required');
+            $this->form_validation->set_rules('type', '类型', 'trim|required');
+            $this->form_validation->set_rules('time_valid_from', '有效期起始时间', 'trim');
+            $this->form_validation->set_rules('time_valid_end', '有效期结束时间', 'trim');
+            $this->form_validation->set_rules('period_valid', '有效期（天）', 'trim');
+            $this->form_validation->set_rules('expire_refund_rate', '过期退款比例', 'trim');
+            $this->form_validation->set_rules('nation', '国别', 'trim');
+            $this->form_validation->set_rules('province', '省', 'trim|required|max_length[10]');
+            $this->form_validation->set_rules('city', '市', 'trim|required|max_length[10]');
+            $this->form_validation->set_rules('county', '区/县', 'trim|required|max_length[10]');
+            $this->form_validation->set_rules('longitude', '经度', 'trim|min_length[7]|max_length[10]|decimal');
+            $this->form_validation->set_rules('latitude', '纬度', 'trim|min_length[7]|max_length[10]|decimal');
+            $this->form_validation->set_rules('time_latest_deliver', '发货时间', 'trim');
+            $this->form_validation->set_rules('type_actual', '运费计算方式', 'trim|in_list[计件,净重,毛重,体积重]');
+            $this->form_validation->set_rules('max_amount', '每单最高配送量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('start_amount', '首量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('unit_amount', '续量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('fee_start', '首量运费', 'trim|greater_than_equal_to[0]|less_than_equal_to[999]');
+            $this->form_validation->set_rules('fee_unit', '续量运费', 'trim|greater_than_equal_to[0]|less_than_equal_to[999]');
+            $this->form_validation->set_rules('exempt_amount', '包邮量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('exempt_subtotal', '包邮订单小计', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -241,15 +229,15 @@
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
 					'user_id' => $this->session->user_id,
-					'biz_id' => $this->session->biz_id,
 					'time_valid_from' => strtotime( $this->input->post('time_valid_from') ),
 					'time_valid_end' => strtotime( $this->input->post('time_valid_end') ),
 					'period_valid' => !empty('period_valid')? $this->input->post('period_valid') * 86400: 1,
+                    'time_latest_deliver' => !empty('time_latest_deliver')? $this->input->post('time_latest_deliver'): 259200, // 默认3自然日
 				);
 				// 自动生成无需特别处理的数据
-				$data_need_no_prepare = array(
-					'name', 'type', 'expire_refund_rate', 'type_actual', 'time_latest_deliver', 'exempt_amount', 'exempt_subtotal', 'max_amount', 'start_amount', 'fee_start', 'fee_unit',
-				);
+                $data_need_no_prepare = array(
+                    'name', 'type', 'expire_refund_rate', 'nation', 'province', 'city', 'county', 'longitude', 'latitude', 'type_actual', 'max_amount', 'start_amount', 'unit_amount', 'fee_start', 'fee_unit', 'exempt_amount', 'exempt_subtotal',
+                );
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
 
@@ -308,7 +296,6 @@
 			
 			// 从API服务器获取相应详情信息
 			$params['id'] = $id;
-			$params['biz_id'] = $this->session->biz_id;
 			$url = api_url($this->class_name. '/detail');
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
@@ -319,19 +306,26 @@
 
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
-			$this->form_validation->set_rules('name', '名称', 'trim|required');
-			$this->form_validation->set_rules('time_valid_from', '有效期起始时间', 'trim');
-			$this->form_validation->set_rules('time_valid_end', '有效期结束时间', 'trim');
-			$this->form_validation->set_rules('period_valid', '有效期（天）', 'trim');
-			$this->form_validation->set_rules('expire_refund_rate', '过期退款比例', 'trim');
-			$this->form_validation->set_rules('type_actual', '运费计算方式', 'trim');
-			$this->form_validation->set_rules('time_latest_deliver', '最晚发货时间', 'trim');
-			$this->form_validation->set_rules('max_amount', '每单最高配送量', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('start_amount', '起始量', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('fee_start', '起始量运费', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('fee_unit', '超出后运费', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('exempt_amount', '包邮量', 'trim|less_than_equal_to[9999]');
-			$this->form_validation->set_rules('exempt_subtotal', '包邮小计', 'trim|less_than_equal_to[99999.99]');
+            $this->form_validation->set_rules('name', '名称', 'trim|required');
+            $this->form_validation->set_rules('time_valid_from', '有效期起始时间', 'trim');
+            $this->form_validation->set_rules('time_valid_end', '有效期结束时间', 'trim');
+            $this->form_validation->set_rules('period_valid', '有效期（天）', 'trim');
+            $this->form_validation->set_rules('expire_refund_rate', '过期退款比例', 'trim');
+            $this->form_validation->set_rules('nation', '国别', 'trim');
+            $this->form_validation->set_rules('province', '省', 'trim|required|max_length[10]');
+            $this->form_validation->set_rules('city', '市', 'trim|required|max_length[10]');
+            $this->form_validation->set_rules('county', '区/县', 'trim|required|max_length[10]');
+            $this->form_validation->set_rules('longitude', '经度', 'trim|min_length[7]|max_length[10]|decimal');
+            $this->form_validation->set_rules('latitude', '纬度', 'trim|min_length[7]|max_length[10]|decimal');
+            $this->form_validation->set_rules('time_latest_deliver', '发货时间', 'trim');
+            $this->form_validation->set_rules('type_actual', '运费计算方式', 'trim|in_list[计件,净重,毛重,体积重]');
+            $this->form_validation->set_rules('max_amount', '每单最高配送量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('start_amount', '首量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('unit_amount', '续量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('fee_start', '首量运费', 'trim|greater_than_equal_to[0]|less_than_equal_to[999]');
+            $this->form_validation->set_rules('fee_unit', '续量运费', 'trim|greater_than_equal_to[0]|less_than_equal_to[999]');
+            $this->form_validation->set_rules('exempt_amount', '包邮量', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
+            $this->form_validation->set_rules('exempt_subtotal', '包邮订单小计', 'trim|greater_than_equal_to[0]|less_than_equal_to[9999]');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -349,10 +343,11 @@
 					'time_valid_from' => strtotime( $this->input->post('time_valid_from') ),
 					'time_valid_end' => strtotime( $this->input->post('time_valid_end') ),
 					'period_valid' => !empty('period_valid')? $this->input->post('period_valid') * 86400: 1,
+                    'time_latest_deliver' => !empty('time_latest_deliver')? $this->input->post('time_latest_deliver'): 259200, // 默认3自然日
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'expire_refund_rate', 'type_actual', 'time_latest_deliver', 'exempt_amount', 'exempt_subtotal', 'max_amount', 'start_amount', 'fee_start', 'fee_unit',
+					'name', 'expire_refund_rate', 'nation', 'province', 'city', 'county', 'longitude', 'latitude', 'type_actual', 'max_amount', 'start_amount', 'unit_amount', 'fee_start', 'fee_unit', 'exempt_amount', 'exempt_subtotal',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);

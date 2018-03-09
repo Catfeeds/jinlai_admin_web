@@ -21,6 +21,8 @@
 	}
 </style>
 
+<script defer src="/js/detail.js"></script>
+
 <base href="<?php echo $this->media_root ?>">
 
 <script>
@@ -52,13 +54,27 @@
         // 需要特定角色和权限进行该操作
         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
             ?>
-            <li class="col-xs-12">
-                <a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a>
-            </li>
+        <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
         <?php endif ?>
     </ul>
 
 	<dl id=list-info class=dl-horizontal>
+        <?php
+        // 当前项客户端URL
+        $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
+        ?>
+
+        <dt><?php echo $this->class_name_cn ?>链接</dt>
+        <dd>
+            <span><?php echo $item_url ?></span>
+            <a href="<?php echo $item_url ?>" target=_blank>查看</a>
+        </dd>
+
+        <dt><?php echo $this->class_name_cn ?>二维码</dt>
+        <dd>
+            <figure class="qrcode col-xs-12 col-sm-6 col-md-3" data-qrcode-string="<?php echo $item_url ?>"></figure>
+        </dd>
+
 		<dt>商家营销活动ID</dt>
 		<dd><?php echo $item['promotion_id'] ?></dd>
 		<dt>活动类型</dt>

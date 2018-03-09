@@ -21,6 +21,8 @@
 	}
 </style>
 
+<script defer src="/js/detail.js"></script>
+
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -44,84 +46,195 @@
         // 需要特定角色和权限进行该操作
         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
             ?>
-            <li class="col-xs-12">
-                <a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a>
-            </li>
+            <li><a title="备注" href="<?php echo base_url($this->class_name.'/note?ids='.$item[$this->id_name]) ?>" target=_blank>备注</a></li>
+
+            <?php
+                $status = $item['status'];
+                if ($status === '待付款'):
+            ?>
+            <li><a title="拒绝" href="<?php echo base_url($this->class_name.'/refuse?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>
+            <li><a title="改价" href="<?php echo base_url($this->class_name.'/reprice?ids='.$item[$this->id_name]) ?>" target=_blank>改价</a></li>
+            <?php endif ?>
+
+            <?php if ($status === '待接单'): ?>
+            <li><a title="拒绝" href="<?php echo base_url($this->class_name.'/refuse?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>
+            <li><a title="接单" href="<?php echo base_url($this->class_name.'/accept?ids='.$item[$this->id_name]) ?>" target=_blank>接单</a></li>
+            <?php endif ?>
+
+            <?php if ($status === '已拒绝' && !empty($item['time_pay']) && ($item['refund_status'] === '退款中')): ?>
+            <li><a title="退款列表" href="<?php echo base_url('refund/index?order_id='.$item[$this->id_name]) ?>" target=_blank>处理退款</a></li>
+            <?php endif ?>
+
+            <?php if ($status === '待发货'): ?>
+            <li><a title="发货" href="<?php echo base_url($this->class_name.'/deliver?ids='.$item[$this->id_name]) ?>" target=_blank>发货</a></li>
+            <?php endif ?>
         <?php endif ?>
     </ul>
 
 	<h2>基本信息</h2>
-	
-	<ul class="list-horizontal well">
-		<li>状态 <strong><?php echo $item['status'] ?></strong></li>
-		<?php if ( !empty($item['refund_status']) ): ?><li>退款状态 <?php echo $item['refund_status'] ?></li><?php endif ?>
-		<li>发票 <?php echo $item['invoice_status'] ?></li>
+    <section class=well>
+        <ul>
+            <li>订单ID <?php echo $item['order_id'] ?></li>
+            <li>用户ID
+                <?php echo $item['user_id'] ?>
+                <a href="<?php echo base_url('user/detail?id='.$item['user_id']) ?>" target=new>查看资料</a>
+            </li>
+            <!--<li>下单设备IP地址 <?php echo $item['user_ip'] ?>（高级功能，开放试用）</li>-->
+            <li>状态 <strong><?php echo $item['status'] ?></strong></li>
+            <?php if ( !empty($item['refund_status']) ): ?><li>退款状态 <?php echo $item['refund_status'] ?></li><?php endif ?>
+            <li>发票 <?php echo $item['invoice_status'] ?></li>
 
-		<?php if ( isset($item['note_user']) ): ?><li>用户留言 <?php echo $item['note_user'] ?></li><?php endif ?>
-		<?php if ( isset($item['note_stuff']) ): ?><li>员工留言 <?php echo $item['note_stuff'] ?></li><?php endif ?>
-	</ul>
+            <?php if ( !empty($item['note_user']) ): ?><li>用户留言 <?php echo $item['note_user'] ?></li><?php endif ?>
+            <?php if ( !empty($item['note_stuff']) ): ?><li>员工留言 <?php echo $item['note_stuff'] ?></li><?php endif ?>
+        </ul>
+    </section>
 
-	<dl id=list-brief class=dl-horizontal>
-		<dt>订单ID</dt>
-		<dd><?php echo $item['order_id'] ?></dd>
-		<dt>用户ID</dt>
-		<dd class=row>
-			<?php echo $item['user_id'] ?>
-			<a class="col-xs-12 col-sm-6 col-md-3 btn btn-info btn-lg" href="<?php echo base_url('user/detail?id='.$item['user_id']) ?>" target=new>
-				<i class="fa fa-info-circle fa-fw" aria-hidden=true></i>用户资料
-			</a>
-		</dd>
-		<dt>用户下单IP地址</dt>
-		<dd><?php echo $item['user_ip'] ?></dd>
-		<dt>小计</dt>
-		<dd>￥ <?php echo $item['subtotal'] ?></dd>
+    <section>
+        <h2>收货地址</h2>
+        <div id=list-addressee>
+            <?php if ( !empty($item['longitude']) && !empty($item['latitude']) ): ?>
+                <figure class="row">
+                    <!--<figcaption>
+                        <p class=help-block>经纬度 <?php echo $item['longitude'] ?>, <?php echo $item['latitude'] ?></p>
+                    </figcaption>-->
+                    <div id=map style="height:300px;background-color:#aaa"></div>
+                </figure>
 
-		<?php if ( isset($item['promotion_id']) ): ?>
-		<dt>营销活动ID</dt>
-		<dd><?php echo $item['promotion_id'] ?></dd>
-		<dt>优惠活动折抵</dt>
-		<dd>￥ <?php echo $item['discount_promotion'] ?></dd>
-		<?php endif ?>
-		
-		<?php if ( isset($item['coupon_id']) ): ?>
-		<dt>优惠券ID</dt>
-		<dd><?php echo $item['coupon_id'] ?></dd>
-		<dt>优惠券折抵</dt>
-		<dd>￥ <?php echo $item['discount_coupon'] ?></dd>
-		<?php endif ?>
-		
-		<?php if ( isset($item['credit_id']) ): ?>
-		<dt>积分流水ID</dt>
-		<dd><?php echo $item['credit_id'] ?></dd>
-		<dt>积分折抵</dt>
-		<dd>￥ <?php echo $item['credit_payed'] ?></dd>
-		<?php endif ?>
+                <script src="https://webapi.amap.com/maps?v=1.3&key=bf0fd60938b2f4f40de5ee83a90c2e0e"></script>
+                <script src="https://webapi.amap.com/ui/1.0/main.js"></script>
+                <script>
+                    var lnglat = [<?php echo $item['longitude'] ?>, <?php echo $item['latitude'] ?>];
+                    var map = new AMap.Map('map',{
+                        center: lnglat,
+                        zoom: 16,
+                        scrollWheel: false,
+                        mapStyle: 'amap://styles/91f3dcb31dfbba6e97a3c2743d4dff88', // 自定义样式
+                    });
+                    marker = new AMap.Marker({
+                        position: lnglat,
+                    });
+                    marker.setMap(map);
 
-		<?php if ( isset($item['freight']) ): ?>
-		<dt>运费</dt>
-		<dd>￥ <?php echo $item['freight'] ?></dd>
-		<?php endif ?>
-		
-		<?php if ( isset($item['repricer_id']) ): ?>
-		<dt>改价折抵</dt>
-		<dd>￥ <?php echo $item['discount_reprice'] ?></dd>
-		<dt>改价操作者ID</dt>
-		<dd><?php echo $item['repricer_id'] ?></dd>
-		<?php endif ?>
+                    // 为BasicControl设置DomLibrary，jQuery
+                    AMapUI.setDomLibrary($);
+                    AMapUI.loadUI(['control/BasicControl'], function(BasicControl) {
+                        // 缩放控件
+                        map.addControl(new BasicControl.Zoom({
+                            position: 'rb', // 右下角
+                        }));
+                    });
+                </script>
+            <?php endif ?>
+            <p>
+                <?php echo $item['street'] ?><br>
+                <?php echo $item['province'] ?> <?php echo $item['city'] ?> <?php echo $item['county'] ?>，<?php echo $item['nation'] ?>
+            </p>
+            <p>
+                <?php if ($this->user_agent['is_mobile']): ?>
+                <a class="btn btn-default btn-lg" href="tel:<?php echo $item['mobile'] ?>">
+                    <i class="fa fa-phone" aria-hidden=true></i> <?php echo $item['mobile'] ?>
+                </a>
+                <?php
+                    else:
+                        echo $item['mobile'];
+                    endif;
+                ?>
+            </p>
+            <p><?php echo $item['fullname'] ?></p>
 
-		<dt>应支付</dt>
-		<dd><strong>￥ <?php echo $item['total'] ?></strong></dd>
+            <?php if ( !empty($item['time_deliver']) ): ?>
+            <ul>
+                <li>发货方式 <?php echo $item['deliver_method'] ?></li>
+                <li>服务商 <?php echo $item['deliver_biz'] ?></li>
+                <li>运单号 <?php echo $item['waybill_id'] ?></li>
+            </ul>
+            <?php endif ?>
+        </div>
+    </section>
 
-		<?php if ( !empty($item['time_pay']) ): ?>
-		<dt>已支付</dt>
-		<dd><strong>￥ <?php echo $item['total_payed'] ?></strong></dd>
-		<?php endif ?>
-		
-		<?php if ( !empty($item['time_refund']) ): ?>
-		<dt>实际退款</dt>
-		<dd><strong>￥ <?php echo $item['total_refund'] ?></strong></dd>
-		<?php endif ?>
-	</dl>
+    <section>
+        <h2>订单商品</h2>
+        <ul id=list-items>
+        <?php foreach ($item['order_items'] as $order_item): ?>
+            <li class=row>
+                <figure class=col-xs-2>
+                    <img src="<?php echo empty($order_item['item_image'])? MEDIA_URL.'sku/'.$order_item['sku_image']: $order_item['item_image'] ?>">
+                </figure>
+                <div class="item-name col-xs-10">
+                    <h3><?php echo $order_item['name'] ?></h3>
+                    <?php if ( isset($order_item['slogan']) ): ?>
+                        <h4><?php echo $order_item['slogan'] ?></h4>
+                    <?php endif ?>
+                    <div>￥<?php echo $order_item['price'] ?> × <?php echo $order_item['count'] ?></div>
+
+                    <?php if ($order_item['refund_status'] !== '未申请'): ?>
+                    <a class="btn btn-default" title="<?php echo $order_item['refund_status'] ?>" href="<?php echo base_url('refund/detail?record_id='.$order_item['record_id']) ?>" target=_blank><?php echo $order_item['refund_status'] ?></a>
+                    <?php endif ?>
+                </div>
+            </li>
+        <?php endforeach ?>
+        </ul>
+    </section>
+
+	<section>
+        <h2>财务信息</h2>
+
+        <dl id=list-brief class=dl-horizontal>
+            <dt>商品小计</dt>
+            <dd>￥ <?php echo $item['subtotal'] ?></dd>
+
+            <?php if ( isset($item['promotion_id']) ): ?>
+            <dt>营销活动ID</dt>
+            <dd><?php echo $item['promotion_id'] ?></dd>
+            <dt>优惠活动折抵</dt>
+            <dd>￥ <?php echo $item['discount_promotion'] ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['coupon_id']) ): ?>
+            <dt>优惠券ID</dt>
+            <dd><?php echo $item['coupon_id'] ?></dd>
+            <dt>优惠券折抵</dt>
+            <dd>￥ <?php echo $item['discount_coupon'] ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['credit_id']) ): ?>
+            <dt>积分流水ID</dt>
+            <dd><?php echo $item['credit_id'] ?></dd>
+            <dt>积分折抵</dt>
+            <dd>￥ <?php echo $item['credit_payed'] ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['freight']) ): ?>
+            <dt>运费</dt>
+            <dd>￥ <?php echo $item['freight'] ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['repricer_id']) ): ?>
+            <dt>改价折抵</dt>
+            <dd>￥ <?php echo $item['discount_reprice'] ?></dd>
+            <dt>改价操作者ID</dt>
+            <dd>
+                <?php echo $item['repricer_id'] ?>
+                <a href="<?php echo base_url('stuff/detail?user_id='.$item['operator_id']) ?>" target=new>查看</a>
+            </dd>
+            <?php endif ?>
+
+            <dt>应支付</dt>
+            <dd>￥ <?php echo $item['total'] ?></dd>
+
+            <?php if ( !empty($item['time_pay']) ): ?>
+            <dt>已支付</dt>
+            <dd>
+                <strong <?php echo ($item['total_payed'] < $item['total'])? ' style="color:red"': NULL ?>>￥ <?php echo $item['total_payed'] ?></strong>
+            </dd>
+            <?php endif ?>
+
+            <?php if ( !empty($item['time_refund']) ): ?>
+            <dt>实际退款</dt>
+            <dd><strong>￥ <?php echo $item['total_refund'] ?></strong></dd>
+            <?php endif ?>
+        </dl>
+    </section>
 
 	<?php if ( !empty($item['time_pay']) ): ?>
 	<section>
@@ -152,76 +265,68 @@
 	<?php endif ?>
 
 	<section>
-		<h2>收件地址</h2>
-		<dl id=list-addressee class=dl-horizontal>
-			<dt>姓名</dt>
-			<dd><?php echo $item['fullname'] ?></dd>
-			<dt>手机号</dt>
-			<dd><?php echo $item['mobile'] ?></dd>
-			<dt>地址</dt>
-			<dd>
-				<?php echo $item['province'] ?> <?php echo $item['city'] ?> <?php echo $item['county'] ?><br>
-				<?php echo $item['street'] ?>
-			</dd>
-		</dl>
-	</section>
-
-	<section>
-		<h2>订单商品</h2>
-		<ul id=list-items>
-		<?php foreach ($item['order_items'] as $order_item): ?>
-		<li class=row>
-			<?php //var_dump($order_item) ?>
-
-			<figure class=col-xs-2>
-				<img src="<?php echo $order_item['item_image'] ?>">
-			</figure>
-			<div class="item-name col-xs-10">
-				<h3><?php echo $order_item['name'] ?></h3>
-				<?php if ( isset($order_item['slogan']) ): ?>
-				<h4><?php echo $order_item['slogan'] ?></h4>
-				<?php endif ?>
-			</div>
-			<div class="col-xs-12 text-right">￥<?php echo $order_item['price'] ?> × <?php echo $order_item['count'] ?></div>
-
-		</li>
-		<?php endforeach ?>
-		</ul>
-	</section>
-
-	<section>
 		<h2>交易记录</h2>
+        <?php
+            $status_auto_delete = array('已关闭', '已取消',);
+            if ( in_array($item['status'], $status_auto_delete) ):
+        ?>
+        <p class="help-block">系统将自动清除<?php echo $item['status'] ?>3天（含）以上的订单</p>
+        <?php endif ?>
+
 		<dl id=list-time class=dl-horizontal>
 			<dt>用户下单时间</dt>
 			<dd><?php echo date('Y-m-d H:i:s', $item['time_create']) ?></dd>
+
+            <?php if ( isset($item['time_cancel']) ): ?>
 			<dt>用户取消时间</dt>
-			<dd><?php echo empty($item['time_cancel'])? NULL: date('Y-m-d H:i:s', $item['time_cancel']) ?></dd>
-			<dt>自动过期时间</dt>
-			<dd><?php echo empty($item['time_expire'])? NULL: date('Y-m-d H:i:s', $item['time_expire']) ?></dd>
-			<dt>用户付款时间</dt>
-			<dd><?php echo empty($item['time_pay'])? NULL: date('Y-m-d H:i:s', $item['time_pay']) ?></dd>
-			<dt>商家拒绝时间</dt>
-			<dd><?php echo empty($item['time_refuse'])? NULL: date('Y-m-d H:i:s', $item['time_refuse']) ?></dd>
-			<dt>商家接单时间</dt>
-			<dd><?php echo empty($item['time_accept'])? NULL: date('Y-m-d H:i:s', $item['time_accept']) ?></dd>
-			<dt>商家发货时间</dt>
-			<dd><?php echo empty($item['time_deliver'])? NULL: date('Y-m-d H:i:s', $item['time_deliver']) ?></dd>
-			<dt>用户确认时间</dt>
-			<dd><?php echo empty($item['time_confirm'])? NULL: date('Y-m-d H:i:s', $item['time_confirm']) ?></dd>
-			<dt>系统确认时间</dt>
-			<dd><?php echo empty($item['time_confirm_auto'])? NULL: date('Y-m-d H:i:s', $item['time_confirm_auto']) ?></dd>
-			<dt>用户评价时间</dt>
-			<dd><?php echo empty($item['time_comment'])? NULL: date('Y-m-d H:i:s', $item['time_comment']) ?></dd>
-			<dt>商家退款时间</dt>
-			<dd><?php echo empty($item['time_refund'])? NULL: date('Y-m-d H:i:s', $item['time_refund']) ?></dd>
+			<dd><?php echo date('Y-m-d H:i:s', $item['time_cancel']) ?>></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_expire']) ): ?>
+            <dt>自动过期时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_expire']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_pay']) ): ?>
+            <dt>用户付款时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_pay']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_refuse']) ): ?>
+            <dt>商家拒绝时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_refuse']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_accept']) ): ?>
+            <dt>商家接单时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_accept']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_deliver']) ): ?>
+            <dt>商家发货时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_deliver']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_confirm']) ): ?>
+            <dt>用户确认时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_confirm']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_comment']) ): ?>
+            <dt>用户评价时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_comment']) ?></dd>
+            <?php endif ?>
+
+            <?php if ( isset($item['time_refund']) ): ?>
+            <dt>商家退款时间</dt>
+            <dd><?php echo date('Y-m-d H:i:s', $item['time_refund']) ?></dd>
+            <?php endif ?>
 
 			<?php if ( ! empty($item['operator_id']) ): ?>
 			<dt>最后操作时间</dt>
 			<dd class=row>
 				<?php echo $item['time_edit'] ?>
-				<a class="col-xs-12 col-sm-6 col-md-3 btn btn-info btn-lg" href="<?php echo base_url('stuff/detail?user_id='.$item['operator_id']) ?>" target=new>
-					<i class="fa fa-info-circle fa-fw" aria-hidden=true></i>查看最后操作者
-				</a>
+				<a href="<?php echo base_url('stuff/detail?user_id='.$item['operator_id']) ?>" target=new>查看最后操作者</a>
 			</dd>
 			<?php endif ?>
 		</dl>

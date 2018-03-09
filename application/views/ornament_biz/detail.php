@@ -1,6 +1,7 @@
 <link rel=stylesheet media=all href="/css/detail.css">
 <style>
-
+    .upload_preview>li {border-radius:0;height:auto;}
+    .color-card {width:4rem;height:2rem;border:2px solid #999;border-radius:4px;display:inline-block;}
 
 	/* 宽度在750像素以上的设备 */
 	@media only screen and (min-width:751px)
@@ -20,6 +21,8 @@
 
 	}
 </style>
+
+<script defer src="/js/detail.js"></script>
 
 <base href="<?php echo $this->media_root ?>">
 
@@ -44,9 +47,7 @@
     // 需要特定角色和权限进行该操作
     if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
         ?>
-        <li class=col-xs-12>
-            <a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a>
-        </li>
+    <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
     <?php endif ?>
     </ul>
 
@@ -61,10 +62,16 @@
 		-->
 
         <dt>第一识别色</dt>
-        <dd><?php echo empty($item['vi_color_first'])? '未设置': '#'.$item['vi_color_first'] ?></dd>
+        <dd>
+            <span class=color-card style="background-color:#<?php echo $item['vi_color_first'] ?>"></span>
+            <?php echo empty($item['vi_color_first'])? '未设置': '#'.$item['vi_color_first'] ?>
+        </dd>
 
         <dt>第二识别色</dt>
-        <dd><?php echo empty($item['vi_color_second'])? '未设置': '#'.$item['vi_color_second'] ?></dd>
+        <dd>
+            <span class=color-card style="background-color:#<?php echo $item['vi_color_second'] ?>"></span>
+            <?php echo empty($item['vi_color_second'])? '未设置': '#'.$item['vi_color_second'] ?>
+        </dd>
 
         <dt>主形象图</dt>
         <dd><?php echo empty($item['main_figure_url'])? '未设置': '<img src="'.$item['main_figure_url'].'">' ?></dd>
@@ -78,7 +85,7 @@
         <dt>会员卡列表图</dt>
         <dd><?php echo empty($item['member_thumb_url'])? '未设置': '<img src="'.$item['member_thumb_url'].'">' ?></dd>
 
-		<dt>首页轮播图内容</dt>
+		<dt>顶部模块轮播图</dt>
         <dd>
             <?php if ( !empty($item['home_slides']) ): ?>
             <ul class=upload_preview>
@@ -97,6 +104,8 @@
             未上传
             <?php endif ?>
         </dd>
+        <dt>顶部模块陈列商品</dt>
+        <dd><?php echo $item['home_m0_ids'] ?></dd>
 
 		<dt>模块一形象图</dt>
         <dd><?php echo empty($item['home_m1_ace_url'])? '未设置': '<img src="'.$item['home_m1_ace_url'].'">' ?></dd>
@@ -119,10 +128,10 @@
 		<dt>模块三陈列商品</dt>
 		<dd><?php echo $item['home_m3_ids'] ?></dd>
 
-        <dt>首页JSON内容</dt>
+        <dt>首页内容（JSON格式）</dt>
         <dd><?php echo empty($item['home_json'])? '未设置': $item['home_json']; ?></dd>
 
-        <dt>首页HTML内容</dt>
+        <dt>首页内容（HTML格式）</dt>
         <dd><?php echo empty($item['home_html'])? '未设置': $item['home_html']; ?></dd>
 	</dl>
 

@@ -1,24 +1,27 @@
+<link rel=stylesheet media=all href="/css/create.css">
 <style>
 
 
-	/* 宽度在750像素以上的设备 */
-	@media only screen and (min-width:751px)
-	{
+    /* 宽度在750像素以上的设备 */
+    @media only screen and (min-width:751px)
+    {
 
-	}
-	
-	/* 宽度在960像素以上的设备 */
-	@media only screen and (min-width:961px)
-	{
+    }
 
-	}
+    /* 宽度在960像素以上的设备 */
+    @media only screen and (min-width:961px)
+    {
 
-	/* 宽度在1280像素以上的设备 */
-	@media only screen and (min-width:1281px)
-	{
+    }
 
-	}
+    /* 宽度在1280像素以上的设备 */
+    @media only screen and (min-width:1281px)
+    {
+
+    }
 </style>
+
+<script defer src="/js/create.js"></script>
 
 <base href="<?php echo $this->media_root ?>">
 
@@ -40,7 +43,7 @@
 			<p class=helper-block>必填项以“※”符号标示</p>
 
 			<div class=form-group>
-				<label for=mobile class="col-sm-2 control-label">手机号※</label>
+				<label for=mobile class="col-sm-2 control-label">手机号 ※</label>
 				<div class=col-sm-10>
 					<input class=form-control name=mobile type=tel size=11 value="<?php echo set_value('mobile') ?>" size=11 pattern="\d{11}" placeholder="手机号" required>
 					<p class=help-block>该手机号必须已注册过本平台的账号（即通过短信登录过），且未被其它商家绑定为员工</p>
@@ -48,14 +51,14 @@
 			</div>
 
 			<div class=form-group>
-				<label for=fullname class="col-sm-2 control-label">姓名※</label>
+				<label for=fullname class="col-sm-2 control-label">姓名 ※</label>
 				<div class=col-sm-10>
 					<input class=form-control name=fullname type=text value="<?php echo set_value('fullname') ?>" placeholder="姓名" required>
 				</div>
 			</div>
 
 			<div class=form-group>
-				<label for=role class="col-sm-2 control-label">角色※</label>
+				<label for=role class="col-sm-2 control-label">角色 ※</label>
 				<div class=col-sm-10>
 					<?php $input_name = 'role' ?>
 					<select class=form-control name="<?php echo $input_name ?>" required>
@@ -71,7 +74,7 @@
 			</div>
 
 			<div class=form-group>
-				<label for=level class="col-sm-2 control-label">级别※</label>
+				<label for=level class="col-sm-2 control-label">级别 ※</label>
 				<div class=col-sm-10>
 					<input class=form-control name=level type=number step=1 max=30 value="<?php echo set_value('level') ?>" placeholder="0暂不授权，1普通员工，10门店级，20品牌级，30企业级" required>
 				</div>

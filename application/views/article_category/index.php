@@ -48,11 +48,12 @@
 	<?php endif ?>
 
     <div id=primary_actions class=action_bottom>
-        <?php if ( isset($items) && count($items) > 1): ?>
-            <span id=enter_bulk>
-                <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
-            </span>
+        <?php if (count($items) > 1): ?>
+        <span id=enter_bulk>
+            <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
+        </span>
         <?php endif ?>
+
         <ul class=horizontal>
             <li>
                 <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
@@ -87,7 +88,7 @@
                     <span class=item-status><?php echo $item['status'] ?></span>
                     <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                         <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
-                        <p>分类名称 <?php echo $item['name'] ?></p>
+                        <p><?php echo $item['name'] ?></p>
                     </a>
 
                     <div class="item-actions">

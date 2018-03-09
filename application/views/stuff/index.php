@@ -45,20 +45,21 @@
 	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
 		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">绑定</a>
 	</div>
-	<?php endif ?>
 
     <div id=primary_actions class=action_bottom>
-        <?php if ( isset($items) && count($items) > 1): ?>
-            <span id=enter_bulk>
-                <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
-            </span>
+        <?php if (count($items) > 1): ?>
+        <span id=enter_bulk>
+            <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
+        </span>
         <?php endif ?>
+
         <ul class=horizontal>
             <li>
                 <a class=bg_primary title="绑定<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">绑定</a>
             </li>
         </ul>
     </div>
+	<?php endif ?>
 
 	<?php if ( empty($items) ): ?>
 	<blockquote>
@@ -88,16 +89,16 @@
                 <span class=item-status><?php echo $item['status'] ?></span>
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                     <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
-                    <p>姓名 <?php echo $item['fullname'] ?></p>
-                    <p>手机号 <?php echo $item['mobile'] ?></p>
+                    <p><?php echo $item['fullname'] ?></p>
+                    <p><?php echo $item['mobile'] ?></p>
                     <p>角色 <?php echo $item['role'] ?></p>
                     <p>级别 <?php echo $item['level'] ?></p>
                 </a>
 
                 <div class="item-actions">
-                <span>
-                    <input name=ids[] class=form-control type=checkbox value="<?php echo $item[$this->id_name] ?>">
-                </span>
+                    <span>
+                        <input name=ids[] class=form-control type=checkbox value="<?php echo $item[$this->id_name] ?>">
+                    </span>
 
                     <ul class=horizontal>
                         <?php

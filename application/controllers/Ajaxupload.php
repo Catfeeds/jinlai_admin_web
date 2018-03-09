@@ -9,7 +9,7 @@
 	use Upyun\Config;
 
 	/**
-	 * Ajaxupload类
+	 * Ajaxupload 类
 	 *
 	 * 处理AJAX文件上传
 	 *

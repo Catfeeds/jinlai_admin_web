@@ -1,8 +1,12 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+// 当前环境及版本号
+define('CURRENT_ENV', 'PRODUCTION'); // 开发环境PRODUCTION，生产环境DEVELOP
+define('CURRENT_VERSION', '0.1.1');
+
 // 根域名及URL
-define('ROOT_DOMAIN', '.jinlaimall.com');
+define('ROOT_DOMAIN', '.517ybang.com');
 define('ROOT_URL', ROOT_DOMAIN.'/');
 
 // 允许响应指定URL的跨域请求
@@ -28,11 +32,13 @@ define('WEB_URL', 'https://www'.ROOT_URL); // 客户端URL
 define('BIZ_URL', 'https://biz'.ROOT_URL); // 商家端URL
 
 // （可选）JS、CSS等非当前站点特有资源所在URL，可用于配合又拍云等第三方存储
-define('CDN_URL', 'http://cdn-remote'.ROOT_URL); // 生产环境
+define('CDN_URL', 'https://cdn-remote'.ROOT_URL); // 生产环境
 
 // （可选）媒体文件，即非样式图片、视频、音频存储的根目录所在URL，可用于配合又拍云等第三方存储
 define('DEFAULT_IMAGE', NULL); // 默认图片URL
-define('MEDIA_URL', 'https://medias'.ROOT_URL); // 生产环境
+//define('MEDIA_URL', 'https://medias'.ROOT_URL); // 生产环境
+define('MEDIA_URL', 'https://jinlaisandbox-images.b0.upaiyun.com/'); // 测试环境
+
 
 // COOKIE & SESSION相关
 define('COOKIE_DOMAIN', 'admin'.ROOT_DOMAIN); // cookie存储路径；方便起见可让所有子域共享，若需分离可自行配置

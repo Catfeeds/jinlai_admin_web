@@ -21,6 +21,8 @@
 	}
 </style>
 
+<script defer src="/js/detail.js"></script>
+
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -44,13 +46,27 @@
         // 需要特定角色和权限进行该操作
         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
             ?>
-            <li class="col-xs-12">
-                <a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a>
-            </li>
+        <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
         <?php endif ?>
     </ul>
 
 	<dl id=list-info class=dl-horizontal>
+        <?php
+        // 当前项客户端URL
+        $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
+        ?>
+
+        <dt><?php echo $this->class_name_cn ?>链接</dt>
+        <dd>
+            <span><?php echo $item_url ?></span>
+            <a href="<?php echo $item_url ?>" target=_blank>查看</a>
+        </dd>
+
+        <dt><?php echo $this->class_name_cn ?>二维码</dt>
+        <dd>
+            <figure class="qrcode col-xs-12 col-sm-6 col-md-3" data-qrcode-string="<?php echo $item_url ?>"></figure>
+        </dd>
+
 		<dt>优惠券模板ID</dt>
 		<dd><?php echo $item['template_id'] ?></dd>
 		<dt>名称</dt>
@@ -102,17 +118,21 @@
 		
 		<dt>总限量</dt>
 		<dd>
-			<?php echo empty($item['max_amount'])? '无': $item['max_amount'].'份'; ?>
+			<?php echo empty($item['max_amount'])? '不限': $item['max_amount'].'份'; ?>
 		</dd>
 		<dt>单个用户限量</dt>
-		<dd><?php echo empty($item['max_amount_user'])? '无': $item['max_amount_user'].'份'; ?></dd>
+		<dd><?php echo empty($item['max_amount_user'])? '不限': $item['max_amount_user'].'份'; ?></dd>
 
-		<dt>限用系统分类</dt>
+		<!--
+        <dt>限用系统分类</dt>
 		<dd><?php echo empty($item['category_id'])? '不限': $category['name']; ?></dd>
+		-->
 		<dt>限用店内分类</dt>
 		<dd><?php echo empty($item['category_biz_id'])? '不限': $category_biz['name']; ?></dd>
 		<dt>限用商品</dt>
-		<dd><?php echo empty($item['item_id'])? '不限': $item['item_id']; ?></dd>
+		<dd>
+            <?php echo empty($item['item_id'])? '不限': '<a class="btn btn-default btn-lg btn-block" href="'.base_url('item/detail?id='.$commodity['item_id']).'">'.$commodity['name'].'</a>'; ?>
+        </dd>
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>

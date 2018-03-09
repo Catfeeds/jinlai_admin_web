@@ -21,6 +21,8 @@
 	}
 </style>
 
+<script defer src="/js/detail.js"></script>
+
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -44,9 +46,7 @@
         // 需要特定角色和权限进行该操作
         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
         ?>
-        <li class="col-xs-12">
-            <a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a>
-        </li>
+        <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
         <?php endif ?>
     </ul>
 
@@ -56,11 +56,21 @@
 		<dt>姓名</dt>
 		<dd><?php echo $item['fullname'] ?></dd>
 		<dt>手机号</dt>
-		<dd><?php echo $item['mobile'] ?></dd>
+		<dd>
+            <?php if ($this->user_agent['is_mobile']): ?>
+                <a class="btn btn-default btn-lg" href="tel:<?php echo $item['mobile'] ?>">
+                    <i class="fa fa-phone" aria-hidden=true></i> <?php echo $item['mobile'] ?>
+                </a>
+            <?php
+            else:
+                echo $item['mobile'];
+            endif;
+            ?>
+        </dd>
 		<!--
 		<dt>员工操作密码</dt>
 		<dd>
-			<?php echo !empty($item['password'])? '已设置': '未设置'; ?>
+			<?php //echo !empty($item['password'])? '已设置': '未设置'; ?>
 			<p>该密码主要用于安全要求非常高的操作，包括但不限于资金提现、商家注销等；一般性的操作只需员工的账户登录密码即可操作，包括但不限于商品上/下架、订单发货/改价等。</p>
 		</dd>
 		-->

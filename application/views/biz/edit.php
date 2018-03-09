@@ -1,28 +1,44 @@
+<link rel=stylesheet media=all href="/css/edit.css">
 <style>
 
+    /* 宽度在750像素以上的设备 */
+    @media only screen and (min-width:751px)
+    {
 
-	/* 宽度在750像素以上的设备 */
-	@media only screen and (min-width:751px)
-	{
+    }
 
-	}
-	
-	/* 宽度在960像素以上的设备 */
-	@media only screen and (min-width:961px)
-	{
+    /* 宽度在960像素以上的设备 */
+    @media only screen and (min-width:961px)
+    {
 
-	}
+    }
 
-	/* 宽度在1280像素以上的设备 */
-	@media only screen and (min-width:1281px)
-	{
+    /* 宽度在1280像素以上的设备 */
+    @media only screen and (min-width:1281px)
+    {
 
-	}
+    }
 </style>
+<script defer src="/js/edit.js"></script>
 
 <base href="<?php echo $this->media_root ?>">
 
 <div id=content class=container>
+    <div class="jumbotron row">
+        <p class=help-block>该部分信息需通过您的专属顾问进行修改或分配</p>
+
+        <dl id=core-info class=dl-horizontal>
+            <dt>商家全称</dt>
+            <dd><?php echo !empty($item['name'])? $item['name']: '未填写' ?></dd>
+            <dt>店铺名称</dt>
+            <dd><?php echo $item['brief_name'] ?></dd>
+            <dt>店铺域名</dt>
+            <dd><?php echo !empty($item['url_name'])? $item['url_name']: '未分配' ?></dd>
+            <dt>商务联系手机号</dt>
+            <dd><?php echo $item['tel_protected_biz'] ?></dd>
+        </dl>
+    </div>
+
 	<?php
 		if ( !empty($error) ) echo '<div class="alert alert-warning" role=alert>'.$error.'</div>';
 		$attributes = array('class' => 'form-'.$this->class_name.'-edit form-horizontal', 'role' => 'form');
@@ -34,67 +50,41 @@
 			<legend>基本资料</legend>
 
 			<input name=id type=hidden value="<?php echo $item[$this->id_name] ?>">
-			
-			<div class="jumbotron row">
-				<p class=help-block>该部分信息需通过您的专属顾问进行修改或分配</p>
-				
-				<div class=form-group>
-					<label for=tel_protected_biz class="col-sm-2 control-label">商务联系手机号</label>
-					<div class=col-sm-10>
-						<p class="form-control-static"><?php echo $this->session->mobile ?></p>
-					</div>
-				</div>
-				<div class=form-group>
-					<label for=name class="col-sm-2 control-label">商家名称</label>
-					<div class=col-sm-10>
-						<p class="form-control-static"><?php echo $item['name'] ?></p>
-					</div>
-				</div>
-				<div class=form-group>
-					<label for=brief_name class="col-sm-2 control-label">简称</label>
-					<div class=col-sm-10>
-						<p class="form-control-static"><?php echo $item['brief_name'] ?></p>
-					</div>
-				</div>
-				<div class=form-group>
-					<label for=url_name class="col-sm-2 control-label">店铺域名</label>
-					<div class=col-sm-10>
-						<p class="form-control-static"><?php echo !empty($item['url_name'])? $item['url_name']: '未设置' ?></p>
-					</div>
-				</div>
-			</div>
 
 			<div class=form-group>
-				<label for=url_logo class="col-sm-2 control-label">LOGO</label>
+				<label for=url_logo class="col-sm-2 control-label">店铺LOGO</label>
                 <div class=col-sm-10>
+                    <?php
+                    require_once(APPPATH. 'views/templates/file-uploader.php');
+                    $name_to_upload = 'url_logo';
+                    generate_html($name_to_upload, $this->class_name, FALSE, 1, $item[$name_to_upload]);
+                    ?>
+
                     <p class=help-block>正方形图片视觉效果最佳</p>
-
-                    <?php $name_to_upload = 'url_logo' ?>
-                    <ul class=upload_preview>
-                        <?php if ( !empty($item[$name_to_upload]) ): ?>
-
-                            <li data-input-name="<?php echo $name_to_upload ?>" data-item-url="<?php echo $item[$name_to_upload] ?>">
-                                <i class="remove fa fa-minus"></i>
-                                <i class="left fa fa-arrow-left"></i>
-                                <i class="right fa fa-arrow-right"></i>
-                                <figure>
-                                    <img src="<?php echo $item[$name_to_upload] ?>">
-                                </figure>
-                            </li>
-
-                        <?php endif ?>
-                    </ul>
-
-                    <div class=selector_zone>
-                        <input id=<?php echo $name_to_upload ?> class=form-control type=file>
-                        <input name=<?php echo $name_to_upload ?> type=hidden value="<?php echo $item[$name_to_upload] ?>">
-
-                        <div class=file_selector><i class="fa fa-plus" aria-hidden=true></i></div>
-                    </div>
-
-                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name ?>/logo" data-selector-id=<?php echo $name_to_upload ?> data-input-name=<?php echo $name_to_upload ?> data-max-count="1" type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
                 </div>
 			</div>
+
+            <!--
+            <div class=form-group>
+                <label for=category_ids class="col-sm-2 control-label">主营商品类目</label>
+                <div class=col-sm-10>
+                    <?php $input_name = 'category_ids[]' ?>
+                    <select class=form-control name="<?php echo $input_name ?>" multiple required>
+                        <?php
+                        $options = $item_categories;
+                        $current_array = explode(',', $item['category_ids']);
+                        foreach ($options as $option):
+                            if ( empty($option['time_delete']) ):
+                                ?>
+                                <option value="<?php echo $option['category_id'] ?>" <?php if ( in_array($option['category_id'], $current_array) ) echo 'selected'; ?>><?php echo $option['name'] ?></option>
+                            <?php
+                            endif;
+                        endforeach;
+                        ?>
+                    </select>
+                </div>
+            </div>
+            -->
 
 			<div class=form-group>
 				<label for=slogan class="col-sm-2 control-label">宣传语</label>
@@ -129,6 +119,29 @@
 					<input class=form-control name=tel_protected_order type=tel size=11 value="<?php echo $item['tel_protected_order'] ?>" placeholder="请填写手机号">
 				</div>
 			</div>
+
+            <div class=form-group>
+                <label for=freight_template_id class="col-sm-2 control-label">默认运费模板</label>
+                <div class=col-sm-10>
+                    <a class="btn btn-default btn-lg btn-block" href="<?php echo base_url('freight_template_biz') ?>">管理运费模板</a>
+
+                    <?php $input_name = 'category_biz_id' ?>
+                    <select class=form-control name="<?php echo $input_name ?>">
+                        <option>包邮</option>
+                        <?php
+                            if ( !empty($biz_freight_templates) ):
+                                $options = $biz_freight_templates;
+                                foreach ($options as $option):
+                            ?>
+                            <option value="<?php echo $option['template_id'] ?>" <?php if ($option['template_id'] === $item[$input_name]) echo 'selected' ?>><?php echo $option['name'] ?></option>
+                        <?php
+                                endforeach;
+                            endif;
+                        ?>
+                    </select>
+
+                </div>
+            </div>
 		</fieldset>
 
 		<fieldset>
@@ -438,12 +451,16 @@
 		
 		<fieldset>
 			<legend>联系地址</legend>
-			<div class=form-group>
+            <p class=help-block>该信息将用于订单退换货等业务</p>
+
+			<!--
+            <div class=form-group>
 				<label for=nation class="col-sm-2 control-label">国家</label>
 				<div class=col-sm-10>
 					<p class="form-control-static"><?php echo $item['nation'] ?></p>
 				</div>
 			</div>
+			-->
 			<div class=form-group>
 				<label for=province class="col-sm-2 control-label">省</label>
 				<div class=col-sm-10>
@@ -465,7 +482,7 @@
 			<div class=form-group>
 				<label for=street class="col-sm-2 control-label">具体地址</label>
 				<div class=col-sm-10>
-					<input class=form-control name=street type=text value="<?php echo $item['street'] ?>" placeholder="具体地址">
+					<textarea class=form-control name=street rows=3 placeholder="具体地址"><?php echo $item['street'] ?></textarea>
 				</div>
 			</div>
 
@@ -480,8 +497,8 @@
 				<input name=latitude type=hidden value="<?php echo $item['latitude'] ?>">
 			</div>
 
-			<script src="https://webapi.amap.com/maps?v=1.3&key=bf0fd60938b2f4f40de5ee83a90c2e0e"></script>
-			<script src="https://webapi.amap.com/ui/1.0/main.js"></script>
+			<script src="//webapi.amap.com/maps?v=1.3&key=bf0fd60938b2f4f40de5ee83a90c2e0e"></script>
+			<script src="//webapi.amap.com/ui/1.0/main.js"></script>
 			<script>
 			    var map = new AMap.Map('map',{
 					<?php if ( !empty($item['longitude']) && !empty($item['latitude']) ): ?>

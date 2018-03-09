@@ -1,3 +1,4 @@
+<link rel=stylesheet media=all href="/css/create.css">
 <style>
 
 
@@ -20,6 +21,8 @@
 	}
 </style>
 
+<script defer src="/js/create.js"></script>
+
 <base href="<?php echo $this->media_root ?>">
 
 <div id=content class=container>
@@ -41,6 +44,40 @@
 				</div>
 			</div>
 
+            <div class=form-group>
+                <label for=category_ids class="col-sm-2 control-label">主营商品类目</label>
+                <div class=col-sm-10>
+                    <?php $input_name = 'category_ids[]' ?>
+                    <select class=form-control name="<?php echo $input_name ?>" multiple required>
+                        <?php
+                        $options = $item_categories;
+                        $current_array = explode(',', $item['category_ids']);
+                        foreach ($options as $option):
+                            if ( empty($option['time_delete']) ):
+                                ?>
+                                <option value="<?php echo $option['category_id'] ?>" <?php if ( in_array($option['category_id'], $current_array) ) echo 'selected'; ?>><?php echo $option['name'] ?></option>
+                            <?php
+                            endif;
+                        endforeach;
+                        ?>
+                    </select>
+                    <p class=help-block>您最多可以选择3种类别的商品进行售卖</p>
+                </div>
+            </div>
+
+            <div class=form-group>
+                <label for=url_logo class="col-sm-2 control-label">店铺LOGO</label>
+                <div class=col-sm-10>
+                    <?php
+                    require_once(APPPATH. 'views/templates/file-uploader.php');
+                    $name_to_upload = 'url_logo';
+                    generate_html($name_to_upload, $this->class_name);
+                    ?>
+
+                    <p class=help-block>正方形图片视觉效果最佳</p>
+                </div>
+            </div>
+
 			<div class=form-group>
 				<label for=name class="col-sm-2 control-label">商家名称 *</label>
 				<div class=col-sm-10>
@@ -50,7 +87,7 @@
 			</div>
 
 			<div class=form-group>
-				<label for=brief_name class="col-sm-2 control-label">简称 *</label>
+				<label for=brief_name class="col-sm-2 control-label">店铺名称 *</label>
 				<div class=col-sm-10>
 					<input class=form-control name=brief_name type=text value="<?php echo set_value('brief_name') ?>" placeholder="例如“SELECTED”" required>
 				</div>
@@ -137,9 +174,9 @@
 		</fieldset>
 
 		<div class="jumbotron row">
-			<p>继续完善更多信息将可优先申请；仅提供上述信息则需<p>
+			<p>继续完善信息可申请认证；未通过认证的商家，货款将暂时由<?php echo SITE_NAME ?>进行存管。<p>
 		    <div class="col-xs-12 col-sm-offset-2 col-sm-2">
-				<button class="btn btn-default btn-lg btn-block" type=submit>排队申请</button>
+				<button class="btn btn-default btn-lg btn-block" type=submit>先开店，以后认证</button>
 		    </div>
 		</div>
 
@@ -242,7 +279,7 @@
                         <div class=file_selector><i class="fa fa-plus" aria-hidden=true></i></div>
                     </div>
 
-                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name ?>/product" data-selector-id="<?php echo $name_to_upload ?>" data-input-name="<?php echo $name_to_upload ?>" data-max-count="4" type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
+                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name.'/'.$name_to_upload ?>" data-selector-id="<?php echo $name_to_upload ?>" data-input-name="<?php echo $name_to_upload ?>" data-max-count=4 type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
                 </div>
 			</div>
 
@@ -259,7 +296,7 @@
                         <div class=file_selector><i class="fa fa-plus" aria-hidden=true></i></div>
                     </div>
 
-                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name ?>/produce" data-selector-id="<?php echo $name_to_upload ?>" data-input-name="<?php echo $name_to_upload ?>" data-max-count="4" type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
+                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name.'/'.$name_to_upload ?>" data-selector-id="<?php echo $name_to_upload ?>" data-input-name="<?php echo $name_to_upload ?>" data-max-count=4 type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
                 </div>
 			</div>
 
@@ -276,15 +313,15 @@
                         <div class=file_selector><i class="fa fa-plus" aria-hidden=true></i></div>
                     </div>
 
-                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name ?>/retail" data-selector-id="<?php echo $name_to_upload ?>" data-input-name="<?php echo $name_to_upload ?>" data-max-count="4" type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
+                    <button class="file-upload btn btn-default btn-lg col-xs-12 col-md-3" data-target-dir="<?php echo $this->class_name.'/'.$name_to_upload ?>" data-selector-id="<?php echo $name_to_upload ?>" data-input-name="<?php echo $name_to_upload ?>" data-max-count=4 type=button><i class="fa fa-upload" aria-hidden=true></i> 上传</button>
                 </div>
 			</div>
 		</fieldset>
 
 		<div class=form-group>
 		    <div class="col-xs-12 col-sm-offset-2 col-sm-2">
-				<p class=help-block>点击“提交入驻申请”代表您已阅读并同意<a href="<?php echo base_url('article/agreement-admission') ?>" target=_blank>入驻协议</a></p>
-				<button class="btn btn-primary btn-lg btn-block" type=submit>提交入驻申请</button>
+				<p class=help-block>点击“提交入驻申请”代表您已阅读并同意<a href="<?php echo base_url('article/agreement-admission') ?>" target=_blank><?php echo SITE_NAME ?>入驻协议</a></p>
+				<button class="btn btn-primary btn-lg btn-block" type=submit>开店并申请认证</button>
 		    </div>
 		</div>
 	</form>
