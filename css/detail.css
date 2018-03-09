@@ -1,0 +1,37 @@
+/**
+ * detail.css
+ *
+ * 适用于详情页的样式规则
+ */
+@charset "utf-8";
+@viewport{width:device-width;}
+
+#maincontainer {margin-bottom:98px;}
+
+#nav-main {display:none;}
+
+#item-actions {background-color:#fff;position:fixed;left:0;right:0;bottom:0;height:98px;line-height:98px;z-index:101;}
+    #item-actions>li {color:#ff3649;float:left;display:inline-block;text-align:center;overflow:hidden;}
+        #item-actions>li:last-child {background-color:#ff3649;}
+            #item-actions>li:last-child>a {color:#fff;}
+        #item-actions>li>a:hover, #item-actions>li>a:active {box-shadow:0 0 1rem #f6f6f6 inset;}
+
+.margined-list>li:not(:last-child) {margin-bottom:1rem;}
+
+/* 宽度在750像素以上的设备 */
+@media only screen and (min-width:751px)
+{
+
+}
+
+/* 宽度在960像素以上的设备 */
+@media only screen and (min-width:961px)
+{
+
+}
+
+/* 宽度在1280像素以上的设备 */
+@media only screen and (min-width:1281px)
+{
+
+}
