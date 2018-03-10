@@ -1,6 +1,6 @@
 <link rel=stylesheet media=all href="/css/detail.css">
 <style>
-
+    #list-options td {height:30px;overflow:hidden;}
 
 	/* 宽度在750像素以上的设备 */
 	@media only screen and (min-width:751px)
@@ -53,10 +53,10 @@
 		    -->
 			<?php endif ?>
             <ul id=item-actions class=list-unstyled>
-                <li><a title="候选项标签列表" href="<?php echo base_url('vote_tag') ?>">候选项标签</a></li>
-                <li><a title="创建候选项标签" href="<?php echo base_url('vote_tag/create?vote_id='.$item[$this->id_name]) ?>">创建候选项标签</a></li>
-                <li><a title="候选项列表" href="<?php echo base_url('vote_option') ?>">候选项</a></li>
-                <li><a title="创建候选项" href="<?php echo base_url('vote_option/create?vote_id='.$item[$this->id_name]) ?>">创建候选项</a></li>
+                <li><a title="候选项标签列表" href="<?php echo base_url('vote_tag?vote_id='.$item[$this->id_name]) ?>" target="_blank">候选项标签</a></li>
+                <li><a title="创建候选项标签" href="<?php echo base_url('vote_tag/create?vote_id='.$item[$this->id_name]) ?>" target="_blank">创建候选项标签</a></li>
+                <li><a title="候选项列表" href="<?php echo base_url('vote_option?vote_id='.$item[$this->id_name]) ?>" target="_blank">候选项</a></li>
+                <li><a title="创建候选项" href="<?php echo base_url('vote_option/create?vote_id='.$item[$this->id_name]) ?>" target="_blank">创建候选项</a></li>
             </ul>
 
 	<dl id=list-info class=dl-horizontal>
@@ -141,17 +141,14 @@
         </dd>
 	</dl>
 
-    <style>
-        #list-options td {height:30px;overflow:hidden;}
-    </style>
-
     <?php if (empty($options)): ?>
     <p>暂无有效候选项。</p>
 
     <?php else: ?>
+        <hr>
     <table id=list-options>
         <tr>
-            <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><!--<th>操作</th>-->
+            <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><th>操作</th>
         </tr>
 
         <?php foreach ($options as $option): ?>
@@ -166,16 +163,24 @@
             <td><?php echo $option['name'] ?></td>
             <td class="option-brief"><?php echo $option['ballot_count'] ?></td>
 
-            <!--
             <td class="option-actions">
-                <a class=option-detail href="<?php echo base_url('vote_option/detail?id='.$item['vote_id']) ?>">查看</a>
-                <a class=option-create href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$option['option_id']) ?>">投票</a>
+                <!--<a class=option-create href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$option['option_id']) ?>">投票</a>-->
+                <ul class=horizontal>
+                    <?php
+                    // 需要特定角色和权限进行该操作
+                    //if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
+                    ?>
+                    <li><a title="查看" href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>查看</a></li>
+                    <li><a title="删除" href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
+                    <li class=color_primary><a title="编辑" href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
+                    <?php //endif ?>
+                </ul>
             </td>
-            -->
 
         </tr>
         <?php endforeach ?>
     </table>
+        <hr>
     <?php endif ?>
 
 	<dl id=list-record class=dl-horizontal>

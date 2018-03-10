@@ -64,9 +64,13 @@
                     $name_to_upload = 'url_image';
                     generate_html($name_to_upload, $this->class_name, FALSE);
                     ?>
+
+                    <p class=help-block>正方形图片视觉效果最佳</p>
 				</div>
 			</div>
-			
+        </fieldset>
+
+        <fieldset>
 			<!--
 			<div class=form-group>
 				<label for=url_video class="col-sm-2 control-label">形象视频URL</label>

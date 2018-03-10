@@ -44,35 +44,41 @@
 			$current_level = $this->session->level; // 当前用户级别
 			$role_allowed = array('管理员', '经理');
 			$level_allowed = 30;
-			if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
+			//if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
 		    <ul id=item-actions class=list-unstyled>
+                <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
 				<li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		    </ul>
-			<?php endif ?>
+			<?php //endif ?>
 
 	<dl id=list-info class=dl-horizontal>
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
+
 		<dt>所属投票ID</dt>
-		<dd><?php echo $item['vote_id'] ?></dd>
+		<dd><?php echo $item['vote_id'] ?> <a href="<?php echo base_url('vote/detail?id='.$item['vote_id']) ?>">查看活动</a></dd>
+
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>描述</dt>
-		<dd><?php echo $item['description'] ?></dd>
-		<dt>形象图URL</dt>
-		<dd class=row>
-			<?php
-				$column_image = 'url_image';
-				if ( empty($item[$column_image]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<figure class="col-xs-12 col-sm-6 col-md-4">
-				<img src="<?php echo $item[$column_image] ?>">
-			</figure>
-			<?php endif ?>
-		</dd>
+		<dd>
+            <p><?php echo $item['description'] ?></p>
+        </dd>
+
+        <dt>形象图</dt>
+        <dd class=row>
+            <?php
+            $column_image = 'url_image';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure id=vote-url_image class=vote-figure>
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
+            <?php endif ?>
+        </dd>
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>

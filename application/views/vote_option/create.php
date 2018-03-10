@@ -47,14 +47,14 @@
 			<div class=form-group>
 				<label for=name class="col-sm-2 control-label">名称 ※</label>
 				<div class=col-sm-10>
-					<input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="名称" required>
+					<input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="30个字符以内" required>
 				</div>
 			</div>
 			
 			<div class=form-group>
 				<label for=description class="col-sm-2 control-label">描述</label>
 				<div class=col-sm-10>
-					<textarea class=form-control name=description rows=10 placeholder="详情"><?php echo set_value('description') ?></textarea>
+					<textarea class=form-control name=description rows=10 placeholder="100个字符以内"><?php echo set_value('description') ?></textarea>
 				</div>
 			</div>
 			
@@ -66,6 +66,8 @@
                     $name_to_upload = 'url_image';
                     generate_html($name_to_upload, $this->class_name, FALSE);
                     ?>
+
+                    <p class=help-block>正方形图片视觉效果最佳</p>
 				</div>
 			</div>
 		</fieldset>

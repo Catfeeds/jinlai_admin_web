@@ -201,6 +201,7 @@
 				'title' => '创建'.$this->class_name_cn,
 				'class' => $this->class_name.' create',
 				'error' => '', // 预设错误提示
+                'vote_id' => $vote_id,
 			);
 
 			// 待验证的表单项
@@ -213,8 +214,6 @@
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] = validation_errors();
-
-			    $data['vote_id'] = $vote_id;
 
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/create', $data);
@@ -349,26 +348,6 @@
 
 			endif;
 		} // end edit
-		
-		/**
-         * 删除
-         *
-         * 商家不可删除
-         */
-        public function delete()
-        {
-            exit('不可删除'.$this->class_name_cn);
-        } // end delete
-
-        /**
-         * 找回
-         *
-         * 商家不可找回
-         */
-        public function restore()
-        {
-            exit('不可恢复'.$this->class_name_cn);
-        } // end restore
 
 	} // end class Vote_option
 

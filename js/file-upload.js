@@ -9,7 +9,7 @@
  */
 
 // AJAX文件上传服务器端URL；上传目标文件夹名稍后通过上传按钮的相关属性获取
-var api_url = '//admin.jinlaimall.com/ajaxupload?target=';
+var api_url = '//admin.517ybang.com/ajaxupload?target=';
 
 // 最大可上传文件数量，默认为4；可被上传按钮的data-max-count属性覆盖
 var max_count = 4;

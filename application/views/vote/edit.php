@@ -65,8 +65,13 @@
                     $name_to_upload = 'url_image';
                     generate_html($name_to_upload, $this->class_name, FALSE, 1, $item[$name_to_upload]);
                     ?>
+
+                    <p class=help-block>正方形图片视觉效果最佳</p>
 				</div>
 			</div>
+        </fieldset>
+
+        <fieldset>
 			<!--
 			<div class=form-group>
 				<label for=url_video class="col-sm-2 control-label">形象视频</label>
@@ -119,6 +124,7 @@
 					<input class=form-control name=time_start type=text value="<?php echo $item['time_start'] ?>" placeholder="开始时间" required>
 				</div>
 			</div>
+
 			<div class=form-group>
 				<label for=time_end class="col-sm-2 control-label">结束时间</label>
 				<div class=col-sm-10>

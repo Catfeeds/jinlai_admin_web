@@ -41,7 +41,6 @@
 		<p class=help-block>必填项以“※”符号标示</p>
 
 		<fieldset>
-			<legend>基本信息</legend>
 
 			<input name=id type=hidden value="<?php echo $item[$this->id_name] ?>">
 			
@@ -67,6 +66,8 @@
                     $name_to_upload = 'url_image';
                     generate_html($name_to_upload, $this->class_name, FALSE, 1, $item[$name_to_upload]);
                     ?>
+
+                    <p class=help-block>正方形图片视觉效果最佳</p>
 				</div>
 			</div>
 		</fieldset>

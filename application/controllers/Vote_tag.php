@@ -200,6 +200,7 @@
 				'title' => '创建'.$this->class_name_cn,
 				'class' => $this->class_name.' create',
 				'error' => '', // 预设错误提示
+                'vote_id' => $vote_id,
 			);
 
 			// 待验证的表单项
@@ -210,8 +211,6 @@
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] = validation_errors();
-
-                $data['vote_id'] = $vote_id;
 
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/create', $data);

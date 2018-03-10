@@ -18,10 +18,12 @@
 
 .margined-list>li:not(:last-child) {margin-bottom:1rem;}
 
+#list-record {margin-bottom:20px;border-top:1px solid #ddd;padding-top:20px;}
+
 /* 宽度在750像素以上的设备 */
 @media only screen and (min-width:751px)
 {
-
+    #content figure {max-width:30%;}
 }
 
 /* 宽度在960像素以上的设备 */

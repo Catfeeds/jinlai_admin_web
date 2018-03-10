@@ -273,13 +273,13 @@
                                 <li><a title="投票活动列表" href="<?php echo base_url('vote') ?>">所有投票活动</a></li>
                                 <li><a title="创建投票活动" href="<?php echo base_url('vote/create') ?>">创建投票活动</a></li>
 
+                                <!--
                                 <li role=separator class=divider></li>
                                 <li><a title="候选项标签列表" href="<?php echo base_url('vote_tag') ?>">候选项标签</a></li>
 
                                 <li role=separator class=divider></li>
                                 <li><a title="候选项列表" href="<?php echo base_url('vote_option') ?>">候选项</a></li>
 
-                                <!--
                                 <li role=separator class=divider></li>
                                 <li><a title="所有选票" href="<?php echo base_url('vote_ballot') ?>">所有选票</a></li>
                                 -->

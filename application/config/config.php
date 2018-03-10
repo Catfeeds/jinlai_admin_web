@@ -69,9 +69,13 @@ define('WEPAY_URL_NATIVE', BASE_URL.'/payment/wepay/example/native.php?showwxpay
 define('ALIPAY_URL', BASE_URL.'/payment/alipay/alipayapi.php?');
 
 // 又拍云参数
-define('UPYUN_BUCKETNAME', 'medias-jinlai');
-define('UPYUN_USERNAME', 'jinlaiadmin');
-define('UPYUN_USERPASSWORD', 'jinlai2017');
+define('UPYUN_BUCKETNAME', 'jinlaisandbox-images');
+define('UPYUN_USERNAME', 'jinlaisandbox');
+define('UPYUN_USERPASSWORD', 'jinlaisandbox');
+// 生产环境
+// define('UPYUN_BUCKETNAME', 'medias-jinlai');
+// define('UPYUN_USERNAME', 'jinlaibiz');
+// define('UPYUN_USERPASSWORD', 'jinlai2017');
 
 /*
 |--------------------------------------------------------------------------

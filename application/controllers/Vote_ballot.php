@@ -199,6 +199,9 @@
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] = validation_errors();
 
+			    $data['vote_id'] = $vote_id;
+                $data['option_id'] = $option_id;
+
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/create', $data);
 				$this->load->view('templates/footer', $data);

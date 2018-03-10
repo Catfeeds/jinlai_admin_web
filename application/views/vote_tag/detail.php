@@ -54,9 +54,10 @@
 	<dl id=list-info class=dl-horizontal>
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
-		
-		<dt>所属投票ID</dt>
-		<dd><?php echo $item['vote_id'] ?></dd>
+
+        <dt>所属投票ID</dt>
+        <dd><?php echo $item['vote_id'] ?> <a href="<?php echo base_url('vote/detail?id='.$item['vote_id']) ?>">查看活动</a></dd>
+
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 	</dl>
