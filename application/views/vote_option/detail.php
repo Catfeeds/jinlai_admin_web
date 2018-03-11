@@ -57,7 +57,16 @@
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
 		<dt>所属投票ID</dt>
-		<dd><?php echo $item['vote_id'] ?> <a href="<?php echo base_url('vote/detail?id='.$item['vote_id']) ?>">查看活动</a></dd>
+		<dd>
+            <?php echo $item['vote_id'] ?>
+            <a href="<?php echo base_url('vote/detail?id='.$item['vote_id']) ?>">查看活动</a>
+        </dd>
+
+        <dt>所属标签ID</dt>
+        <dd>
+            <?php echo $item['tag_id'] ?>
+            <a href="<?php echo base_url('vote_tag/detail?id='.$item['tag_id']) ?>">查看标签</a>
+        </dd>
 
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>

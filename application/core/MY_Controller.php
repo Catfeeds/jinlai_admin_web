@@ -1020,6 +1020,9 @@
             $params['vote_id'] = $vote_id;
             $params['time_delete'] = 'NULL';
 
+            // 默认按索引序号降序排序
+            $params['orderby_index_id'] = 'DESC';
+
             $url = api_url('vote_option/index');
             $result = $this->curl->go($url, $params, 'array');
             if ($result['status'] === 200):

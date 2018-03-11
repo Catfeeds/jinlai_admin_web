@@ -1,6 +1,6 @@
 <link rel=stylesheet media=all href="/css/detail.css">
 <style>
-    #list-options td {height:30px;overflow:hidden;}
+    #list-options td {height:30px;overflow:hidden;vertical-align:top;}
 
 	/* 宽度在750像素以上的设备 */
 	@media only screen and (min-width:751px)
@@ -76,7 +76,7 @@
 
         <dt><?php echo $this->class_name_cn ?>二维码</dt>
         <dd>
-            <figure class="qrcode col-xs-12 col-sm-6 col-md-3" data-qrcode-string="<?php echo $item_url ?>"></figure>
+            <figure class=qrcode data-qrcode-string="<?php echo $item_url ?>"></figure>
         </dd>
 
 		<dt>名称</dt>
@@ -85,7 +85,7 @@
 		<dd><?php echo $item['description'] ?></dd>
 
         <dt>形象图</dt>
-        <dd class=row>
+        <dd>
             <?php
             $column_image = 'url_image';
             if ( empty($item[$column_image]) ):
@@ -98,28 +98,56 @@
             <?php endif ?>
         </dd>
 
-        <dt>形象视频</dt>
-        <dd class=row>
-            <?php
-            if ( empty($item['url_video']) ):
-                ?>
-                <p>未上传</p>
-            <?php else: ?>
-                <figure id=url_video class=vote-figure>
-                    <video controls alt="<?php echo $item['name'] ?>形象视频" poster="<?php echo $item['url_video_thumb'] ?>" src="<?php echo $item['url_video'] ?>">您的浏览器不支持视频播放</video>
-                </figure>
-            <?php endif ?>
-        </dd>
-
         <dt>背景音乐</dt>
-        <dd class=row>
+        <dd>
             <?php
             $column_image = 'url_audio';
             if ( empty($item[$column_image]) ):
                 ?>
                 <p>未上传</p>
             <?php else: ?>
-                <audio controls src="<?php echo $item[$column_image] ?>">
+            <audio controls src="<?php echo $item[$column_image] ?>">
+                <?php endif ?>
+        </dd>
+
+        <dt>形象视频</dt>
+        <dd>
+            <?php
+            if ( empty($item['url_video']) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+            <figure id=url_video class=vote-figure>
+                <video controls alt="<?php echo $item['name'] ?>形象视频" src="<?php echo $item['url_video'] ?>">您的浏览器不支持视频播放</video>
+            </figure>
+            <?php endif ?>
+        </dd>
+
+        <dt>形象视频缩略图</dt>
+        <dd>
+            <?php
+            $column_image = 'url_video_thumb';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure id=vote-url_video_thumb class=vote-figure>
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
+            <?php endif ?>
+        </dd>
+
+        <dt>选项默认占位图</dt>
+        <dd class=row>
+            <?php
+            $column_image = 'url_default_option_image';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure id=vote-url_default_option_image class=vote-figure>
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
             <?php endif ?>
         </dd>
 
@@ -145,25 +173,34 @@
     <p>暂无有效候选项。</p>
 
     <?php else: ?>
-        <hr>
+    <hr>
     <table id=list-options>
         <tr>
-            <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><th>操作</th>
+            <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><th>标签ID</th><th>索引序号</th><th>操作</th>
         </tr>
 
-        <?php foreach ($options as $option): ?>
+        <?php
+            // 候选项默认占位图
+            $default_option_image = $item['url_default_option_image'];
+            foreach ($options as $option):
+        ?>
         <tr>
 
             <td>
-                <figure class="option-image">
-                    <img src="<?php echo MEDIA_URL.'vote_option/'.$option['url_image'] ?>">
+                <figure>
+                    <img
+                            class="lazyload"
+                            src="<?php echo $default_option_image ?>"
+                            data-original="<?php echo !empty($option['url_image'])? MEDIA_URL.'vote_option/'.$option['url_image']: $default_option_image ?>"
+                    >
                 </figure>
             </td>
-            <td>#<?php echo $option['option_id'] ?> </td>
+            <td>#<?php echo $option['option_id'] ?></td>
             <td><?php echo $option['name'] ?></td>
-            <td class="option-brief"><?php echo $option['ballot_count'] ?></td>
-
-            <td class="option-actions">
+            <td><?php echo $option['ballot_count'] ?></td>
+            <td><?php echo $option['tag_id'] ?></td>
+            <td><?php echo $option['index_id'] ?></td>
+            <td class=option-actions>
                 <!--<a class=option-create href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$option['option_id']) ?>">投票</a>-->
                 <ul class=horizontal>
                     <?php
@@ -180,7 +217,7 @@
         </tr>
         <?php endforeach ?>
     </table>
-        <hr>
+    <hr>
     <?php endif ?>
 
 	<dl id=list-record class=dl-horizontal>

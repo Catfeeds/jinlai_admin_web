@@ -37,4 +37,10 @@ $(function(){
     }
     seperate_string();
 
+    // 图片延迟加载
+    $('img.lazyload').lazyload({
+        threshold : 200,
+        effect : "fadeIn"
+    });
+
 });

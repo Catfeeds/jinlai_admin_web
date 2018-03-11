@@ -14,14 +14,14 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'vote_id', 'name', 'description', 'url_image', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'status', 'time_create_min', 'time_create_max',
+			'vote_id', 'tag_id', 'index_id', 'name', 'description', 'url_image', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'status', 'time_create_min', 'time_create_max',
 		);
 
 		/**
 		 * 可被编辑的字段名
 		 */
 		protected $names_edit_allowed = array(
-			'name', 'description', 'url_image',
+            'tag_id', 'index_id', 'name', 'description', 'url_image',
 		);
 
 		/**
@@ -207,6 +207,8 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
+            $this->form_validation->set_rules('tag_id', '所属标签', 'trim|is_natural_no_zero');
+            $this->form_validation->set_rules('index_id', '索引序号', 'trim|is_natural_no_zero|less_than[65535]');
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
 			$this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
 			$this->form_validation->set_rules('url_image', '形象图URL', 'trim|max_length[255]');
@@ -214,6 +216,8 @@
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] = validation_errors();
+
+                $data['tags'] = $this->list_vote_tag($vote_id);
 
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/create', $data);
@@ -227,7 +231,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'description', 'url_image',
+                    'tag_id', 'index_id', 'name', 'description', 'url_image',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
@@ -290,12 +294,15 @@
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['item'] = $result['content'];
+			    $data['vote_id'] = $data['item']['vote_id'];
 			else:
 				redirect( base_url('error/code_404') ); // 若未成功获取信息，则转到错误页
 			endif;
 
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
+            $this->form_validation->set_rules('tag_id', '所属标签', 'trim|is_natural_no_zero');
+            $this->form_validation->set_rules('index_id', '索引序号', 'trim|is_natural_no_zero|less_than[65535]');
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
 			$this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
 			$this->form_validation->set_rules('url_image', '形象图URL', 'trim|max_length[255]');
@@ -303,6 +310,8 @@
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] .= validation_errors();
+
+                $data['tags'] = $this->list_vote_tag($data['vote_id']);
 
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/edit', $data);
@@ -316,7 +325,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'description', 'url_image',
+                    'tag_id', 'index_id', 'name', 'description', 'url_image',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);

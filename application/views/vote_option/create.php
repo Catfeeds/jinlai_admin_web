@@ -43,6 +43,15 @@
 
 		<fieldset>
             <input name=vote_id type=hidden value=<?php echo $vote_id ?>>
+
+            <div class=form-group>
+                <label for=index_id class="col-sm-2 control-label">索引序号</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=index_id type=number min="1" step="1" max=65535 value="<?php echo set_value('index_id') ?>" placeholder="整数数字">
+
+                    <p class=help-block>输入索引序号后，活动页面上各候选项将按序号数字大小排序</p>
+                </div>
+            </div>
 			
 			<div class=form-group>
 				<label for=name class="col-sm-2 control-label">名称 ※</label>
@@ -57,6 +66,20 @@
 					<textarea class=form-control name=description rows=10 placeholder="100个字符以内"><?php echo set_value('description') ?></textarea>
 				</div>
 			</div>
+
+            <?php if ( ! empty($tags)): ?>
+            <div class=form-group>
+                <?php $input_name = 'tag_id' ?>
+                <label for="<?php echo $input_name ?>" class="col-sm-2 control-label">参选分类</label>
+                <div class=col-sm-10>
+                    <select name=<?php echo $input_name ?> required>
+                    <?php foreach($tags as $tag): ?>
+                        <option value="<?php echo $tag[$input_name] ?>"><?php echo $tag['name'] ?></option>
+                    <?php endforeach ?>
+                    </select>
+                </div>
+            </div>
+            <?php endif ?>
 			
 			<div class=form-group>
 				<label for=url_image class="col-sm-2 control-label">形象图</label>
