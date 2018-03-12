@@ -129,14 +129,6 @@
 			$this->load->view($this->view_root.'/detail', $data);
 			$this->load->view('templates/footer', $data);
 		} // end detail
-		
-		/**
-		 * TODO 平台活动报名
-		 */
-		public function apply()
-		{
-
-		} // end apply
 
 	} // end class Promotion
 

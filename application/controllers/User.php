@@ -154,15 +154,15 @@
                 $data['title'] = ( $id === $this->session->user_id )? '我的资料': $data['item']['nickname'];
                 $data['class'] = $this->class_name.' detail';
 
+                // 输出视图
+                $this->load->view('templates/header', $data);
+                $this->load->view($this->view_root.'/detail', $data);
+                $this->load->view('templates/footer', $data);
+
             else:
                 redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
 
             endif;
-
-			// 输出视图
-			$this->load->view('templates/header', $data);
-			$this->load->view($this->view_root.'/detail', $data);
-			$this->load->view('templates/footer', $data);
 		} // end detail
 
 		/**

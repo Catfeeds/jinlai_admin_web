@@ -44,20 +44,17 @@
 			$current_level = $this->session->level; // 当前用户级别
 			$role_allowed = array('管理员', '经理');
 			$level_allowed = 30;
-			if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
+			//if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
-		    <!--
-                <ul id=item-actions class=list-unstyled>
-				<li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
-		    </ul>
-		    -->
-			<?php endif ?>
+
             <ul id=item-actions class=list-unstyled>
                 <li><a title="候选项标签列表" href="<?php echo base_url('vote_tag?vote_id='.$item[$this->id_name]) ?>" target="_blank">候选项标签</a></li>
                 <li><a title="创建候选项标签" href="<?php echo base_url('vote_tag/create?vote_id='.$item[$this->id_name]) ?>" target="_blank">创建候选项标签</a></li>
                 <li><a title="候选项列表" href="<?php echo base_url('vote_option?vote_id='.$item[$this->id_name]) ?>" target="_blank">候选项</a></li>
                 <li><a title="创建候选项" href="<?php echo base_url('vote_option/create?vote_id='.$item[$this->id_name]) ?>" target="_blank">创建候选项</a></li>
-            </ul>
+                <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
+		    </ul>
+			<?php //endif ?>
 
 	<dl id=list-info class=dl-horizontal>
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
@@ -81,6 +78,8 @@
 
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
+        <dt>自定义URL</dt>
+        <dd><?php echo $item['url_name'] ?></dd>
 		<dt>描述</dt>
 		<dd><?php echo $item['description'] ?></dd>
 
@@ -89,8 +88,8 @@
             <?php
             $column_image = 'url_image';
             if ( empty($item[$column_image]) ):
-                ?>
-                <p>未上传</p>
+            ?>
+            <p>未上传</p>
             <?php else: ?>
                 <figure id=vote-url_image class=vote-figure>
                     <img src="<?php echo $item[$column_image] ?>">
@@ -103,22 +102,22 @@
             <?php
             $column_image = 'url_audio';
             if ( empty($item[$column_image]) ):
-                ?>
-                <p>未上传</p>
+            ?>
+            <p>未上传</p>
             <?php else: ?>
-            <audio controls src="<?php echo $item[$column_image] ?>">
-                <?php endif ?>
+            <audio controls src="<?php echo $item[$column_image] ?>">您的浏览器不支持音频播放</audio>
+            <?php endif ?>
         </dd>
 
         <dt>形象视频</dt>
         <dd>
             <?php
             if ( empty($item['url_video']) ):
-                ?>
-                <p>未上传</p>
+            ?>
+            <p>未上传</p>
             <?php else: ?>
             <figure id=url_video class=vote-figure>
-                <video controls alt="<?php echo $item['name'] ?>形象视频" src="<?php echo $item['url_video'] ?>">您的浏览器不支持视频播放</video>
+                <video controls alt="<?php echo $item['name'] ?>形象视频" src="<?php echo $item['url_video'] ?>" poster="<?php echo $item['url_video_thumb'] ?>">您的浏览器不支持视频播放</video>
             </figure>
             <?php endif ?>
         </dd>
@@ -151,17 +150,13 @@
             <?php endif ?>
         </dd>
 
-		<dt>URL名称</dt>
-		<dd><?php echo $item['url_name'] ?></dd>
 		<dt>可报名</dt>
 		<dd><?php echo $item['signup_allowed'] ?></dd>
 
-		<dt>每选民最高总选票数</dt>
-		<dd><?php echo ($item['max_user_total'] == 0)? '不限': $item['max_user_total'].'票' ?></dd>
-		<dt>每选民最高日选票数</dt>
-		<dd><?php echo $item['max_user_daily'] ?>票</dd>
-		<dt>每选民同选项最高日选票数</dt>
-        <dd><?php echo $item['max_user_daily_each'] ?>票</dd>
+        <dt>投票规则</dt>
+        <dd>
+            <?php echo ($item['max_user_total'] == 0)? NULL: '总共可投'.$item['max_user_total'].'票，' ?>每人每天<?php echo $item['max_user_daily'] ?>张选票，同一候选项每天限投<?php echo $item['max_user_daily_each'] ?>票
+        </dd>
 
 		<dt>起止时间</dt>
 		<dd>
@@ -174,11 +169,14 @@
 
     <?php else: ?>
     <hr>
-    <table id=list-options>
-        <tr>
-            <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><th>标签ID</th><th>索引序号</th><th>操作</th>
-        </tr>
+    <table id=list-options class="table table-striped">
+        <thead class=thead-dark>
+            <tr>
+                <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><th>标签ID</th><th>索引序号</th><th>操作</th>
+            </tr>
+        </thead>
 
+        <tbody>
         <?php
             // 候选项默认占位图
             $default_option_image = $item['url_default_option_image'];
@@ -187,13 +185,15 @@
         <tr>
 
             <td>
+                <a title="查看" href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>
                 <figure>
                     <img
-                            class="lazyload"
+                            class=lazyload
                             src="<?php echo $default_option_image ?>"
                             data-original="<?php echo !empty($option['url_image'])? MEDIA_URL.'vote_option/'.$option['url_image']: $default_option_image ?>"
                     >
                 </figure>
+                </a>
             </td>
             <td>#<?php echo $option['option_id'] ?></td>
             <td><?php echo $option['name'] ?></td>
@@ -207,15 +207,16 @@
                     // 需要特定角色和权限进行该操作
                     //if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                     ?>
-                    <li><a title="查看" href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>查看</a></li>
-                    <li><a title="删除" href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
-                    <li class=color_primary><a title="编辑" href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
+                    <li><a class=btn title="查看" href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>查看</a></li>
+<!--                    <li><a title="删除" href="--><?php //echo base_url('vote_option/delete?ids='.$option['option_id']) ?><!--" target=_blank>删除</a></li>-->
+                    <li><a class=btn title="编辑" href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
                     <?php //endif ?>
                 </ul>
             </td>
 
         </tr>
         <?php endforeach ?>
+        </tbody>
     </table>
     <hr>
     <?php endif ?>

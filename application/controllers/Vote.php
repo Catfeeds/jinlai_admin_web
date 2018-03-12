@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Vote 投票类
+	 * Vote/VOT 投票类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
@@ -14,14 +14,14 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'name', 'description', 'url_image', 'url_video', 'url_audio', 'url_name', 'signup_allowed', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'time_create_min', 'time_create_max',
+            'name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'time_create_min', 'time_create_max',
 		);
 
 		/**
 		 * 可被编辑的字段名
 		 */
 		protected $names_edit_allowed = array(
-			'name', 'description', 'url_image', 'url_video', 'url_audio', 'url_name', 'signup_allowed', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end',
+            'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end',
 		);
 
 		/**
@@ -36,11 +36,8 @@
 		{
 			parent::__construct();
 
-			// （可选）未登录用户转到登录页
-            $current_url = 'https://'. $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-            $target_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid='.WECHAT_APP_ID.'&redirect_uri='.urlencode($current_url).'&response_type=code&scope=snsapi_userinfo#wechat_redirect';
-			//($this->session->time_expire_login > time() || !empty($sns_info)) OR redirect( $target_url );
-			//var_dump($sns_info);
+			// 未登录用户转到登录页
+			($this->session->time_expire_login > time()) OR redirect( $target_url );
 
 			// 向类属性赋值
 			$this->class_name = strtolower(__CLASS__);
@@ -106,13 +103,15 @@
 		 */
 		public function detail()
 		{
-			// 检查是否已传入必要参数
-			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
-			if ( !empty($id) ):
-				$params['id'] = $id;
-			else:
-				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
-			endif;
+            // 检查是否已传入必要参数
+            $id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
+            if ( !empty($id) ):
+                $params['id'] = $id;
+            elseif ( !empty($url_name) ):
+                $params['url_name'] = $url_name;
+            else:
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endif;
 
 			// 从API服务器获取相应详情信息
 			$url = api_url($this->class_name. '/detail');
@@ -205,15 +204,18 @@
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
-			$this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
+            $this->form_validation->set_rules('url_name', 'URL名称', 'trim|min_length[5]|max_length[30]|alpha_dash');
+			$this->form_validation->set_rules('description', '描述', 'trim|max_length[255]');
 			$this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_audio', '背景音乐', 'trim|max_length[255]');
 			$this->form_validation->set_rules('url_video', '形象视频', 'trim|max_length[255]');
-			$this->form_validation->set_rules('url_audio', '背景音乐', 'trim|max_length[255]');
-			$this->form_validation->set_rules('url_name', 'URL名称', 'trim|min_length[5]|max_length[30]|alpha_dash');
+            $this->form_validation->set_rules('url_video_thumb', '形象视频缩略图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_default_option_image', '选项默认占位图', 'trim|max_length[255]');
+
 			$this->form_validation->set_rules('signup_allowed', '可报名', 'trim|required|in_list[否,是]');
-			$this->form_validation->set_rules('max_user_total', '每选民最高总选票数', 'trim|is_natural_no_zero|greater_than_equal_to[0]|less_than_equal_to[999]');
-			$this->form_validation->set_rules('max_user_daily', '每选民最高日选票数', 'trim|greater_than[1]|less_than_equal_to[99]');
-			$this->form_validation->set_rules('max_user_daily_each', '每选民同选项最高日选票数', 'trim|greater_than[1]|less_than_equal_to[99]');
+            $this->form_validation->set_rules('max_user_total', '每选民最高总选票数', 'trim|is_natural|greater_than_equal_to[0]|less_than_equal_to[999]');
+            $this->form_validation->set_rules('max_user_daily', '每选民最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
+            $this->form_validation->set_rules('max_user_daily_each', '每选民同选项最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
 			
 			$this->form_validation->set_rules('time_start', '开始时间', 'trim|exact_length[16]|callback_time_start');
 			$this->form_validation->set_rules('time_end', '结束时间', 'trim|exact_length[16]|callback_time_end');
@@ -241,7 +243,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'description', 'url_image', 'url_video', 'url_audio', 'url_name', 'signup_allowed',
+                    'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
@@ -310,16 +312,19 @@
 
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
-			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
-			$this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
+            $this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
+            $this->form_validation->set_rules('url_name', 'URL名称', 'trim|min_length[5]|max_length[30]|alpha_dash');
+            $this->form_validation->set_rules('description', '描述', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
-            $this->form_validation->set_rules('url_video', '形象视频', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_audio', '背景音乐', 'trim|max_length[255]');
-			$this->form_validation->set_rules('url_name', 'URL名称', 'trim|min_length[5]|max_length[30]|alpha_dash');
+            $this->form_validation->set_rules('url_video', '形象视频', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_video_thumb', '形象视频缩略图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_default_option_image', '选项默认占位图', 'trim|max_length[255]');
+
 			$this->form_validation->set_rules('signup_allowed', '可报名', 'trim|required|in_list[否,是]');
-			$this->form_validation->set_rules('max_user_total', '每选民最高总选票数', 'trim|is_natural_no_zero|greater_than_equal_to[0]|less_than_equal_to[999]');
-			$this->form_validation->set_rules('max_user_daily', '每选民最高日选票数', 'trim|greater_than[1]|less_than_equal_to[99]');
-			$this->form_validation->set_rules('max_user_daily_each', '每选民同选项最高日选票数', 'trim|greater_than[1]|less_than_equal_to[99]');
+			$this->form_validation->set_rules('max_user_total', '每选民最高总选票数', 'trim|is_natural|greater_than_equal_to[0]|less_than_equal_to[999]');
+			$this->form_validation->set_rules('max_user_daily', '每选民最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
+			$this->form_validation->set_rules('max_user_daily_each', '每选民同选项最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
 			
 			$this->form_validation->set_rules('time_start', '开始时间', 'trim|exact_length[16]|callback_time_start');
 			$this->form_validation->set_rules('time_end', '结束时间', 'trim|exact_length[16]|callback_time_end');
@@ -329,6 +334,7 @@
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] .= validation_errors();
+			    $data['options'] = $this->list_vote_option($id);
 
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/edit', $data);
@@ -348,7 +354,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'description', 'url_image', 'url_video', 'url_audio', 'url_name', 'signup_allowed',
+					'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);
@@ -363,6 +369,26 @@
 					$data['content'] = $result['content']['message'];
 					$data['operation'] = 'edit';
 					$data['id'] = $result['content']['id']; // 修改后的信息ID
+
+                    // 对候选项进行排序，新增的选项将自动附加在最后
+                    if ( ! empty($this->input->post('option_orders')) ):
+                        $option_orders_array = $this->explode_csv($this->input->post('option_orders'));
+
+                        //  根据数组下标调整各选项ID对应的索引数值
+                        $options_count = count($option_orders_array);
+                        for ($i=0;$i<count($option_orders_array);$i++):
+                            // 更新各选项索引序号
+                            $params = array(
+                                'user_id' => $this->session->user_id,
+                                'id' => $option_orders_array[$i],
+
+                                'name' => 'index_id',
+                                'value' => $options_count - $i,
+                            );
+                            $url = api_url('vote_option/edit_certain');
+                            @$result = $this->curl->go($url, $params, 'array'); // 关闭错误提示
+                        endfor;
+                    endif;
 
 					$this->load->view('templates/header', $data);
 					$this->load->view($this->view_root.'/result', $data);
@@ -380,28 +406,60 @@
 
 			endif;
 		} // end edit
-		
-		/**
-         * 删除
-         *
-         * 商家不可删除
-         */
-        public function delete()
-        {
-            exit('不可删除'.$this->class_name_cn);
-        } // end delete
 
-        /**
-         * 找回
-         *
-         * 商家不可找回
-         */
-        public function restore()
+        // 检查起始时间
+        public function time_start($value)
         {
-            exit('不可恢复'.$this->class_name_cn);
-        } // end restore
+            if ( empty($value) ):
+                return true;
 
-	} // end class Vote
+            elseif (strlen($value) !== 16):
+                return false;
+
+            else:
+                // 将精确到分的输入值拼合上秒值
+                $time_to_check = strtotime($value.':00');
+
+                // 该时间不可早于当前时间一分钟以内
+                if ($time_to_check <= time() + 60):
+                    return false;
+                else:
+                    return true;
+                endif;
+
+            endif;
+        } // end time_start
+
+        // 检查结束时间
+        public function time_end($value)
+        {
+            if ( empty($value) ):
+                return true;
+
+            elseif (strlen($value) !== 16):
+                return false;
+
+            else:
+                // 将精确到分的输入值拼合上秒值
+                $time_to_check = strtotime($value.':00');
+
+                // 该时间不可早于当前时间一分钟以内
+                if ($time_to_check <= time() + 60):
+                    return false;
+
+                // 若已设置开始时间，不可早于开始时间一分钟以内
+                elseif ( !empty($this->input->post('time_start')) && $time_to_check < strtotime($this->input->post('time_start')) + 60):
+                    return false;
+
+                else:
+                    return true;
+
+                endif;
+
+            endif;
+        } // end time_end
+
+    } // end class Vote
 
 /* End of file Vote.php */
 /* Location: ./application/controllers/Vote.php */
