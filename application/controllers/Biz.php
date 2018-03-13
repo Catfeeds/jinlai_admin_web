@@ -119,18 +119,8 @@
 					'class' => $this->class_name.' create',
 				);
 
-                // 从API服务器获取顶级商品分类列表信息
-                $params = array(
-                    'level' => 1,
-                    'time_delete' => 'NULL',
-                );
-                $url = api_url('item_category/index');
-                $result = $this->curl->go($url, $params, 'array');
-                if ($result['status'] === 200):
-                    $data['item_categories'] = $result['content'];
-                else:
-                    $data['item_categories'] = NULL;
-                endif;
+                // 获取顶级商品分类列表
+                $data['item_categories'] = $this->list_category();
 
 				// 待验证的表单项
 				$this->form_validation->set_error_delimiters('', '；');
@@ -232,93 +222,70 @@
          */
         public function create_quick()
         {
-            // 若为其它商家的员工，不允许创建商家
-            if ( !empty($this->session->biz_id) ):
-                $data['title'] = $this->class_name_cn. '创建失败';
-                $data['class'] = 'fail';
-                $data['content'] = '您目前是其它商家的成员，不可创建商家；请与当前所属商家解除关系后再尝试。';
+            // 页面信息
+            $data = array(
+                'title' => '快速创建'.$this->class_name_cn,
+                'class' => $this->class_name.' create',
+            );
+
+            // 获取顶级商品分类列表
+            $data['item_categories'] = $this->list_category();
+
+            // 待验证的表单项
+            $this->form_validation->set_error_delimiters('', '；');
+            $this->form_validation->set_rules('category_id', '主营商品类目', 'trim|required|is_natural_no_zero');
+            $this->form_validation->set_rules('brief_name', '店铺名称', 'trim|required|max_length[20]|is_unique[biz.brief_name]');
+            $this->form_validation->set_rules('url_logo', '店铺LOGO', 'trim|max_length[255]');
+
+            // 若表单提交不成功
+            if ($this->form_validation->run() === FALSE):
+                $data['error'] = validation_errors();
 
                 $this->load->view('templates/header', $data);
-                $this->load->view($this->view_root.'/result', $data);
+                $this->load->view($this->view_root.'/create_quick', $data);
                 $this->load->view('templates/footer', $data);
 
             else:
-                // 页面信息
-                $data = array(
-                    'title' => '创建'.$this->class_name_cn,
-                    'class' => $this->class_name.' create',
+                // 需要创建的数据；逐一赋值需特别处理的字段
+                $data_to_create = array(
+                    'user_id' => $this->session->user_id,
+                    'tel_public' => $this->session->mobile,
                 );
+                // 自动生成无需特别处理的数据
+                $data_need_no_prepare = array(
+                    'category_id', 'url_logo', 'brief_name',
+                );
+                foreach ($data_need_no_prepare as $name)
+                    $data_to_create[$name] = $this->input->post($name);
 
-                // 从API服务器获取顶级商品分类列表信息
-                $params = array(
-                    'level' => 1,
-                    'time_delete' => 'NULL',
-                );
-                $url = api_url('item_category/index');
+                // 向API服务器发送待创建数据
+                $params = $data_to_create;
+                $url = api_url($this->class_name. '/create_quick');
                 $result = $this->curl->go($url, $params, 'array');
                 if ($result['status'] === 200):
-                    $data['item_categories'] = $result['content'];
+                    $data['title'] = $this->class_name_cn. '创建成功';
+                    $data['class'] = 'success';
+                    $data['content'] = $result['content']['message'];
+                    $data['operation'] = 'create';
+                    $data['id'] = $result['content']['id']; // 创建后的信息ID
+
+                    // 更新本地信息
+                    $this->session->stuff_id = $result['content']['stuff_id'];
+                    $this->session->biz_id = $result['content']['id'];
+                    $this->session->role = '管理员';
+                    $this->session->level = '100';
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/result_create', $data);
+                    $this->load->view('templates/footer', $data);
+
                 else:
-                    $data['item_categories'] = NULL;
-                endif;
-
-                // 待验证的表单项
-                $this->form_validation->set_error_delimiters('', '；');
-                $this->form_validation->set_rules('category_id', '主营商品类目', 'trim|required|is_natural_no_zero');
-                $this->form_validation->set_rules('brief_name', '店铺名称', 'trim|required|max_length[20]|is_unique[biz.brief_name]');
-                $this->form_validation->set_rules('url_logo', '店铺LOGO', 'trim|max_length[255]');
-
-                // 若表单提交不成功
-                if ($this->form_validation->run() === FALSE):
-                    $data['error'] = validation_errors();
+                    // 若创建失败，则进行提示
+                    $data['error'] = $result['content']['error']['message'];
 
                     $this->load->view('templates/header', $data);
                     $this->load->view($this->view_root.'/create_quick', $data);
                     $this->load->view('templates/footer', $data);
-
-                else:
-                    // 需要创建的数据；逐一赋值需特别处理的字段
-                    $data_to_create = array(
-                        'user_id' => $this->session->user_id,
-                        'tel_public' => $this->session->mobile,
-                    );
-                    // 自动生成无需特别处理的数据
-                    $data_need_no_prepare = array(
-                        'url_logo', 'brief_name', 'category_id',
-                    );
-                    foreach ($data_need_no_prepare as $name)
-                        $data_to_create[$name] = $this->input->post($name);
-
-                    // 向API服务器发送待创建数据
-                    $params = $data_to_create;
-                    $url = api_url($this->class_name. '/create_quick');
-                    $result = $this->curl->go($url, $params, 'array');
-                    if ($result['status'] === 200):
-                        $data['title'] = $this->class_name_cn. '创建成功';
-                        $data['class'] = 'success';
-                        $data['content'] = $result['content']['message'];
-                        $data['operation'] = 'create';
-                        $data['id'] = $result['content']['id']; // 创建后的信息ID
-
-                        // 更新本地信息
-                        $this->session->stuff_id = $result['content']['stuff_id'];
-                        $this->session->biz_id = $result['content']['id'];
-                        $this->session->role = '管理员';
-                        $this->session->level = '100';
-
-                        $this->load->view('templates/header', $data);
-                        $this->load->view($this->view_root.'/result_create', $data);
-                        $this->load->view('templates/footer', $data);
-
-                    else:
-                        // 若创建失败，则进行提示
-                        $data['error'] = $result['content']['error']['message'];
-
-                        $this->load->view('templates/header', $data);
-                        $this->load->view($this->view_root.'/create_quick', $data);
-                        $this->load->view('templates/footer', $data);
-
-                    endif;
 
                 endif;
 
@@ -336,11 +303,6 @@
 				$params['id'] = $id;
 			else:
 				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
-			endif;
-
-			// 若不是当前商家所属，转到相应提示页
-			if ( $id != $this->session->biz_id ):
-				redirect( base_url('error/not_yours') );
 			endif;
 
 			// 操作可能需要检查操作权限
@@ -365,41 +327,24 @@
 				redirect( base_url('error/code_404') ); // 若未成功获取信息，则转到错误页
 			endif;
 
-            // 从API服务器获取顶级商品分类列表信息
-            $params = array(
-                'level' => 1,
-                'time_delete' => 'NULL',
+            // 获取顶级商品分类列表
+            $data['item_categories'] = $this->list_category();
+
+            $api_params = array(
+                'biz_id' => $id,
+                'time_delete' => 'NULL'
             );
-            $url = api_url('item_category/index');
-            $result = $this->curl->go($url, $params, 'array');
-            if ($result['status'] === 200):
-                $data['item_categories'] = $result['content'];
-            else:
-                $data['item_categories'] = NULL;
-            endif;
-
-            // 获取商家运费模板列表
-            $data['biz_freight_templates'] = $this->list_freight_template_biz();
-
-			// 获取当前商家有效店铺装修
-            $params['biz_id'] = $this->session->biz_id;
-            $url = api_url('ornament_biz/index');
-            $result = $this->curl->go($url, $params, 'array');
-            if ($result['status'] === 200):
-                $data['ornaments'] = $result['content'];
-            else:
-                $data['ornaments'] = NULL;
-            endif;
+            // 获取商家运费模板列表、有效店铺装修列表
+            $data['biz_freight_templates'] = $this->list_freight_template_biz($api_params);
+            $data['ornaments'] = $this->list_ornament_biz($api_params);
 
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
-            if ($this->app_type === 'admin'):
-                $this->form_validation->set_rules('category_id', '主营商品类目', 'trim|required|is_natural_no_zero');
-                $this->form_validation->set_rules('name', '商家全称', 'trim|required|min_length[5]|max_length[35]');
-                $this->form_validation->set_rules('brief_name', '店铺名称', 'trim|required|max_length[20]');
-                $this->form_validation->set_rules('url_name', '店铺域名', 'trim|max_length[20]|alpha_dash');
-                $this->form_validation->set_rules('tel_protected_biz', '商务联系手机号', 'trim|required|exact_length[11]|is_natural');
-            endif;
+            $this->form_validation->set_rules('category_id', '主营商品类目', 'trim|required|is_natural_no_zero');
+            $this->form_validation->set_rules('name', '商家全称', 'trim|required|min_length[5]|max_length[35]');
+            $this->form_validation->set_rules('brief_name', '店铺名称', 'trim|required|max_length[20]');
+            $this->form_validation->set_rules('url_name', '店铺域名', 'trim|max_length[20]|alpha_dash');
+            $this->form_validation->set_rules('tel_protected_biz', '商务联系手机号', 'trim|required|exact_length[11]|is_natural');
 			$this->form_validation->set_rules('url_logo', '店铺LOGO', 'trim|max_length[255]');
 			$this->form_validation->set_rules('slogan', '宣传语', 'trim|max_length[30]');
 			$this->form_validation->set_rules('description', '简介', 'trim|max_length[255]');
@@ -465,15 +410,6 @@
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);
 
-                // 根据客户端类型等条件筛选可操作的字段名
-                if ($this->app_type !== 'admin'):
-                    unset($data_to_edit['category_id']);
-                    unset($data_to_edit['name']);
-                    unset($data_to_edit['brief_name']);
-                    unset($data_to_edit['url_name']);
-                    unset($data_to_edit['tel_protected_biz']);
-                endif;
-
 				// 向API服务器发送待创建数据
 				$params = $data_to_edit;
 				$url = api_url($this->class_name. '/edit');
@@ -519,11 +455,6 @@
 					exit();
 				endif;
 			endforeach;
-			
-			// 若不是当前商家所属，转到相应提示页
-			if ( $id != $this->session->biz_id ):
-				redirect( base_url('error/not_yours') );
-			endif;
 
 			// 操作可能需要检查操作权限
 			// $role_allowed = array('管理员', '经理'); // 角色要求

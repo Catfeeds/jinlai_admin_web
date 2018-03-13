@@ -195,9 +195,13 @@
 				'error' => '', // 预设错误提示
 			);
 
+			// 获取商家列表
+			$data['bizs'] = $this->list_biz();
+
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
+            $this->form_validation->set_rules('biz_id', '所属商家', 'trim|required|is_natural_no_zero');
 			$this->form_validation->set_rules('name', '店名', 'trim|required');
 			$this->form_validation->set_rules('description', '说明', 'trim');
 			$this->form_validation->set_rules('tel_public', '消费者联系电话', 'trim');
@@ -234,7 +238,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'description', 'tel_public', 'tel_protected_biz', 'tel_protected_order', 'day_rest', 'time_open', 'time_close', 'url_image_main', 'figure_image_urls', 'nation', 'province', 'city', 'county', 'street', 'region_id', 'poi_id', 'longitude', 'latitude', 'range_deliver',
+					'biz_id', 'name', 'description', 'tel_public', 'tel_protected_biz', 'tel_protected_order', 'day_rest', 'time_open', 'time_close', 'url_image_main', 'figure_image_urls', 'nation', 'province', 'city', 'county', 'street', 'region_id', 'poi_id', 'longitude', 'latitude', 'range_deliver',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
@@ -338,7 +342,6 @@
 				$data_to_edit = array(
 					'user_id' => $this->session->user_id,
 					'id' => $id,
-					//'name' => $this->input->post('name')),
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(

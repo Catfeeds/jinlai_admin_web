@@ -14,26 +14,29 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'article_id', 'category_id', 'title', 'excerpt', 'content', 'url_name', 'url_images', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
+			'category_id', 'title', 'excerpt', 'content', 'url_name', 'url_images', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
 		/**
 		 * 可被编辑的字段名
 		 */
 		protected $names_edit_allowed = array(
-			'category_id', 'title', 'excerpt', 'content', 'url_name', 'url_images',
+			'category_id', 'title', 'content',
 		);
 
 		/**
 		 * 完整编辑单行时必要的字段名
 		 */
 		protected $names_edit_required = array(
-			'id', 'title', 'excerpt', 'content'
+			'id', 'category_id', 'title', 'content'
 		);
 
 		public function __construct()
 		{
 			parent::__construct();
+
+            // 未登录用户转到登录页
+            ($this->session->time_expire_login > time()) OR redirect( base_url('login') );
 
 			// 向类属性赋值
 			$this->class_name = strtolower(__CLASS__);
@@ -134,9 +137,6 @@
 		 */
 		public function trash()
 		{
-			// 未登录用户转到登录页
-			($this->session->time_expire_login > time()) OR redirect( base_url('login') );
-
 			// 操作可能需要检查操作权限
 			$role_allowed = array('管理员', '经理'); // 角色要求
 			$min_level = 30; // 级别要求
@@ -184,9 +184,6 @@
 		 */
 		public function create()
 		{
-			// 未登录用户转到登录页
-			($this->session->time_expire_login > time()) OR redirect( base_url('login') );
-
 			// 操作可能需要检查操作权限
 			// $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
@@ -262,9 +259,6 @@
 		 */
 		public function edit()
 		{
-			// 未登录用户转到登录页
-			($this->session->time_expire_login > time()) OR redirect( base_url('login') );
-			
 			// 检查是否已传入必要参数
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
 			if ( !empty($id) ):

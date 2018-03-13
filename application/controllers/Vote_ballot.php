@@ -241,26 +241,6 @@
 				
 			endif;
 		} // end create
-		
-		/**
-         * 删除
-         *
-         * 商家不可删除
-         */
-        public function delete()
-        {
-            exit('不可删除'.$this->class_name_cn);
-        } // end delete
-
-        /**
-         * 找回
-         *
-         * 商家不可找回
-         */
-        public function restore()
-        {
-            exit('不可恢复'.$this->class_name_cn);
-        } // end restore
 
 	} // end class Vote_ballot
 
