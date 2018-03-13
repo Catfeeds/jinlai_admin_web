@@ -92,7 +92,7 @@
             <p>未上传</p>
             <?php else: ?>
                 <figure id=vote-url_image class=vote-figure>
-                    <img src="<?php echo $item[$column_image] ?>">
+                    <img class=lazyload data-original="<?php echo $item[$column_image] ?>">
                 </figure>
             <?php endif ?>
         </dd>
@@ -131,7 +131,7 @@
                 <p>未上传</p>
             <?php else: ?>
                 <figure id=vote-url_video_thumb class=vote-figure>
-                    <img src="<?php echo $item[$column_image] ?>">
+                    <img class=lazyload src="<?php echo $item[$column_image] ?>">
                 </figure>
             <?php endif ?>
         </dd>
@@ -160,7 +160,18 @@
 
 		<dt>起止时间</dt>
 		<dd>
-            <?php echo date('Y-m-d H:i:s', $item['time_start']) ?> - <?php echo date('Y-m-d H:i:s', $item['time_end']) ?>
+            <?php echo date('Y-m-d H:i:s', $item['time_start']). ' - '. date('Y-m-d H:i:s', $item['time_end']) ?>
+            <p>
+                持续<?php echo round( ($item['time_end'] - $item['time_start']) / (60 * 60 * 24), 1) // 计算天数，保留一位小数 ?>天，
+                <?php
+                    $days_to_start = round( ($item['time_start'] - time()) / (60 * 60 * 24), 1);
+                    if ($days_to_start < 0):
+                        echo '已在进行中';
+                    else:
+                        echo $days_to_start.'天后开始';
+                    endif;
+                ?>
+            </p>
         </dd>
 	</dl>
 
@@ -172,7 +183,13 @@
     <table id=list-options class="table table-striped">
         <thead class=thead-dark>
             <tr>
-                <th>形象图</th><th>候选项ID</th><th>名称</th><th>目前选票</th><th>标签ID</th><th>索引序号</th><th>操作</th>
+                <th>形象图</th>
+                <th data-sort=int>候选项ID</th>
+                <th>名称</th>
+                <th data-sort=int>目前选票</th>
+                <th data-sort=int>标签ID</th>
+                <th data-sort=int>索引序号</th>
+                <th>操作</th>
             </tr>
         </thead>
 
@@ -195,7 +212,7 @@
                 </figure>
                 </a>
             </td>
-            <td>#<?php echo $option['option_id'] ?></td>
+            <td><?php echo $option['option_id'] ?></td>
             <td><?php echo $option['name'] ?></td>
             <td><?php echo $option['ballot_count'] ?></td>
             <td><?php echo $option['tag_id'] ?></td>

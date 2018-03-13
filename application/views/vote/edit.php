@@ -140,6 +140,7 @@
 				<label for=max_user_total class="col-sm-2 control-label">每选民最高总选票数</label>
 				<div class=col-sm-10>
 					<input class=form-control name=max_user_total type=number min=0 max=999 step=1 value="<?php echo $item['max_user_total'] ?>" placeholder="最高999，不限请填0">
+                    <p class=help-block>填0则不限</p>
 				</div>
 			</div>
 			<div class=form-group>
@@ -159,7 +160,8 @@
 				<label for=time_start class="col-sm-2 control-label">开始时间</label>
 				<div class=col-sm-10>
                     <input class=form-control name=time_start type=datetime value="<?php echo empty($item['time_start'])? NULL: date('Y-m-d H:i', $item['time_start']); ?>" placeholder="例如：<?php echo date('Y-m-d H:i', strtotime('+1days')) ?>">
-                    <p class=help-block>若留空，则默认为立即开始</p>
+
+                    <?php require_once(APPPATH. 'views/templates/time_start_hint.php') ?>
 				</div>
 			</div>
 
@@ -167,17 +169,17 @@
 				<label for=time_end class="col-sm-2 control-label">结束时间</label>
 				<div class=col-sm-10>
                     <input class=form-control name=time_end type=datetime value="<?php echo empty($item['time_end'])? NULL: date('Y-m-d H:i', $item['time_end']); ?>" placeholder="例如：<?php echo date('Y-m-d H:i', strtotime('+31days')) ?>">
-                    <p class=help-block>若留空，则默认为30天后结束</p>
+
+                    <?php require_once(APPPATH. 'views/templates/time_end_hint.php') ?>
 				</div>
 			</div>
 
             <div class=form-group>
                 <label for=option_orders class="col-sm-2 control-label">选项显示顺序</label>
                 <div class=col-sm-10>
-                    <textarea class=form-control name=option_orders rows=5><?php
+                    <textarea class=form-control name=option_orders rows=10><?php
                             foreach ($options as $option)
-                                echo $option['option_id'].',' ?>
-                        <?php echo @$item['option_orders'] ?></textarea>
+                                echo $option['option_id'].',' ?></textarea>
 
                     <p class=help-block>选项较多时，系统需要较长时间处理，页面将过一段时间才显示处理结果，稍等片刻即可。</p>
                 </div>

@@ -354,7 +354,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed',
+					'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'option_orders',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);
@@ -369,26 +369,6 @@
 					$data['content'] = $result['content']['message'];
 					$data['operation'] = 'edit';
 					$data['id'] = $result['content']['id']; // 修改后的信息ID
-
-                    // 对候选项进行排序，新增的选项将自动附加在最后
-                    if ( ! empty($this->input->post('option_orders')) ):
-                        $option_orders_array = $this->explode_csv($this->input->post('option_orders'));
-
-                        //  根据数组下标调整各选项ID对应的索引数值
-                        $options_count = count($option_orders_array);
-                        for ($i=0;$i<count($option_orders_array);$i++):
-                            // 更新各选项索引序号
-                            $params = array(
-                                'user_id' => $this->session->user_id,
-                                'id' => $option_orders_array[$i],
-
-                                'name' => 'index_id',
-                                'value' => $options_count - $i,
-                            );
-                            $url = api_url('vote_option/edit_certain');
-                            @$result = $this->curl->go($url, $params, 'array'); // 关闭错误提示
-                        endfor;
-                    endif;
 
 					$this->load->view('templates/header', $data);
 					$this->load->view($this->view_root.'/result', $data);

@@ -187,6 +187,7 @@
 		<script defer src="/js/file-upload.js"></script>
         <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
         <script defer src="<?php echo CDN_URL ?>jquery/jquery.lazyload.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>jquery/stupidtable.min.js"></script>
         <?php endif ?>
 
         <script>

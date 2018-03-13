@@ -43,4 +43,6 @@ $(function(){
         effect : "fadeIn"
     });
 
+    // 对表格进行排序
+    $('table').stupidtable();
 });

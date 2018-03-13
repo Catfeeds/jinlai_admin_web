@@ -155,14 +155,16 @@
 				<label for=time_start class="col-sm-2 control-label">开始时间</label>
 				<div class=col-sm-10>
                     <input class=form-control name=time_start type=text value="<?php echo set_value('time_start') ?>" placeholder="例如：<?php echo date('Y-m-d H:i', strtotime('+1days')) ?>">
-                    <p class=help-block>若留空，则默认为立即开始</p>
+
+                    <?php require_once(APPPATH. 'views/templates/time_start_hint.php') ?>
 				</div>
 			</div>
 			<div class=form-group>
 				<label for=time_end class="col-sm-2 control-label">结束时间</label>
 				<div class=col-sm-10>
                     <input class=form-control name=time_end type=text value="<?php echo set_value('time_end') ?>" placeholder="例如：<?php echo date('Y-m-d H:i', strtotime('+31days')) ?>">
-                    <p class=help-block>若留空，则默认为30天后结束</p>
+
+                    <?php require_once(APPPATH. 'views/templates/time_end_hint.php') ?>
 				</div>
 			</div>
 		</fieldset>
