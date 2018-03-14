@@ -89,8 +89,8 @@
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                     <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
                     <p><?php echo $item['name'] ?></p>
-                    <p><?php echo $item['tag_id'] ?></p>
-                    <p><?php echo $item['index_id'] ?></p>
+                    <p>标签ID <?php echo $item['tag_id'] ?></p>
+                    <p>索引序号 <?php echo $item['index_id'] ?></p>
                 </a>
 
                 <div class=item-actions>
@@ -103,8 +103,17 @@
                         // 需要特定角色和权限进行该操作
                         //if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                             ?>
-                        <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-                        <li class=color_primary><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>" target=_blank>查看</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
+
+                        <?php if ($item['status'] === '正常'): ?>
+                        <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
+                        <?php else: ?>
+                        <li><a href="<?php echo base_url($this->class_name.'/approve?ids='.$item[$this->id_name]) ?>" target=_blank>批准</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>
+                        <?php endif ?>
+
                         <?php //endif ?>
                     </ul>
                 </div>

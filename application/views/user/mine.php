@@ -26,14 +26,14 @@
 
 <div id=content class=container>
 	<div id=user-info>
-		<a title="我的用户资料" href="<?php echo base_url('user/edit') ?>">
+		<a title="我的资料" href="<?php echo base_url('user/edit') ?>">
 			<h2><?php echo $this->session->nickname ?></h2>
 		</a>
 	</div>
 
 	<section id=general-actions>
 		<ul>
-			<li><a title="我的资料" href="<?php echo base_url('user/edit') ?>">我的资料</a>
+			<li><a title="修改资料" href="<?php echo base_url('user/edit') ?>">修改资料</a>
 			<li><a title="修改密码" href="<?php echo base_url('password_change') ?>">修改密码</a></li>
 			<li><a title="重置密码" href="<?php echo base_url('password_reset') ?>">重置密码</a></li>
 			<li><a title="退出账户" id=logout class="btn btn-block btn-danger" href="<?php echo base_url('logout') ?>">退出</a></li>

@@ -211,13 +211,14 @@
             $this->form_validation->set_rules('index_id', '索引序号', 'trim|is_natural_no_zero|less_than[65535]');
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
 			$this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
-			$this->form_validation->set_rules('url_image', '形象图URL', 'trim|max_length[255]');
+			$this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
 				$data['error'] = validation_errors();
 
-                $data['tags'] = $this->list_vote_tag($vote_id);
+                // 获取候选项标签
+			    $data['tags'] = $this->list_vote_tag($vote_id);
 
 				$this->load->view('templates/header', $data);
 				$this->load->view($this->view_root.'/create', $data);
@@ -358,7 +359,211 @@
 			endif;
 		} // end edit
 
-	} // end class Vote_option
+        /**
+         * 批准参选
+         */
+        public function approve()
+        {
+            // 操作可能需要检查操作权限
+            // $role_allowed = array('管理员', '经理'); // 角色要求
+// 			$min_level = 30; // 级别要求
+// 			$this->basic->permission_check($role_allowed, $min_level);
+
+            $op_name = '批准参选'; // 操作的名称
+            $op_view = 'approve'; // 操作名、视图文件名
+
+            // 页面信息
+            $data = array(
+                'title' => $op_name. $this->class_name_cn,
+                'class' => $this->class_name. ' '. $op_view,
+                'error' => '', // 预设错误提示
+
+                'op_name' => $op_view,
+            );
+
+            // 赋值视图中需要用到的待操作项数据
+            $data['ids'] = $ids = $this->parse_ids_array();
+
+            // 获取待操作项数据
+            $data['items'] = array();
+            foreach ($ids as $id):
+                // 从API服务器获取相应详情信息
+                $params['id'] = $id;
+                $url = api_url($this->class_name. '/detail');
+                $result = $this->curl->go($url, $params, 'array');
+                if ($result['status'] === 200):
+                    $data['items'][] = $result['content'];
+                else:
+                    $data['error'] .= 'ID'.$id.'项不可操作，“'.$result['content']['error']['message'].'”';
+                endif;
+            endforeach;
+
+            // 将需要显示的数据传到视图以备使用
+            $data['data_to_display'] = $this->data_to_display;
+
+            // 待验证的表单项
+            $this->form_validation->set_error_delimiters('', '；');
+            $this->form_validation->set_rules('ids', '待操作数据', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
+            $this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
+
+            // 若表单提交不成功
+            if ($this->form_validation->run() === FALSE):
+                $data['error'] .= validation_errors();
+
+                $this->load->view('templates/header', $data);
+                $this->load->view($this->view_root.'/'.$op_view, $data);
+                $this->load->view('templates/footer', $data);
+
+            else:
+                // 检查必要参数是否已传入
+                $required_params = $this->names_edit_bulk_required;
+                foreach ($required_params as $param):
+                    ${$param} = $this->input->post($param);
+                    if ( empty( ${$param} ) ):
+                        $data['error'] = '必要的请求参数未全部传入';
+                        $this->load->view('templates/header', $data);
+                        $this->load->view($this->view_root.'/'.$op_view, $data);
+                        $this->load->view('templates/footer', $data);
+                        exit();
+                    endif;
+                endforeach;
+
+                // 需要存入数据库的信息
+                $data_to_edit = array(
+                    'user_id' => $this->session->user_id,
+                    'ids' => $ids,
+                    'password' => $password,
+                    'operation' => $op_view,
+                );
+
+                // 向API服务器发送待修改数据
+                $params = $data_to_edit;
+                $url = api_url($this->class_name. '/edit_bulk');
+                $result = $this->curl->go($url, $params, 'array');
+                if ($result['status'] === 200):
+                    $data['title'] = $this->class_name_cn.$op_name. '成功';
+                    $data['class'] = 'success';
+                    $data['content'] = $result['content']['message'];
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/result', $data);
+                    $this->load->view('templates/footer', $data);
+
+                else:
+                    // 若修改失败，则进行提示
+                    $data['error'] .= $result['content']['error']['message'];
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/'.$op_view, $data);
+                    $this->load->view('templates/footer', $data);
+                endif;
+
+            endif;
+        } // end approve
+
+        /**
+         * 拒绝参选
+         */
+        public function reject()
+        {
+            // 操作可能需要检查操作权限
+            // $role_allowed = array('管理员', '经理'); // 角色要求
+// 			$min_level = 30; // 级别要求
+// 			$this->basic->permission_check($role_allowed, $min_level);
+
+            $op_name = '拒绝参选'; // 操作的名称
+            $op_view = 'reject'; // 操作名、视图文件名
+
+            // 页面信息
+            $data = array(
+                'title' => $op_name. $this->class_name_cn,
+                'class' => $this->class_name. ' '. $op_view,
+                'error' => '', // 预设错误提示
+
+                'op_name' => $op_view,
+            );
+
+            // 赋值视图中需要用到的待操作项数据
+            $data['ids'] = $ids = $this->parse_ids_array();
+
+            // 获取待操作项数据
+            $data['items'] = array();
+            foreach ($ids as $id):
+                // 从API服务器获取相应详情信息
+                $params['id'] = $id;
+                $url = api_url($this->class_name. '/detail');
+                $result = $this->curl->go($url, $params, 'array');
+                if ($result['status'] === 200):
+                    $data['items'][] = $result['content'];
+                else:
+                    $data['error'] .= 'ID'.$id.'项不可操作，“'.$result['content']['error']['message'].'”';
+                endif;
+            endforeach;
+
+            // 将需要显示的数据传到视图以备使用
+            $data['data_to_display'] = $this->data_to_display;
+
+            // 待验证的表单项
+            $this->form_validation->set_error_delimiters('', '；');
+            $this->form_validation->set_rules('ids', '待操作数据', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
+            $this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
+
+            // 若表单提交不成功
+            if ($this->form_validation->run() === FALSE):
+                $data['error'] .= validation_errors();
+
+                $this->load->view('templates/header', $data);
+                $this->load->view($this->view_root.'/'.$op_view, $data);
+                $this->load->view('templates/footer', $data);
+
+            else:
+                // 检查必要参数是否已传入
+                $required_params = $this->names_edit_bulk_required;
+                foreach ($required_params as $param):
+                    ${$param} = $this->input->post($param);
+                    if ( empty( ${$param} ) ):
+                        $data['error'] = '必要的请求参数未全部传入';
+                        $this->load->view('templates/header', $data);
+                        $this->load->view($this->view_root.'/'.$op_view, $data);
+                        $this->load->view('templates/footer', $data);
+                        exit();
+                    endif;
+                endforeach;
+
+                // 需要存入数据库的信息
+                $data_to_edit = array(
+                    'user_id' => $this->session->user_id,
+                    'ids' => $ids,
+                    'password' => $password,
+                    'operation' => $op_view, // 操作名称
+                );
+
+                // 向API服务器发送待修改数据
+                $params = $data_to_edit;
+                $url = api_url($this->class_name. '/edit_bulk');
+                $result = $this->curl->go($url, $params, 'array');
+                if ($result['status'] === 200):
+                    $data['title'] = $this->class_name_cn.$op_name. '成功';
+                    $data['class'] = 'success';
+                    $data['content'] = $result['content']['message'];
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/result', $data);
+                    $this->load->view('templates/footer', $data);
+
+                else:
+                    // 若修改失败，则进行提示
+                    $data['error'] .= $result['content']['error']['message'];
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/'.$op_view, $data);
+                    $this->load->view('templates/footer', $data);
+                endif;
+
+            endif;
+        } // end reject
+
+    } // end class Vote_option
 
 /* End of file Vote_option.php */
 /* Location: ./application/controllers/Vote_option.php */

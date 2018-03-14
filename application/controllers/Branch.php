@@ -14,7 +14,7 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'branch_id', 'biz_id', 'name', 'description', 'tel_public', 'tel_protected_biz', 'tel_protected_order', 'day_rest', 'time_open', 'time_close', 'url_image_main', 'figure_image_urls', 'nation', 'province', 'city', 'county', 'street', 'region_id', 'region', 'poi_id', 'poi', 'longitude', 'latitude', 'status', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
+			'biz_id', 'name', 'description', 'tel_public', 'tel_protected_biz', 'tel_protected_order', 'day_rest', 'time_open', 'time_close', 'url_image_main', 'figure_image_urls', 'nation', 'province', 'city', 'county', 'street', 'region_id', 'region', 'poi_id', 'poi', 'longitude', 'latitude', 'status', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
 		/**

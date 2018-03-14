@@ -218,15 +218,22 @@
             <td><?php echo $option['tag_id'] ?></td>
             <td><?php echo $option['index_id'] ?></td>
             <td class=option-actions>
-                <!--<a class=option-create href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$option['option_id']) ?>">投票</a>-->
-                <ul class=horizontal>
+                <ul>
                     <?php
                     // 需要特定角色和权限进行该操作
                     //if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                     ?>
-                    <li><a class=btn title="查看" href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>查看</a></li>
-<!--                    <li><a title="删除" href="--><?php //echo base_url('vote_option/delete?ids='.$option['option_id']) ?><!--" target=_blank>删除</a></li>-->
-                    <li><a class=btn title="编辑" href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
+                    <li><a href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>查看</a></li>
+                    <li><a href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
+                    <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$option['option_id']) ?>" target=_blank>投票</a></li>
+
+                    <?php if ($option['status'] === '正常'): ?>
+                    <li><a href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
+                    <?php else: ?>
+                    <li><a href="<?php echo base_url('vote_option/approve?ids='.$option['option_id']) ?>" target=_blank>批准</a></li>
+                    <li><a href="<?php echo base_url('vote_option/reject?ids='.$option['option_id']) ?>" target=_blank>拒绝</a></li>
+                    <?php endif ?>
+
                     <?php //endif ?>
                 </ul>
             </td>

@@ -33,8 +33,8 @@ body {margin-bottom:104px;}
 .item-actions>* {float:left;display:inline;}
 .item-actions>span {width:40px;height:40px;}
 .item-actions ul {float:right;}
-    .item-actions li {text-align:center;height:52px;line-height:52px;margin-left:10px;border:1px solid #9fa0a0;border-radius:26px;overflow:hidden;}
-        .item-actions a {color:#9fa0a0;display:block;height:100%;padding:0 14px;}
+    .item-actions li {margin-left:10px;padding:14px 0;}
+    .item-actions a {color:#9fa0a0;text-align:center;width:130px;height:52px;line-height:52px;border:1px solid #9fa0a0;border-radius:26px;}
 
 /* 宽度在750像素以上的设备 */
 @media only screen and (min-width:751px)

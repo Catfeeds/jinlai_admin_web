@@ -64,8 +64,8 @@
 
 	<?php
 		if ( !empty($error) ) echo '<div class="alert alert-warning" role=alert>'.$error.'</div>';
-		$attributes = array('class' => 'form-'.$this->class_name.'-note form-horizontal', 'role' => 'form');
-		echo form_open($this->class_name.'/note', $attributes);
+		$attributes = array('class' => 'form-'.$this->class_name.'-'.$op_name.' form-horizontal', 'role' => 'form');
+		echo form_open($this->class_name.'/'.$op_name, $attributes);
 	?>
 		<fieldset>
 			<input name=ids type=hidden value="<?php echo implode(',', $ids) ?>">
@@ -87,7 +87,7 @@
 
 		<div class=form-group>
 		    <div class="col-xs-12 col-sm-offset-2 col-sm-2">
-				<button class="btn btn-warning btn-lg btn-block" type=submit>确定</button>
+				<button class="btn btn-default btn-lg btn-block" type=submit>确定</button>
 		    </div>
 		</div>
 

@@ -47,8 +47,9 @@
 			//if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
 		    <ul id=item-actions class=list-unstyled>
-                <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-				<li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
+                <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
+                <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
+				<li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		    </ul>
 			<?php //endif ?>
 

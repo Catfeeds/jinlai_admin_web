@@ -425,13 +425,15 @@
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
 			$op_name = '删除'; // 操作的名称
-			$op_view = 'delete'; // 视图文件名
+			$op_view = 'delete'; // 操作名、视图文件名
 
 			// 页面信息
 			$data = array(
 				'title' => $op_name. $this->class_name_cn,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
+
+                'op_name' => $op_view,
 			);
 
 			// 赋值视图中需要用到的待操作项数据
@@ -442,7 +444,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -484,14 +485,13 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
 					'operation' => $op_view, // 操作名称
 				);
 
-				// 向API服务器发送待创建数据
+				// 向API服务器发送待修改数据
 				$params = $data_to_edit;
 				$url = api_url($this->class_name. '/edit_bulk');
 				$result = $this->curl->go($url, $params, 'array');
@@ -505,7 +505,7 @@
 					$this->load->view('templates/footer', $data);
 
 				else:
-					// 若创建失败，则进行提示
+					// 若修改失败，则进行提示
 					$data['error'] .= $result['content']['error']['message'];
 
 					$this->load->view('templates/header', $data);
@@ -518,8 +518,6 @@
 
 		/**
 		 * 恢复单行或多行项目
-		 *
-		 * 一般用于存为草稿、上架、下架、删除、恢复等状态变化，请根据需要修改方法名，例如delete、restore、draft等
 		 */
 		public function restore()
 		{
@@ -529,13 +527,15 @@
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
 			$op_name = '恢复'; // 操作的名称
-			$op_view = 'restore'; // 视图文件名
+			$op_view = 'restore'; // 操作名、视图文件名
 
 			// 页面信息
 			$data = array(
 				'title' => $op_name. $this->class_name_cn,
 				'class' => $this->class_name. ' '. $op_view,
 				'error' => '', // 预设错误提示
+
+                'op_name' => $op_view,
 			);
 
 			// 赋值视图中需要用到的待操作项数据
@@ -546,7 +546,6 @@
 			foreach ($ids as $id):
 				// 从API服务器获取相应详情信息
 				$params['id'] = $id;
-                $params['biz_id'] = $this->session->biz_id;
 				$url = api_url($this->class_name. '/detail');
 				$result = $this->curl->go($url, $params, 'array');
 				if ($result['status'] === 200):
@@ -588,14 +587,13 @@
 
 				// 需要存入数据库的信息
 				$data_to_edit = array(
-                    'biz_id' => $this->session->biz_id,
 					'user_id' => $this->session->user_id,
 					'ids' => $ids,
 					'password' => $password,
 					'operation' => $op_view, // 操作名称
 				);
 
-				// 向API服务器发送待创建数据
+				// 向API服务器发送待修改数据
 				$params = $data_to_edit;
 				$url = api_url($this->class_name. '/edit_bulk');
 				$result = $this->curl->go($url, $params, 'array');
@@ -609,7 +607,7 @@
 					$this->load->view('templates/footer', $data);
 
 				else:
-					// 若创建失败，则进行提示
+					// 若修改失败，则进行提示
 					$data['error'] .= $result['content']['error']['message'];
 
 					$this->load->view('templates/header', $data);
@@ -952,11 +950,12 @@
         } // end get_vote_option
 
         // 获取投票选项列表
-        protected function list_vote_option($vote_id)
+        protected function list_vote_option($vote_id, $status = NULL)
         {
             // 从API服务器获取相应列表信息
             $params['vote_id'] = $vote_id;
             $params['time_delete'] = 'NULL';
+            if ($status !== NULL) $params['status'] = $status;
 
             // 默认按索引序号降序排序
             $params['orderby_index_id'] = 'DESC';
