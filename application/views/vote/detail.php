@@ -189,6 +189,7 @@
                 <th data-sort=int>目前选票</th>
                 <th data-sort=int>标签ID</th>
                 <th data-sort=int>索引序号</th>
+                <th data-sort=string>状态</th>
                 <th>操作</th>
             </tr>
         </thead>
@@ -217,6 +218,7 @@
             <td><?php echo $option['ballot_count'] ?></td>
             <td><?php echo $option['tag_id'] ?></td>
             <td><?php echo $option['index_id'] ?></td>
+            <td><?php echo $option['status'] ?></td>
             <td class=option-actions>
                 <ul>
                     <?php
@@ -225,13 +227,16 @@
                     ?>
                     <li><a href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>查看</a></li>
                     <li><a href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
-                    <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$option['option_id']) ?>" target=_blank>投票</a></li>
 
                     <?php if ($option['status'] === '正常'): ?>
-                    <li><a href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
-                    <?php else: ?>
-                    <li><a href="<?php echo base_url('vote_option/approve?ids='.$option['option_id']) ?>" target=_blank>批准</a></li>
-                    <li><a href="<?php echo base_url('vote_option/reject?ids='.$option['option_id']) ?>" target=_blank>拒绝</a></li>
+                        <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$option['vote_id'].'&option_id='.$option['option_id']) ?>" target=_blank>投票</a></li>
+                        <li><a href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
+                        <li><a href="<?php echo base_url('vote_option/reject?ids='.$option['option_id']) ?>" target=_blank>中止参选</a></li>
+                    <?php elseif ($option['status'] === '待审核'): ?>
+                        <li><a href="<?php echo base_url('vote_option/approve?ids='.$option['option_id']) ?>" target=_blank>批准</a></li>
+                        <li><a href="<?php echo base_url('vote_option/reject?ids='.$option['option_id']) ?>" target=_blank>拒绝</a></li>
+                    <?php elseif ($option['status'] === '已拒绝'): ?>
+                        <li><a href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
                     <?php endif ?>
 
                     <?php //endif ?>

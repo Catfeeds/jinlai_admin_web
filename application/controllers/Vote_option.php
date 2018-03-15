@@ -471,7 +471,7 @@
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-            $op_name = '拒绝参选'; // 操作的名称
+            $op_name = '拒绝参选/中止参选'; // 操作的名称
             $op_view = 'reject'; // 操作名、视图文件名
 
             // 页面信息

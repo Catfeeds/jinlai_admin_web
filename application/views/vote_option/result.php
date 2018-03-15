@@ -37,8 +37,6 @@
 	<?php endif ?>
 	
 	<ul class=row>
-		<li class="col-xs-12 col-sm-6 col-sm-3"><a class="btn btn-default btn-lg" title="<?php echo $this->class_name_cn ?>列表" href="<?php echo base_url($this->class_name.'?vote_id='.$vote_id) ?>">返回<?php echo $this->class_name_cn ?>列表</a></li>
-	
 	<?php if ( !empty($operation) ): ?>
 	
 		<?php if ($operation === 'create'): ?>

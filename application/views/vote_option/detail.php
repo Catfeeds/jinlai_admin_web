@@ -47,9 +47,18 @@
 			//if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
 		    <ul id=item-actions class=list-unstyled>
-                <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
+                <?php if ($item['status'] === '正常'): ?>
+                    <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
+                    <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
+                    <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>中止参选</a></li>
+                <?php elseif ($item['status'] === '待审核'): ?>
+                    <li><a href="<?php echo base_url($this->class_name.'/approve?ids='.$item[$this->id_name]) ?>" target=_blank>批准</a></li>
+                    <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>
+                <?php elseif ($item['status'] === '已拒绝'): ?>
                 <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-				<li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
+                <?php endif ?>
+
+                <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
 		    </ul>
 			<?php //endif ?>
 
