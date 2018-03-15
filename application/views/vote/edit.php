@@ -159,7 +159,7 @@
 			<div class=form-group>
 				<label for=time_start class="col-sm-2 control-label">开始时间</label>
 				<div class=col-sm-10>
-                    <input class=form-control name=time_start type=datetime value="<?php echo empty($item['time_start'])? NULL: date('Y-m-d H:i', $item['time_start']); ?>" placeholder="例如：<?php echo date('Y-m-d H:i', strtotime('+1days')) ?>">
+                    <input class=form-control name=time_start type=datetime value="<?php echo (empty($item['time_start']) || $item['time_start'] < time())? NULL: date('Y-m-d H:i', $item['time_start']); ?>" placeholder="例如：<?php echo date('Y-m-d H:i', strtotime('+1days')) ?>">
 
                     <?php require_once(APPPATH. 'views/templates/time_start_hint.php') ?>
 				</div>
@@ -181,7 +181,7 @@
                             foreach ($options as $option)
                                 echo $option['option_id'].',' ?></textarea>
 
-                    <p class=help-block>选项较多时，系统需要较长时间处理，页面将过一段时间才显示处理结果，稍等片刻即可。</p>
+                    <p class=help-block>候选项数量较多时，系统需要较长时间处理，页面将过一段时间才显示处理结果，稍等片刻即可。</p>
                 </div>
             </div>
 		</fieldset>

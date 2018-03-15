@@ -364,7 +364,7 @@
 
 			endif;
 			
-			return $ids;
+			return array_unique($ids); // 清除重复项
 		} // end parse_ids_array
 
         /**

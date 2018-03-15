@@ -387,6 +387,10 @@
 			endif;
 		} // end edit
 
+        /**
+         * 以下为工具类方法
+         */
+
         // 检查起始时间
         public function time_start($value)
         {

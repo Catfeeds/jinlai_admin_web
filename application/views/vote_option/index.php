@@ -39,28 +39,30 @@
 	$current_level = $this->session->level; // 当前用户级别
 	$role_allowed = array('管理员', '经理');
 	$level_allowed = 30;
-	if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
+	//if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
+
+        $url_to_create = base_url($this->class_name.'/create?vote_id='.$vote['vote_id']); // 创建数据项的URL
 	?>
 	<div class="btn-group btn-group-justified" role=group>
 		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
-	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
+	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash?vote_id='.$vote['vote_id']) ?>">回收站</a>
+		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo $url_to_create ?>">创建</a>
 	</div>
 	
     <div id=primary_actions class=action_bottom>
         <?php if (count($items) > 1): ?>
         <span id=enter_bulk>
-            <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
+            <i class="far fa-circle" aria-hidden=true></i>批量
         </span>
         <?php endif ?>
 
         <ul class=horizontal>
             <li>
-                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
+                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo $url_to_create ?>">创建</a>
             </li>
         </ul>
     </div>
-	<?php endif ?>
+	<?php //endif ?>
 
 	<?php if ( empty($items) ): ?>
 	<blockquote>
@@ -71,11 +73,15 @@
 	<form method=get target=_blank>
         <?php if (count($items) > 1): ?>
         <div id=bulk_action class=action_bottom>
-            <span id="bulk_selector" data-bulk-selector=off>
-                <i class="fa fa-circle-o" aria-hidden=true></i>全选
+            <span id=bulk_selector data-bulk-selector=off>
+                <i class="far fa-check-circle" aria-hidden=true></i>全选
             </span>
             <span id=exit_bulk>取消</span>
             <ul class=horizontal>
+                <li>
+                    <input name=vote_id type=hidden value="<?php echo $vote['vote_id'] ?>">
+                    <button class=bg_second formaction="<?php echo base_url('vote_ballot/create_multiple') ?>" type=submit>批量投票</button>
+                </li>
                 <li>
                     <button class=bg_primary formaction="<?php echo base_url($this->class_name.'/delete') ?>" type=submit>删除</button>
                 </li>
@@ -103,13 +109,13 @@
                         // 需要特定角色和权限进行该操作
                         //if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                             ?>
-                        <li><a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>" target=_blank>查看</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
 
                         <?php if ($item['status'] === '正常'): ?>
                         <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
+                        <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$item['vote_id'].'&ids='.$item['option_id']) ?>" target=_blank>批量投票</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-                            <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>中止参选</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>中止参选</a></li>
                         <?php elseif ($item['status'] === '待审核'): ?>
                         <li><a href="<?php echo base_url($this->class_name.'/approve?ids='.$item[$this->id_name]) ?>" target=_blank>批准</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>

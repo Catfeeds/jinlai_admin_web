@@ -59,6 +59,14 @@
 		 */
 		public function index()
 		{
+            // 检查是否已传入必要参数
+			$vote_id = $this->input->get_post('vote_id')? $this->input->get_post('vote_id'): NULL;
+			if ( !empty($vote_id) ):
+                $params['vote_id'] = $vote_id;
+            else:
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endif;
+
 			// 页面信息
 			$data = array(
 				'title' => $this->class_name_cn. '列表',
@@ -83,9 +91,14 @@
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
+
+                // 获取投票信息
+                $data['vote'] = $this->get_vote($vote_id);
+
 			else:
 				$data['items'] = array();
 				$data['error'] = $result['content']['error']['message'];
+
 			endif;
 
 			// 将需要显示的数据传到视图以备使用
@@ -562,6 +575,10 @@
 
             endif;
         } // end reject
+
+        /**
+         * 以下为工具类方法
+         */
 
     } // end class Vote_option
 

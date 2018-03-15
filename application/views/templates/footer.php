@@ -1,5 +1,4 @@
 
-            <p class="container bg-info text-center">使用中如发现问题，请联系刘亚杰<a class="btn btn-default" href="tel:+8617664073966"><i class="far fa-mobile"></i>176-6407-3966</a></p>
         </main>
 <!-- End #maincontainer -->
 

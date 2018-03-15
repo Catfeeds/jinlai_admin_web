@@ -344,6 +344,10 @@
 			endif;
 		} // end edit
 
+        /**
+         * 以下为工具类方法
+         */
+
 	} // end class Vote_tag
 
 /* End of file Vote_tag.php */

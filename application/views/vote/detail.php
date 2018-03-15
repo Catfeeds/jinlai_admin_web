@@ -230,6 +230,7 @@
 
                     <?php if ($option['status'] === '正常'): ?>
                         <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$option['vote_id'].'&option_id='.$option['option_id']) ?>" target=_blank>投票</a></li>
+                        <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$option['vote_id'].'&ids='.$option['option_id']) ?>" target=_blank>批量投票</a></li>
                         <li><a href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
                         <li><a href="<?php echo base_url('vote_option/reject?ids='.$option['option_id']) ?>" target=_blank>中止参选</a></li>
                     <?php elseif ($option['status'] === '待审核'): ?>

@@ -58,7 +58,7 @@
 	</table>
 
 	<div class="alert alert-warning" role=alert>
-		<p>确定要<?php echo $title ?>？系统将会为上述每个候选项创建投票数量上下限之间随机数量的选票。</p>
+		<p>确定要<?php echo $title ?>？系统将会为上述每个候选项创建投票数量上下限之间随机数量的选票；候选项数量较多时，系统需要较长时间处理，页面将过一段时间才显示处理结果，稍等片刻即可。</p>
 	</div>
 
 	<?php
@@ -69,17 +69,26 @@
 		<fieldset>
 			<input name=ids type=hidden value="<?php echo implode(',', $ids) ?>">
 
+            <input name=vote_id type=hidden value="<?php echo $vote_id ?>">
+
             <div class=form-group>
                 <label for=amount_min class="col-sm-2 control-label">投票数量下限</label>
                 <div class=col-sm-10>
-                    <input class=form-control name=amount_min type=number min="10" step="1" max=1000 value="<?php echo set_value('amount_min') ?>" placeholder="最少需要增加多少选票，10 - 1000之间" required>
+                    <input class=form-control name=amount_min type=number min=10 step=1 max=1000 value="<?php echo set_value('amount_min') ?>" placeholder="最少需要增加多少选票，10 - 1000之间" required>
                 </div>
             </div>
 
             <div class=form-group>
                 <label for=amount_max class="col-sm-2 control-label">投票数量上限</label>
                 <div class=col-sm-10>
-                    <input class=form-control name=amount_max type=number min="10" step="1" max=1000 value="<?php echo set_value('amount_max') ?>" placeholder="最多需要增加多少选票，10 - 1000之间，不可低于投票数量下限" required>
+                    <input class=form-control name=amount_max type=number min=10 step=1 max=1000 value="<?php echo set_value('amount_max') ?>" placeholder="最多需要增加多少选票，10 - 1000之间，不可低于投票数量下限" required>
+                </div>
+            </div>
+
+            <div class=form-group>
+                <label for=password class="col-sm-2 control-label">密码</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=password type=password placeholder="请输入您的登录密码" autofocus required>
                 </div>
             </div>
 		</fieldset>
