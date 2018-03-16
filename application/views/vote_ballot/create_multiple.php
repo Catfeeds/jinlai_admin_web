@@ -67,7 +67,7 @@
 		echo form_open($this->class_name.'/'.$op_name, $attributes);
 	?>
 		<fieldset>
-			<input name=ids type=hidden value="<?php echo implode(',', $ids) ?>">
+			<input name=ids type=hidden value="<?php echo $ids ?>">
 
             <input name=vote_id type=hidden value="<?php echo $vote_id ?>">
 

@@ -180,6 +180,7 @@
 
     <?php else: ?>
     <hr>
+    <p>点击候选项ID、目前选票、标签ID、索引序号等均可进行排序显示</p>
     <table id=list-options class="table table-striped">
         <thead class=thead-dark>
             <tr>

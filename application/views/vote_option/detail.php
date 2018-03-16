@@ -67,6 +67,22 @@
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
+        <?php
+        // 当前项客户端URL
+        $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
+        ?>
+        <dt><?php echo $this->class_name_cn ?>链接</dt>
+        <dd>
+            <span><?php echo $item_url ?></span>
+            <a href="<?php echo $item_url ?>" target=_blank>查看</a>
+            <p>部分投票活动页面仅支持在微信中打开</p>
+        </dd>
+
+        <dt><?php echo $this->class_name_cn ?>二维码</dt>
+        <dd>
+            <figure class=qrcode data-qrcode-string="<?php echo $item_url ?>"></figure>
+        </dd>
+
 		<dt>所属投票ID</dt>
 		<dd>
             <?php echo $item['vote_id'] ?>
@@ -99,6 +115,13 @@
                 </figure>
             <?php endif ?>
         </dd>
+
+        <?php if ( ! empty($item['mobile'])): ?>
+        <dt>审核联系手机号</dt>
+        <dd>
+            <a class="btn btn-default" href="tel:+86<?php echo $item['mobile'] ?>"><i class="far fa-mobile"></i><?php echo $item['mobile'] ?></a>
+        </dd>
+        <?php endif ?>
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>

@@ -68,7 +68,7 @@
 		echo form_open($this->class_name.'/note', $attributes);
 	?>
 		<fieldset>
-			<input name=ids type=hidden value="<?php echo implode(',', $ids) ?>">
+			<input name=ids type=hidden value="<?php echo $ids ?>">
 
 			<div class=form-group>
 				<label for=note_stuff class="col-sm-2 control-label">备注</label>

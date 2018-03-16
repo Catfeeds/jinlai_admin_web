@@ -377,6 +377,10 @@
          */
         public function approve()
         {
+            // 检查必要参数是否已传入
+            if ( empty($this->input->post_get('ids')))
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+
             // 操作可能需要检查操作权限
             // $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
@@ -385,6 +389,10 @@
             $op_name = '批准参选'; // 操作的名称
             $op_view = 'approve'; // 操作名、视图文件名
 
+            // 赋值视图中需要用到的待操作项数据
+            $ids = $this->parse_ids_array(); // 数组格式，已去掉重复项及空项
+            $ids_string = implode(',', $ids); // 字符串格式
+
             // 页面信息
             $data = array(
                 'title' => $op_name. $this->class_name_cn,
@@ -392,24 +400,13 @@
                 'error' => '', // 预设错误提示
 
                 'op_name' => $op_view,
+                'ids' => $ids_string,
             );
 
-            // 赋值视图中需要用到的待操作项数据
-            $data['ids'] = $ids = $this->parse_ids_array();
-
             // 获取待操作项数据
-            $data['items'] = array();
-            foreach ($ids as $id):
-                // 从API服务器获取相应详情信息
-                $params['id'] = $id;
-                $url = api_url($this->class_name. '/detail');
-                $result = $this->curl->go($url, $params, 'array');
-                if ($result['status'] === 200):
-                    $data['items'][] = $result['content'];
-                else:
-                    $data['error'] .= 'ID'.$id.'项不可操作，“'.$result['content']['error']['message'].'”';
-                endif;
-            endforeach;
+            $params = array('ids' => $ids_string);
+            $url = api_url($this->class_name.'/index');
+            $data['items'] = $this->curl->go($url, $params, 'array')['content'];
 
             // 将需要显示的数据传到视图以备使用
             $data['data_to_display'] = $this->data_to_display;
@@ -479,13 +476,21 @@
          */
         public function reject()
         {
+            // 检查必要参数是否已传入
+            if ( empty($this->input->post_get('ids')))
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+
             // 操作可能需要检查操作权限
             // $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-            $op_name = '拒绝参选/中止参选'; // 操作的名称
+            $op_name = '拒绝参选'; // 操作的名称
             $op_view = 'reject'; // 操作名、视图文件名
+
+            // 赋值视图中需要用到的待操作项数据
+            $ids = $this->parse_ids_array(); // 数组格式，已去掉重复项及空项
+            $ids_string = implode(',', $ids); // 字符串格式
 
             // 页面信息
             $data = array(
@@ -494,24 +499,13 @@
                 'error' => '', // 预设错误提示
 
                 'op_name' => $op_view,
+                'ids' => $ids_string,
             );
 
-            // 赋值视图中需要用到的待操作项数据
-            $data['ids'] = $ids = $this->parse_ids_array();
-
             // 获取待操作项数据
-            $data['items'] = array();
-            foreach ($ids as $id):
-                // 从API服务器获取相应详情信息
-                $params['id'] = $id;
-                $url = api_url($this->class_name. '/detail');
-                $result = $this->curl->go($url, $params, 'array');
-                if ($result['status'] === 200):
-                    $data['items'][] = $result['content'];
-                else:
-                    $data['error'] .= 'ID'.$id.'项不可操作，“'.$result['content']['error']['message'].'”';
-                endif;
-            endforeach;
+            $params = array('ids' => $ids_string);
+            $url = api_url($this->class_name.'/index');
+            $data['items'] = $this->curl->go($url, $params, 'array')['content'];
 
             // 将需要显示的数据传到视图以备使用
             $data['data_to_display'] = $this->data_to_display;
