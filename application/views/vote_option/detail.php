@@ -95,6 +95,9 @@
             <a href="<?php echo base_url('vote_tag/detail?id='.$item['tag_id']) ?>">查看标签</a>
         </dd>
 
+        <dt>总选票数</dt>
+        <dd><?php echo $item['ballot_overall'] ?> 票</dd>
+
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>描述</dt>

@@ -216,7 +216,7 @@
             </td>
             <td><?php echo $option['option_id'] ?></td>
             <td><?php echo $option['name'] ?></td>
-            <td><?php echo $option['ballot_count'] ?></td>
+            <td><?php echo $option['ballot_overall'] ?></td>
             <td><?php echo $option['tag_id'] ?></td>
             <td><?php echo $option['index_id'] ?></td>
             <td><?php echo $option['status'] ?></td>

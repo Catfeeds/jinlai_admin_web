@@ -97,6 +97,7 @@
                     <p><?php echo $item['name'] ?></p>
                     <p>标签ID <?php echo $item['tag_id'] ?></p>
                     <p>索引序号 <?php echo $item['index_id'] ?></p>
+                    <p><?php echo $item['ballot_overall'] ?>票</p>
                 </a>
 
                 <div class=item-actions>
