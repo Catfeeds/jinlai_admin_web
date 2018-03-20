@@ -252,11 +252,11 @@
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-            $op_name = '批量投票'; // 操作的名称
+            $op_name = '批量创建'; // 操作的名称
             $op_view = 'create_multiple'; // 操作名、视图文件名
 
             // 检查必要参数是否已传入
-            $required_params = array('vote_id', 'ids',);
+            $required_params = array('vote_id', 'ids');
             foreach ($required_params as $param):
                 ${$param} = $this->input->post_get($param);
                 if ( empty( ${$param} ) )

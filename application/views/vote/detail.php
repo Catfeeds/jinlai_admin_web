@@ -111,9 +111,7 @@
 
         <dt>形象视频</dt>
         <dd>
-            <?php
-            if ( empty($item['url_video']) ):
-            ?>
+            <?php if ( empty($item['url_video']) ): ?>
             <p>未上传</p>
             <?php else: ?>
             <figure id=url_video class=vote-figure>
@@ -122,31 +120,14 @@
             <?php endif ?>
         </dd>
 
-        <dt>形象视频缩略图</dt>
-        <dd>
-            <?php
-            $column_image = 'url_video_thumb';
-            if ( empty($item[$column_image]) ):
-                ?>
-                <p>未上传</p>
-            <?php else: ?>
-                <figure id=vote-url_video_thumb class=vote-figure>
-                    <img class=lazyload src="<?php echo $item[$column_image] ?>">
-                </figure>
-            <?php endif ?>
-        </dd>
-
         <dt>选项默认占位图</dt>
-        <dd class=row>
-            <?php
-            $column_image = 'url_default_option_image';
-            if ( empty($item[$column_image]) ):
-                ?>
-                <p>未上传</p>
+        <dd>
+            <?php if ( empty($item['url_default_option_image']) ): ?>
+            <p>未上传</p>
             <?php else: ?>
-                <figure id=vote-url_default_option_image class=vote-figure>
-                    <img src="<?php echo $item[$column_image] ?>">
-                </figure>
+            <figure id=vote-url_default_option_image class=vote-figure>
+                <img src="<?php echo $item['url_default_option_image'] ?>">
+            </figure>
             <?php endif ?>
         </dd>
 
@@ -155,7 +136,7 @@
 
         <dt>投票规则</dt>
         <dd>
-            <?php echo ($item['max_user_total'] == 0)? NULL: '总共可投'.$item['max_user_total'].'票，' ?>每人每天<?php echo $item['max_user_daily'] ?>张选票，同一候选项每天限投<?php echo $item['max_user_daily_each'] ?>票
+            <?php echo ($item['max_user_total'] == 0)? NULL: '总共可投'.$item['max_user_total'].'票，' ?>每人每天<?php echo $item['max_user_daily'] ?>张选票，同一候选项每人每天限投<?php echo $item['max_user_daily_each'] ?>票
         </dd>
 
 		<dt>起止时间</dt>
@@ -181,10 +162,10 @@
     <?php else: ?>
     <hr>
     <p>点击候选项ID、目前选票、标签ID、索引序号等均可进行排序显示</p>
-    <table id=list-options class="table table-striped">
+    <table id=list-options class="table table-striped" summary="候选项一览">
+        <caption>候选项一览</caption>
         <thead class=thead-dark>
             <tr>
-                <th>形象图</th>
                 <th data-sort=int>候选项ID</th>
                 <th>名称</th>
                 <th data-sort=int>目前选票</th>
@@ -200,23 +181,24 @@
             // 候选项默认占位图
             $default_option_image = $item['url_default_option_image'];
             foreach ($options as $option):
+                // 根据候选项状态决定显示样式
+                switch ($option['status']):
+                    case '正常':
+                        break;
+                    case '待审核':
+                        $option_class = 'bg-warning';
+                        break;
+                    case '已拒绝':
+                        $option_class = 'bg-danger';
+                        break;
+                endswitch;
         ?>
-        <tr>
-
-            <td>
-                <a title="查看" href="<?php echo base_url('vote_option/detail?id='.$option['option_id']) ?>" target=_blank>
-                <figure>
-                    <img
-                            class=lazyload
-                            src="<?php echo $default_option_image ?>"
-                            data-original="<?php echo !empty($option['url_image'])? MEDIA_URL.'vote_option/'.$option['url_image']: $default_option_image ?>"
-                    >
-                </figure>
-                </a>
-            </td>
+        <tr <?php if (isset($option_class)) echo 'class='.$option_class ?>>
             <td><?php echo $option['option_id'] ?></td>
             <td><?php echo $option['name'] ?></td>
-            <td><?php echo $option['ballot_overall'] ?></td>
+            <td data-sort-value="<?php echo $option['ballot_overall'] ?>">
+                <?php echo $option['ballot_overall'] ?> 票
+            </td>
             <td><?php echo $option['tag_id'] ?></td>
             <td><?php echo $option['index_id'] ?></td>
             <td><?php echo $option['status'] ?></td>
@@ -230,8 +212,8 @@
                     <li><a href="<?php echo base_url('vote_option/edit?id='.$option['option_id']) ?>" target=_blank>编辑</a></li>
 
                     <?php if ($option['status'] === '正常'): ?>
-                        <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$option['vote_id'].'&option_id='.$option['option_id']) ?>" target=_blank>投票</a></li>
-                        <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$option['vote_id'].'&ids='.$option['option_id']) ?>" target=_blank>批量投票</a></li>
+                        <li><a href="<?php echo base_url('vote_ballot/create?vote_id='.$option['vote_id'].'&option_id='.$option['option_id']) ?>" target=_blank>投1张票</a></li>
+                        <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$option['vote_id'].'&ids='.$option['option_id']) ?>" target=_blank>投多张票</a></li>
                         <li><a href="<?php echo base_url('vote_option/delete?ids='.$option['option_id']) ?>" target=_blank>删除</a></li>
                         <li><a href="<?php echo base_url('vote_option/reject?ids='.$option['option_id']) ?>" target=_blank>中止参选</a></li>
                     <?php elseif ($option['status'] === '待审核'): ?>

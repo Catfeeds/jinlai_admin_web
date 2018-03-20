@@ -97,7 +97,7 @@
                     <p><?php echo $item['name'] ?></p>
                     <p>标签ID <?php echo $item['tag_id'] ?></p>
                     <p>索引序号 <?php echo $item['index_id'] ?></p>
-                    <p><?php echo $item['ballot_overall'] ?>票</p>
+                    <p><?php echo $item['ballot_overall'] ?> 票</p>
                 </a>
 
                 <div class=item-actions>
@@ -113,8 +113,8 @@
                         <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
 
                         <?php if ($item['status'] === '正常'): ?>
-                        <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
-                        <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$item['vote_id'].'&ids='.$item['option_id']) ?>" target=_blank>批量投票</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投1张票</a></li>
+                        <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$item['vote_id'].'&ids='.$item['option_id']) ?>" target=_blank>投多张票</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>中止参选</a></li>
                         <?php elseif ($item['status'] === '待审核'): ?>

@@ -48,8 +48,8 @@
 			?>
 		    <ul id=item-actions class=list-unstyled>
                 <?php if ($item['status'] === '正常'): ?>
-                    <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投票</a></li>
-                    <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$item['vote_id'].'&ids='.$item['option_id']) ?>" target=_blank>批量投票</a></li>
+                    <li><a href="<?php echo base_url($this->class_name.'/create?vote_id='.$item['vote_id'].'&option_id='.$item['option_id']) ?>" target=_blank>投1张票</a></li>
+                    <li><a href="<?php echo base_url('vote_ballot/create_multiple?vote_id='.$item['vote_id'].'&ids='.$item['option_id']) ?>" target=_blank>投多张票</a></li>
                     <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
                     <li><a href="<?php echo base_url($this->class_name.'/reject?ids='.$item[$this->id_name]) ?>" target=_blank>中止参选</a></li>
                 <?php elseif ($item['status'] === '待审核'): ?>
@@ -67,6 +67,8 @@
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
+        <?php if ($status === '正常'): ?>
+
         <?php
         // 当前项客户端URL
         $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
@@ -83,6 +85,11 @@
             <figure class=qrcode data-qrcode-string="<?php echo $item_url ?>"></figure>
         </dd>
 
+        <dt>总选票数</dt>
+        <dd><?php echo $item['ballot_overall'] ?> 票</dd>
+
+        <?php endif ?>
+
 		<dt>所属投票ID</dt>
 		<dd>
             <?php echo $item['vote_id'] ?>
@@ -95,9 +102,6 @@
             <a href="<?php echo base_url('vote_tag/detail?id='.$item['tag_id']) ?>">查看标签</a>
         </dd>
 
-        <dt>总选票数</dt>
-        <dd><?php echo $item['ballot_overall'] ?> 票</dd>
-
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>描述</dt>
@@ -106,7 +110,7 @@
         </dd>
 
         <dt>形象图</dt>
-        <dd class=row>
+        <dd>
             <?php
             $column_image = 'url_image';
             if ( empty($item[$column_image]) ):
