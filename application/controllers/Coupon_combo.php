@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Coupon_combo 优惠券包类
+	 * Coupon_combo/CPC 优惠券包类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
@@ -374,6 +374,10 @@
 
 			endif;
 		} // end edit
+
+        /**
+         * 以下为工具类方法
+         */
 		
 		// 检查起始时间
 		public function time_start($value)

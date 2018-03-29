@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Vote_option 投票候选项类
+	 * Vote_option/VTO 投票候选项类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
@@ -14,7 +14,8 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'vote_id', 'tag_id', 'index_id', 'name', 'description', 'url_image', 'ballot_overall', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'status', 'time_create_min', 'time_create_max',
+			'vote_id', 'tag_id', 'index_id', 'name', 'description', 'url_image', 'ballot_overall',
+            'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'status', 'time_create_min', 'time_create_max',
 		);
 
 		/**

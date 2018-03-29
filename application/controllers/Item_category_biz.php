@@ -2,34 +2,20 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Item_category_biz 店内分类
+	 * Item_category_biz/IBK 店内商品分类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
 	 * @copyright ICBG <www.bingshankeji.com>
 	 */
 	class Item_category_biz extends MY_Controller
-	{	
+	{
 		/**
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
 			'category_id', 'parent_id', 'biz_id', 'name', 'url_image',
 			'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
-		);
-
-		/**
-		 * 可被编辑的字段名
-		 */
-		protected $names_edit_allowed = array(
-			'category_id', 'parent_id', 'name', 'url_image',
-		);
-
-		/**
-		 * 完整编辑单行时必要的字段名
-		 */
-		protected $names_edit_required = array(
-			'id', 'name',
 		);
 
 		public function __construct()
@@ -179,189 +165,6 @@
 			$this->load->view($this->view_root.'/trash', $data);
 			$this->load->view('templates/footer', $data);
 		} // end trash
-
-		/**
-		 * 创建
-		 */
-		public function create()
-		{
-			// 操作可能需要检查操作权限
-			// $role_allowed = array('管理员', '经理'); // 角色要求
-// 			$min_level = 30; // 级别要求
-// 			$this->basic->permission_check($role_allowed, $min_level);
-
-			// 页面信息
-			$data = array(
-				'title' => '创建'.$this->class_name_cn,
-				'class' => $this->class_name.' create',
-			);
-
-			// 获取商家级商品分类
-			$data['biz_categories'] = $this->list_category_biz();
-
-			// 待验证的表单项
-			$this->form_validation->set_error_delimiters('', '；');
-			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-			$this->form_validation->set_rules('parent_id', '所属店内分类', 'trim');
-			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[20]');
-			$this->form_validation->set_rules('url_image', '图片', 'trim');
-
-			// 若表单提交不成功
-			if ($this->form_validation->run() === FALSE):
-				$data['error'] = validation_errors();
-
-				$this->load->view('templates/header', $data);
-				$this->load->view($this->view_root.'/create', $data);
-				$this->load->view('templates/footer', $data);
-
-			else:
-				// 需要创建的数据；逐一赋值需特别处理的字段
-				$data_to_create = array(
-					'user_id' => $this->session->user_id,
-				);
-				// 自动生成无需特别处理的数据
-				$data_need_no_prepare = array(
-					'parent_id', 'name', 'url_image',
-				);
-				foreach ($data_need_no_prepare as $name)
-					$data_to_create[$name] = $this->input->post($name);
-
-				// 向API服务器发送待创建数据
-				$params = $data_to_create;
-				$url = api_url($this->class_name. '/create');
-				$result = $this->curl->go($url, $params, 'array');
-				if ($result['status'] === 200):
-					$data['title'] = $this->class_name_cn. '创建成功';
-					$data['class'] = 'success';
-					$data['content'] = $result['content']['message'];
-					$data['operation'] = 'create';
-					$data['id'] = $result['content']['id']; // 创建后的信息ID
-
-					$this->load->view('templates/header', $data);
-					$this->load->view($this->view_root.'/result', $data);
-					$this->load->view('templates/footer', $data);
-
-				else:
-					// 若创建失败，则进行提示
-					$data['error'] = $result['content']['error']['message'];
-
-					$this->load->view('templates/header', $data);
-					$this->load->view($this->view_root.'/create', $data);
-					$this->load->view('templates/footer', $data);
-
-				endif;
-				
-			endif;
-		} // end create
-
-		/**
-		 * 编辑单行
-		 */
-		public function edit()
-		{
-			// 检查是否已传入必要参数
-			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;
-			if ( !empty($id) ):
-				$params['id'] = $id;
-			else:
-				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
-			endif;
-
-			// 操作可能需要检查操作权限
-			// $role_allowed = array('管理员', '经理'); // 角色要求
-// 			$min_level = 30; // 级别要求
-// 			$this->basic->permission_check($role_allowed, $min_level);
-
-			// 页面信息
-			$data = array(
-				'title' => '修改'.$this->class_name_cn,
-				'class' => $this->class_name.' edit',
-			);
-			
-			// 从API服务器获取相应详情信息
-			$params['id'] = $id;
-			$url = api_url($this->class_name. '/detail');
-			$result = $this->curl->go($url, $params, 'array');
-			if ($result['status'] === 200):
-				$data['item'] = $result['content'];
-				
-				// 获取所属商品分类信息
-				$data['category_biz'] = $this->get_category_biz($data['item']['parent_id']);
-			else:
-				redirect( base_url('error/code_404') ); // 若未成功获取信息，则转到错误页
-			endif;
-
-			// 获取系统级商品分类
-			$data['categories'] = $this->list_category();
-
-			// 获取商家级商品分类
-			$data['biz_categories'] = $this->list_category_biz();
-
-			// 待验证的表单项
-			$this->form_validation->set_error_delimiters('', '；');
-			$this->form_validation->set_rules('parent_id', '所属店内分类', 'trim');
-			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[20]');
-			$this->form_validation->set_rules('url_image', '图片', 'trim');
-
-			// 若表单提交不成功
-			if ($this->form_validation->run() === FALSE):
-				$data['error'] = validation_errors();
-
-				$this->load->view('templates/header', $data);
-				$this->load->view($this->view_root.'/edit', $data);
-				$this->load->view('templates/footer', $data);
-
-			else:
-				// 不可以自身作为所属商品分类
-				if ( $this->input->post('parent_id') === $data['item']['category_id']):
-					$data['error'] = '不可以自身作为所属分类';
-					
-					$this->load->view('templates/header', $data);
-					$this->load->view($this->view_root.'/edit', $data);
-					$this->load->view('templates/footer', $data);
-
-				else:
-					// 需要编辑的数据；逐一赋值需特别处理的字段
-					$data_to_edit = array(
-						'user_id' => $this->session->user_id,
-						'id' => $id,
-					);
-					// 自动生成无需特别处理的数据
-					$data_need_no_prepare = array(
-						'parent_id', 'name', 'url_image',
-					);
-					foreach ($data_need_no_prepare as $name)
-						$data_to_edit[$name] = $this->input->post($name);
-
-					// 向API服务器发送待创建数据
-					$params = $data_to_edit;
-					$url = api_url($this->class_name. '/edit');
-					$result = $this->curl->go($url, $params, 'array');
-					if ($result['status'] === 200):
-						$data['title'] = $this->class_name_cn. '修改成功';
-						$data['class'] = 'success';
-						$data['content'] = $result['content']['message'];
-						$data['operation'] = 'edit';
-						$data['id'] = $id;
-
-						$this->load->view('templates/header', $data);
-						$this->load->view($this->view_root.'/result', $data);
-						$this->load->view('templates/footer', $data);
-
-					else:
-						// 若创建失败，则进行提示
-						$data['error'] = $result['content']['error']['message'];
-
-						$this->load->view('templates/header', $data);
-						$this->load->view($this->view_root.'/edit', $data);
-						$this->load->view('templates/footer', $data);
-
-					endif;
-					
-				endif;
-
-			endif;
-		} // end edit
 
 	} // end class Item_category_biz
 

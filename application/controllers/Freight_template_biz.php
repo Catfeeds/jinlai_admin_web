@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Freight_template_biz 商家运费模板类
+	 * Freight_template_biz/FTB 商家运费模板类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
@@ -14,7 +14,8 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
         protected $names_to_sort = array(
-            'biz_id', 'name', 'type', 'time_valid_from', 'time_valid_end', 'period_valid', 'expire_refund_rate', 'nation', 'province', 'city', 'county', 'longitude', 'latitude', 'time_latest_deliver', 'type_actual', 'max_amount', 'start_amount', 'unit_amount', 'fee_start', 'fee_unit', 'exempt_amount', 'exempt_subtotal', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
+            'biz_id', 'name', 'type', 'time_valid_from', 'time_valid_end', 'period_valid', 'expire_refund_rate', 'nation', 'province', 'city', 'county', 'longitude', 'latitude', 'time_latest_deliver', 'type_actual', 'max_amount', 'start_amount', 'unit_amount', 'fee_start', 'fee_unit', 'exempt_amount', 'exempt_subtotal',
+            'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
         );
 
         /**
@@ -380,6 +381,10 @@
 
 			endif;
 		} // end edit
+
+        /**
+         * 以下为工具类方法
+         */
 
 	} // end class Freight_template_biz
 

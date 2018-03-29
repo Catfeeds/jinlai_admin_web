@@ -34,8 +34,8 @@
 
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
-				'name' => '名称',
-				'description' => '描述',
+				'order_id' => '所属订单ID',
+				'content' => '评价内容',
 			);
 		} // end __construct
 
@@ -166,22 +166,26 @@
         /**
          * 删除
          *
-         * 商家不可删除
+         * 不可删除
          */
         public function delete()
         {
-            exit('不可删除用户的'.$this->class_name_cn);
+            exit('不可删除'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
         } // end delete
 
         /**
          * 找回
          *
-         * 商家不可找回
+         * 不可找回
          */
         public function restore()
         {
-            exit('不可找回用户的'.$this->class_name_cn);
+            exit('不可找回'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
         } // end restore
+
+        /**
+         * 以下为工具类方法
+         */
 
 	} // end class Comment_item
 

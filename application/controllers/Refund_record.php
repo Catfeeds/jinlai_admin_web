@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Refund_record 退款记录类
+	 * Refund_record/RFR 退款记录类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
@@ -14,7 +14,8 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'refund_id', 'biz_id', 'user_id', 'content', 'time_create', 'time_delete', 'time_edit', 'operator_id',
+			'refund_id', 'biz_id', 'user_id', 'content',
+            'time_create', 'time_delete', 'time_edit', 'operator_id',
 		);
 
 		public function __construct()
@@ -148,6 +149,30 @@
 				
 			endif;
 		} // end create
+
+        /**
+         * 删除
+         *
+         * 不可删除
+         */
+        public function delete()
+        {
+            exit('不可删除'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+        } // end delete
+
+        /**
+         * 找回
+         *
+         * 不可找回
+         */
+        public function restore()
+        {
+            exit('不可找回'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+        } // end restore
+
+        /**
+         * 以下为工具类方法
+         */
 
 	} // end class Refund_record
 

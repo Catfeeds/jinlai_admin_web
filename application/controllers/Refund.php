@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Refund 退款/售后类
+	 * Refund/RFD 退款/售后类
      *
      * 仅退款类型，当商家同意后进行退款；退货退款类型，当商家收货后进行退款
      * 若货款未结算，则直接从商家余额中扣除相应商家余额到平台余额，平台向用户原路退款
@@ -124,126 +124,28 @@
 		} // end detail
 
         /**
-         * 备注
-         */
-        public function note()
-        {
-            // 检查必要参数是否已传入
-            if ( empty($this->input->post_get('ids')))
-                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
-
-            // 操作可能需要检查操作权限
-            // $role_allowed = array('管理员', '经理'); // 角色要求
-// 			$min_level = 30; // 级别要求
-// 			$this->basic->permission_check($role_allowed, $min_level);
-
-            $op_name = '备注'; // 操作的名称
-            $op_view = 'note'; // 操作名、视图文件名
-
-            // 赋值视图中需要用到的待操作项数据
-            $ids = $this->parse_ids_array(); // 数组格式，已去掉重复项及空项
-            $ids_string = implode(',', $ids); // 字符串格式
-
-            // 页面信息
-            $data = array(
-                'title' => $op_name. $this->class_name_cn,
-                'class' => $this->class_name. ' '. $op_view,
-                'error' => '', // 预设错误提示
-
-                'op_name' => $op_view,
-                'ids' => $ids_string,
-            );
-
-            // 获取待操作项数据
-            $params = array('ids' => $ids_string);
-            $url = api_url($this->class_name.'/index');
-            $data['items'] = $this->curl->go($url, $params, 'array')['content'];
-
-            // 将需要显示的数据传到视图以备使用
-            $data['data_to_display'] = $this->data_to_display;
-
-            // 待验证的表单项
-            $this->form_validation->set_error_delimiters('', '；');
-            $this->form_validation->set_rules('ids', '待操作数据ID们', 'trim|required|regex_match[/^(\d|\d,?)+$/]'); // 仅允许非零整数和半角逗号
-            $this->form_validation->set_rules('password', '密码', 'trim|required|min_length[6]|max_length[20]');
-            $this->form_validation->set_rules('note_stuff', '员工备注', 'trim|required');
-
-            // 若表单提交不成功
-            if ($this->form_validation->run() === FALSE):
-                $data['error'] .= validation_errors();
-
-                $this->load->view('templates/header', $data);
-                $this->load->view($this->view_root.'/'.$op_view, $data);
-                $this->load->view('templates/footer', $data);
-
-            else:
-                // 检查必要参数是否已传入
-                $required_params = $this->names_edit_bulk_required;
-                foreach ($required_params as $param):
-                    ${$param} = $this->input->post($param);
-                    if ( empty( ${$param} ) ):
-                        $data['error'] = '必要的请求参数未全部传入';
-                        $this->load->view('templates/header', $data);
-                        $this->load->view($this->view_root.'/'.$op_view, $data);
-                        $this->load->view('templates/footer', $data);
-                        exit();
-                    endif;
-                endforeach;
-
-                // 需要存入数据库的信息
-                $data_to_edit = array(
-                    'user_id' => $this->session->user_id,
-                    'ids' => $ids,
-                    'password' => $password,
-                    'operation' => $op_view, // 操作名称
-
-                    'note_stuff' => $this->input->post('note_stuff'),
-                );
-
-                // 向API服务器发送待创建数据
-                $params = $data_to_edit;
-                $url = api_url($this->class_name. '/edit_bulk');
-                $result = $this->curl->go($url, $params, 'array');
-                if ($result['status'] === 200):
-                    $data['title'] = $this->class_name_cn.$op_name. '成功';
-                    $data['class'] = 'success';
-                    $data['content'] = $result['content']['message'];
-
-                    $this->load->view('templates/header', $data);
-                    $this->load->view($this->view_root.'/result', $data);
-                    $this->load->view('templates/footer', $data);
-
-                else:
-                    // 若创建失败，则进行提示
-                    $data['error'] .= $result['content']['error']['message'];
-
-                    $this->load->view('templates/header', $data);
-                    $this->load->view($this->view_root.'/'.$op_view, $data);
-                    $this->load->view('templates/footer', $data);
-                endif;
-
-            endif;
-        } // end note
-
-        /**
          * 删除
          *
-         * 商家不可删除
+         * 不可删除
          */
         public function delete()
         {
-            exit('商家不可删除用户的'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+            exit('不可删除用户的'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
         } // end delete
 
         /**
          * 找回
          *
-         * 商家不可找回
+         * 不可找回
          */
         public function restore()
         {
-            exit('商家不可找回用户的'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+            exit('不可找回用户的'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
         } // end restore
+
+        /**
+         * 以下为工具类方法
+         */
 
 	} // end class Refund
 

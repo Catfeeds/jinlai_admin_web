@@ -448,7 +448,6 @@
             // 获取待操作项数据
             $params = array('ids' => $ids_string);
             $url = api_url($this->class_name.'/index');
-            var_dump($params);
             $data['items'] = $this->curl->go($url, $params, 'array')['content'];
 
 			// 将需要显示的数据传到视图以备使用

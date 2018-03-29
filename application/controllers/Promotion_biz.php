@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('此文件不可被直接访问');
 
 	/**
-	 * Promotion_biz 店内活动类
+	 * Promotion_biz/PRB 店内活动类
 	 *
 	 * @version 1.0.0
 	 * @author Kamas 'Iceberg' Lau <kamaslau@outlook.com>
@@ -16,36 +16,6 @@
 		protected $names_to_sort = array(
 			'biz_id', 'name', 'description', 'time_start', 'time_end', 'fold_allowed', 'type', 'discount', 'present_trigger_amount', 'present', 'reduction_trigger_amount', 'reduction_trigger_count', 'reduction_amount', 'reduction_amount_time', 'reduction_discount', 'coupon_id', 'coupon_combo_id', 'deposit', 'balance', 'time_book_start', 'time_book_end', 'time_complete_start', 'time_complete_end', 'groupbuy_order_amount', 'groupbuy_quantity_max',
 			'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
-		);
-
-		/*
-		 * 根据活动类型获取创建及编辑时的必要字段
-		 */
-		protected $names_required_by_type = array(
-			'单品折扣' => array('', '',),
-			'单品满赠' => array('', '',),
-			'单品满减' => array('', '',),
-			'单品赠券' => array('', '',),
-			'单品预购' => array('', '',),
-			'单品团购' => array('', '',),
-			'订单折扣' => array('', '',),
-			'订单满赠' => array('', '',),
-			'订单满减' => array('', '',),
-			'订单赠券' => array('', '',),
-		);
-
-		/**
-		 * 可被编辑的字段名
-		 */
-		protected $names_edit_allowed = array(
-			'name', 'description', 'time_start', 'time_end', 'fold_allowed', 'discount', 'present_trigger_amount', 'present', 'reduction_trigger_amount', 'reduction_trigger_count', 'reduction_amount', 'reduction_amount_time', 'reduction_discount', 'coupon_id', 'coupon_combo_id', 'deposit', 'balance', 'time_book_start', 'time_book_end', 'time_complete_start', 'time_complete_end', 'groupbuy_order_amount', 'groupbuy_quantity_max',
-		);
-
-		/**
-		 * 完整编辑单行时必要的字段名
-		 */
-		protected $names_edit_required = array(
-			'id', 'name', 'time_start', 'time_end',
 		);
 
 		public function __construct()
@@ -198,54 +168,36 @@
 		 */
 		public function publish()
 		{
-			// 操作可能需要检查操作权限
-			// $role_allowed = array('管理员', '经理'); // 角色要求
+            // 检查必要参数是否已传入
+            if ( empty($this->input->post_get('ids')))
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+
+            // 操作可能需要检查操作权限
+            // $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-			$op_name = '开始'; // 操作的名称
-			$op_view = 'publish'; // 视图文件名
+            $op_name = '开始'; // 操作的名称
+            $op_view = 'publish'; // 视图文件名
 
-			// 页面信息
-			$data = array(
-				'title' => $op_name. $this->class_name_cn,
-				'class' => $this->class_name. ' '. $op_view,
-				'error' => '', // 预设错误提示
-			);
+            // 赋值视图中需要用到的待操作项数据
+            $ids = $this->parse_ids_array(); // 数组格式，已去掉重复项及空项
+            $ids_string = implode(',', $ids); // 字符串格式
 
-			// 检查是否已传入必要参数
-			if ( !empty($this->input->get_post('ids')) ):
-				$ids = $this->input->get_post('ids');
-				
-				// 将字符串格式转换为数组格式
-				if ( !is_array($ids) ):
-					$ids = explode(',', $ids);
-				endif;
+            // 页面信息
+            $data = array(
+                'title' => $op_name. $this->class_name_cn,
+                'class' => $this->class_name. ' '. $op_view,
+                'error' => '', // 预设错误提示
 
-			elseif ( !empty($this->input->post('ids[]')) ):
-				$ids = $this->input->post('ids[]');
+                'op_name' => $op_view,
+                'ids' => $ids_string,
+            );
 
-			else:
-				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
-
-			endif;
-			
-			// 赋值视图中需要用到的待操作项数据
-			$data['ids'] = $ids;
-			
-			// 获取待操作项数据
-			$data['items'] = array();
-			foreach ($ids as $id):
-				// 从API服务器获取相应详情信息
-				$params['id'] = $id;
-				$url = api_url($this->class_name. '/detail');
-				$result = $this->curl->go($url, $params, 'array');
-				if ($result['status'] === 200):
-					$data['items'][] = $result['content'];
-				else:
-					$data['error'] .= 'ID'.$id.'项不可操作，“'.$result['content']['error']['message'].'”';
-				endif;
-			endforeach;
+            // 获取待操作项数据
+            $params = array('ids' => $ids_string);
+            $url = api_url($this->class_name.'/index');
+            $data['items'] = $this->curl->go($url, $params, 'array')['content'];
 
 			// 将需要显示的数据传到视图以备使用
 			$data['data_to_display'] = $this->data_to_display;
@@ -313,58 +265,40 @@
 		} // end publish
 		
 		/**
-		 * 结束
+		 * 中止
 		 */
 		public function suspend()
 		{
-			// 操作可能需要检查操作权限
-			// $role_allowed = array('管理员', '经理'); // 角色要求
+            // 检查必要参数是否已传入
+            if ( empty($this->input->post_get('ids')))
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+
+            // 操作可能需要检查操作权限
+            // $role_allowed = array('管理员', '经理'); // 角色要求
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-			$op_name = '结束'; // 操作的名称
-			$op_view = 'suspend'; // 视图文件名
+            $op_name = '中止'; // 操作的名称
+            $op_view = 'suspend'; // 操作名、视图文件名
 
-			// 页面信息
-			$data = array(
-				'title' => $op_name. $this->class_name_cn,
-				'class' => $this->class_name. ' '. $op_view,
-				'error' => '', // 预设错误提示
-			);
+            // 赋值视图中需要用到的待操作项数据
+            $ids = $this->parse_ids_array(); // 数组格式，已去掉重复项及空项
+            $ids_string = implode(',', $ids); // 字符串格式
 
-			// 检查是否已传入必要参数
-			if ( !empty($this->input->get_post('ids')) ):
-				$ids = $this->input->get_post('ids');
+            // 页面信息
+            $data = array(
+                'title' => $op_name. $this->class_name_cn,
+                'class' => $this->class_name. ' '. $op_view,
+                'error' => '', // 预设错误提示
 
-				// 将字符串格式转换为数组格式
-				if ( !is_array($ids) ):
-					$ids = explode(',', $ids);
-				endif;
+                'op_name' => $op_view,
+                'ids' => $ids_string,
+            );
 
-			elseif ( !empty($this->input->post('ids[]')) ):
-				$ids = $this->input->post('ids[]');
-
-			else:
-				redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
-
-			endif;
-			
-			// 赋值视图中需要用到的待操作项数据
-			$data['ids'] = $ids;
-			
-			// 获取待操作项数据
-			$data['items'] = array();
-			foreach ($ids as $id):
-				// 从API服务器获取相应详情信息
-				$params['id'] = $id;
-				$url = api_url($this->class_name. '/detail');
-				$result = $this->curl->go($url, $params, 'array');
-				if ($result['status'] === 200):
-					$data['items'][] = $result['content'];
-				else:
-					$data['error'] .= 'ID'.$id.'项不可操作，“'.$result['content']['error']['message'].'”';
-				endif;
-			endforeach;
+            // 获取待操作项数据
+            $params = array('ids' => $ids_string);
+            $url = api_url($this->class_name.'/index');
+            $data['items'] = $this->curl->go($url, $params, 'array')['content'];
 
 			// 将需要显示的数据传到视图以备使用
 			$data['data_to_display'] = $this->data_to_display;
@@ -430,168 +364,6 @@
 
 			endif;
 		} // end suspend
-
-        /**
-         * 检查起始时间
-         *
-         * @param string $value
-         * @param bool $later_than_now 是否允许早于当前时间，默认不允许
-         * @return bool
-         */
-		public function time_start($value, $later_than_now = FALSE)
-		{
-			if ( empty($value) ):
-				return true;
-
-			elseif (strlen($value) !== 16):
-				return false;
-
-			else:
-				// 将精确到分的输入值拼合上秒值
-				$time_to_check = strtotime($value.':00');
-
-				// 该时间不可早于当前时间一分钟以内
-				if ($later_than_now === FALSE && $time_to_check <= time() + 60):
-					return false;
-				else:
-					return true;
-				endif;
-
-			endif;
-		} // end time_start
-
-		// 检查结束时间
-		public function time_end($value)
-		{
-			if ( empty($value) ):
-				return true;
-
-			elseif (strlen($value) !== 16):
-				return false;
-
-			else:
-				// 将精确到分的输入值拼合上秒值
-				$time_to_check = strtotime($value.':00');
-
-				// 该时间不可早于当前时间一分钟以内
-				if ($time_to_check <= time() + 60):
-					return false;
-
-				// 若已设置开始时间，不可早于开始时间一分钟以内
-				elseif ( !empty($this->input->post('time_start')) && $time_to_check < strtotime($this->input->post('time_start')) + 60):
-					return false;
-
-				else:
-					return true;
-
-				endif;
-
-			endif;
-		} // end time_end
-		
-		// 检查起始时间
-		public function time_book_start($value)
-		{
-			if ( empty($value) ):
-				return true;
-
-			elseif (strlen($value) !== 16):
-				return false;
-
-			else:
-				// 将精确到分的输入值拼合上秒值
-				$time_to_check = strtotime($value.':00');
-
-				// 该时间不可早于当前时间一分钟以内
-				if ($time_to_check <= time() + 60):
-					return false;
-				else:
-					return true;
-				endif;
-
-			endif;
-		} // end time_book_start
-
-		// 检查结束时间
-		public function time_book_end($value)
-		{
-			if ( empty($value) ):
-				return true;
-
-			elseif (strlen($value) !== 16):
-				return false;
-
-			else:
-				// 将精确到分的输入值拼合上秒值
-				$time_to_check = strtotime($value.':00');
-
-				// 该时间不可早于当前时间一分钟以内
-				if ($time_to_check <= time() + 60):
-					return false;
-
-				// 若已设置开始时间，不可早于开始时间一分钟以内
-				elseif ( !empty($this->input->post('time_book_start')) && $time_to_check < strtotime($this->input->post('time_book_start')) + 60):
-					return false;
-
-				else:
-					return true;
-
-				endif;
-
-			endif;
-		} // end time_book_end
-		
-		// 检查起始时间
-		public function time_complete_start($value)
-		{
-			if ( empty($value) ):
-				return true;
-
-			elseif (strlen($value) !== 16):
-				return false;
-
-			else:
-				// 将精确到分的输入值拼合上秒值
-				$time_to_check = strtotime($value.':00');
-
-				// 该时间不可早于当前时间一分钟以内
-				if ($time_to_check <= time() + 60):
-					return false;
-				else:
-					return true;
-				endif;
-
-			endif;
-		} // end time_complete_start
-
-		// 检查结束时间
-		public function time_complete_end($value)
-		{
-			if ( empty($value) ):
-				return true;
-
-			elseif (strlen($value) !== 16):
-				return false;
-
-			else:
-				// 将精确到分的输入值拼合上秒值
-				$time_to_check = strtotime($value.':00');
-
-				// 该时间不可早于当前时间一分钟以内
-				if ($time_to_check <= time() + 60):
-					return false;
-
-				// 若已设置开始时间，不可早于开始时间一分钟以内
-				elseif ( !empty($this->input->post('time_complete_start')) && $time_to_check < strtotime($this->input->post('time_complete_start')) + 60):
-					return false;
-
-				else:
-					return true;
-
-				endif;
-
-			endif;
-		} // end time_complete_end
 
 	} // end class Promotion_biz
 
