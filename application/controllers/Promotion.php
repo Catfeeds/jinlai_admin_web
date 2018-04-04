@@ -14,7 +14,7 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'promotion_id', 'name', 'description', 'url_images', 'url_web', 'brand_ids', 'biz_ids', 'item_ids', 'time_start', 'time_end', 'note_stuff',
+			'name', 'description', 'url_images', 'url_web', 'brand_ids', 'biz_ids', 'item_ids', 'time_start', 'time_end', 'note_stuff',
 			'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
@@ -75,7 +75,6 @@
 
 			// 排序条件
 			$order_by = NULL;
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -115,8 +114,9 @@
             $result = $this->curl->go($url, $params, 'array');
             if ($result['status'] === 200):
                 $data['item'] = $result['content'];
+
                 // 页面信息
-                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['title'] = $this->class_name_cn. ' "'.$data['item']['name']. '"';
                 $data['class'] = $this->class_name.' detail';
 
             else:

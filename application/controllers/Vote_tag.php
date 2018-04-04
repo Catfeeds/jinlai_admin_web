@@ -75,7 +75,6 @@
 
 			// 排序条件
 			$order_by = NULL;
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -120,7 +119,7 @@
                 $data['vote'] = $this->get_vote($data['item']['vote_id']);
 				
 				// 页面信息
-                $data['title'] = $this->class_name_cn. '"'.$data['item']['name'].'"';
+                $data['title'] = $this->class_name_cn. ' "'. $data['item']['name']. '"';
                 $data['class'] = $this->class_name.' detail';
 
                 // 输出视图

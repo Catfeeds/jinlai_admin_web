@@ -117,10 +117,11 @@
 			$result = $this->curl->go($url, $params, 'array');
             if ($result['status'] === 200):
                 $data['item'] = $result['content'];
-                $data['description'] = $this->class_name.','. $data['item']['excerpt'];
+
                 // 页面信息
-                $data['title'] = $this->class_name_cn. $data['item']['title'];
+                $data['title'] = $this->class_name_cn. ' "'.$data['item']['title']. '"';
                 $data['class'] = $this->class_name.' detail';
+                $data['description'] = $this->class_name.','. $data['item']['excerpt'];
 
                 // 输出视图
                 $this->load->view('templates/header', $data);

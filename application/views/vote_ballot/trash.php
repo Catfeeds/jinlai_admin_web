@@ -45,7 +45,6 @@
 	<div class="btn-group btn-group-justified" role=group>
 		<a class="btn btn-default" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
 	  	<a class="btn btn-primary" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
 	</div>
 	<?php endif ?>
 
@@ -73,6 +72,7 @@
             <?php foreach ($items as $item): ?>
             <li>
 
+                <span class=item-status><?php echo $item['status'] ?></span>
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                     <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
                     <p><?php echo $item['name'] ?></p>
@@ -80,9 +80,9 @@
                 </a>
 
                 <div class=item-actions>
-                <span>
-                    <input name=ids[] class=form-control type=checkbox value="<?php echo $item[$this->id_name] ?>">
-                </span>
+                    <span>
+                        <input name=ids[] class=form-control type=checkbox value="<?php echo $item[$this->id_name] ?>">
+                    </span>
 
                     <ul class=horizontal>
                         <?php

@@ -77,7 +77,6 @@
 
 			// 排序条件
 			$order_by = NULL;
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -120,12 +119,13 @@
 			if ($result['status'] === 200):
 				$data['item'] = $result['content'];
 
-                // 页面信息
-                $data['title'] = $this->class_name_cn. '"'. $data['item']['name']. '"';
-                $data['class'] = $this->class_name.' detail';
-
-                $data['options'] = $this->list_vote_option($id);
+                // 获取投票候选项及候选项标签
+			    $data['options'] = $this->list_vote_option($id);
                 $data['tags'] = $this->list_vote_tag($id);
+
+                // 页面信息
+                $data['title'] = $this->class_name_cn. ' "'. $data['item']['name']. '"';
+                $data['class'] = $this->class_name.' detail';
 
                 $this->load->view('templates/header', $data);
                 $this->load->view($this->view_root.'/detail', $data);

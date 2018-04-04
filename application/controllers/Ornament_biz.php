@@ -14,7 +14,8 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'biz_id', 'name', 'vi_color_first', 'vi_color_second', 'main_figure_url', 'member_logo_url', 'member_figure_url', 'member_thumb_url', 'template_id', 'home_slides', 'home_m0_ids', 'home_m1_ace_url', 'home_m1_ace_id', 'home_m1_ids', 'home_m2_ace_url', 'home_m2_ace_id', 'home_m2_ids', 'home_m3_ace_url', 'home_m3_ace_id', 'home_m3_ids', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
+			'biz_id', 'name', 'vi_color_first', 'vi_color_second', 'main_figure_url', 'member_logo_url', 'member_figure_url', 'member_thumb_url', 'template_id', 'home_slides', 'home_m0_ids', 'home_m1_ace_url', 'home_m1_ace_id', 'home_m1_ids', 'home_m2_ace_url', 'home_m2_ace_id', 'home_m2_ids', 'home_m3_ace_url', 'home_m3_ace_id', 'home_m3_ids',
+            'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
 		public function __construct()
@@ -99,8 +100,9 @@
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['item'] = $result['content'];
+
                 // 页面信息
-                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
+                $data['title'] = $this->class_name_cn. ' "'.$data['item']['name']. '"';
                 $data['class'] = $this->class_name.' detail';
 
                 // 输出视图

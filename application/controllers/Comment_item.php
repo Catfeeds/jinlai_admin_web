@@ -14,7 +14,8 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'order_id', 'user_id', 'biz_id', 'item_id', 'score', 'content', 'image_urls', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'score_max', 'score_min',
+			'order_id', 'user_id', 'biz_id', 'item_id', 'score', 'content', 'image_urls',
+            'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'score_max', 'score_min',
 		);
 
 		public function __construct()
