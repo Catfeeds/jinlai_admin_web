@@ -69,7 +69,7 @@
 	<dl id=list-info class=dl-horizontal>
         <?php
         // 当前项客户端URL
-        $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
+        $item_url = WEB_URL.$this->class_name.'/detail'. (empty($item['url_name'])? '?id='.$item[$this->id_name]: '/'.$item['url_name']);
         ?>
 
         <dt><?php echo $this->class_name_cn ?>链接</dt>
@@ -88,9 +88,10 @@
 		<dd><?php echo $item['article_id'] ?></dd>
 		<dt>分类</dt>
 		<dd><?php echo $item['category_id'] ?></dd>
+		-->
+
 		<dt>自定义域名</dt>
 		<dd><?php echo $item['url_name'] ?></dd>
-		-->
 
         <dt>形象图</dt>
         <?php if ( !empty($item['url_images']) ): ?>

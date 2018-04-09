@@ -15,7 +15,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180404">
+		<meta name=version content="revision20180409">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -37,7 +37,7 @@
         <?php exit();endif; ?>
 
 		<?php if ($this->user_agent['is_wechat']): ?>
-		<script src="https://res.wx.qq.com/open/js/jweixin-1.3.0.js"></script>
+		<script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 		<script>
 			<?php
 				function curl($url, $params = NULL, $return = 'array', $method = 'get')
@@ -180,7 +180,8 @@
         <script src="/js/common.js"></script>
 		<script defer src="<?php echo CDN_URL ?>js/js.cookie.js"></script>
 		<script defer src="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.8/fontawesome-all.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.9/fontawesome-all.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.9/fa-v4-shims.min.js"></script>
         <?php if (isset($this->session->time_expire_login) ): ?>
 		<script defer src="/js/file-upload.js"></script>
         <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
@@ -209,7 +210,7 @@
         <?php else: ?>
         <link rel=apple-touch-icon href="<?php echo CDN_URL ?>icon/jinlai_client/icon120@3x.png">
         <meta name=format-detection content="telephone=yes, address=no, email=no">
-        <!--<meta name=apple-itunes-app content="app-id=<?php echo IOS_APP_ID ?>">-->
+        <!--<meta name=apple-itunes-app content="app-id=<?php //echo IOS_APP_ID ?>">-->
         <?php endif ?>
 	</head>
 <?php
@@ -314,12 +315,11 @@
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>商品 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-								<li><a href="<?php echo base_url('item_category_biz') ?>">店内分类</a></li>
-								<li><a href="<?php echo base_url('item_category_biz/create') ?>">创建店内分类</a></li>
+								<li><a href="<?php echo base_url('item_category') ?>">平台分类</a></li>
+								<li><a href="<?php echo base_url('item_category/create') ?>">创建平台分类</a></li>
 
 								<li role=separator class=divider></li>
 								<li><a href="<?php echo base_url('freight_template_biz') ?>">所有运费模板</a></li>
-								<li><a href="<?php echo base_url('freight_template_biz/create') ?>">创建运费模板</a></li>
 
 								<li role=separator class=divider></li>
 								<li><a href="<?php echo base_url('item') ?>">所有商品</a></li>
@@ -357,8 +357,11 @@
                                 <li><a href="<?php echo base_url('article/create') ?>">创建平台文章</a></li>
 
                                 <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('article_category') ?>">平台文章分类</a></li>
+                                <li><a href="<?php echo base_url('article_category/create') ?>">创建平台文章分类</a></li>
+
+                                <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('article_biz') ?>">商家文章</a></li>
-                                <li><a href="<?php echo base_url('article_biz/create') ?>">创建商家文章</a></li>
                             </ul>
                         </li>
 

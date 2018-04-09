@@ -75,7 +75,6 @@
 
 			// 排序条件
 			$order_by = NULL;
-			//$order_by['name'] = 'value';
 
 			// 从API服务器获取相应列表信息
 			$params = $condition;
@@ -100,7 +99,7 @@
 		/**
 		 * 详情页
 		 */
-		public function detail($url_name)
+		public function detail($url_name = NULL)
 		{
 			// 检查是否已传入必要参数
 			$id = $this->input->get_post('id')? $this->input->get_post('id'): NULL;

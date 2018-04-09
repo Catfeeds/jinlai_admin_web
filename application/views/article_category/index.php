@@ -40,10 +40,10 @@
 	$level_allowed = 30;
 	if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 	?>
-	<div class=btn-group role=group>
-		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>"><i class="fa fa-list fa-fw" aria-hidden=true></i> 所有<?php echo $this->class_name_cn ?></a>
-	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>"><i class="fa fa-trash fa-fw" aria-hidden=true></i> 回收站</a>
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>"><i class="fa fa-plus fa-fw" aria-hidden=true></i> 创建<?php echo $this->class_name_cn ?></a>
+    <div class="btn-group btn-group-justified" role=group>
+        <a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
+        <a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
+		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
 	</div>
 	<?php endif ?>
 
@@ -85,7 +85,7 @@
         <ul id=item-list class=row>
             <?php foreach ($items as $item): ?>
                 <li>
-                    <span class=item-status><?php echo $item['status'] ?></span>
+
                     <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                         <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
                         <p><?php echo $item['name'] ?></p>
@@ -97,6 +97,8 @@
                         </span>
 
                         <ul class=horizontal>
+                            <li class=color_warning><a title="分类文章管理" href="<?php echo base_url('article?category_id='.$item['category_id']) ?>" target=_blank>分类文章 <i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+
                             <?php
                             // 需要特定角色和权限进行该操作
                             if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):

@@ -180,81 +180,6 @@
 		} // end trash
 
 		/**
-		 * 创建
-		 */
-		public function create()
-		{
-			// 操作可能需要检查操作权限
-			// $role_allowed = array('管理员', '经理'); // 角色要求
-// 			$min_level = 30; // 级别要求
-// 			$this->basic->permission_check($role_allowed, $min_level);
-
-			// 页面信息
-			$data = array(
-				'title' => '创建'.$this->class_name_cn,
-				'class' => $this->class_name.' create',
-				'error' => '', // 预设错误提示
-			);
-
-			// 待验证的表单项
-			$this->form_validation->set_error_delimiters('', '；');
-			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-			$this->form_validation->set_rules('fullname', '姓名', 'trim|required');
-			$this->form_validation->set_rules('code_ssn_owner', '身份证号', 'trim|required');
-			$this->form_validation->set_rules('url_image_owner_id', '身份证照片', 'trim|required');
-			$this->form_validation->set_rules('url_verify_photo', '用户持身份证照片', 'trim|required');
-			$this->form_validation->set_rules('bank_name', '开户行名称', 'trim|required');
-			$this->form_validation->set_rules('bank_account', '开户行账号', 'trim|required');
-
-			// 若表单提交不成功
-			if ($this->form_validation->run() === FALSE):
-				$data['error'] = validation_errors();
-
-				$this->load->view('templates/header', $data);
-				$this->load->view($this->view_root.'/create', $data);
-				$this->load->view('templates/footer', $data);
-
-			else:
-				// 需要创建的数据；逐一赋值需特别处理的字段
-				$data_to_create = array(
-					'user_id' => $this->session->user_id,
-				);
-				// 自动生成无需特别处理的数据
-				$data_need_no_prepare = array(
-					'fullname', 'code_ssn_owner', 'url_image_owner_id', 'url_verify_photo', 'bank_name', 'bank_account',
-				);
-				foreach ($data_need_no_prepare as $name)
-					$data_to_create[$name] = $this->input->post($name);
-
-				// 向API服务器发送待创建数据
-				$params = $data_to_create;
-				$url = api_url($this->class_name. '/create');
-				$result = $this->curl->go($url, $params, 'array');
-				if ($result['status'] === 200):
-					$data['title'] = $this->class_name_cn. '创建成功';
-					$data['class'] = 'success';
-					$data['content'] = $result['content']['message'];
-					$data['operation'] = 'create';
-					$data['id'] = $result['content']['id']; // 创建后的信息ID
-
-					$this->load->view('templates/header', $data);
-					$this->load->view($this->view_root.'/result', $data);
-					$this->load->view('templates/footer', $data);
-
-				else:
-					// 若创建失败，则进行提示
-					$data['error'] = $result['content']['error']['message'];
-
-					$this->load->view('templates/header', $data);
-					$this->load->view($this->view_root.'/create', $data);
-					$this->load->view('templates/footer', $data);
-
-				endif;
-				
-			endif;
-		} // end create
-
-		/**
 		 * 编辑单行
 		 */
 		public function edit()
@@ -445,6 +370,10 @@
 
 			endif;
 		} // end edit_certain
+
+        /**
+         * 以下为工具类方法
+         */
 
 	} // end class Identity_user
 

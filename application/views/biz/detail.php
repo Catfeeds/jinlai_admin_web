@@ -89,7 +89,7 @@
 	<dl id=list-info class=dl-horizontal>
         <?php
         // 当前项客户端URL
-        $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
+        $item_url = WEB_URL.$this->class_name.'/detail'. (empty($item['url_name'])? '?id='.$item[$this->id_name]: '/'.$item['url_name']);
         ?>
 
         <dt><?php echo $this->class_name_cn ?>链接</dt>

@@ -68,6 +68,10 @@
 			$this->load->view('templates/footer', $data);
 		} // end index
 
+        /**
+         * 以下为工具类方法
+         */
+
 	} // end class Home
 
 /* End of file Home.php */

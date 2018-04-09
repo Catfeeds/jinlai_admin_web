@@ -163,6 +163,10 @@
 			$this->load->view('templates/footer', $data);
 		} // end trash
 
+        /**
+         * 以下为工具类方法
+         */
+
 	} // end class Ornament_biz
 
 /* End of file Ornament_biz.php */

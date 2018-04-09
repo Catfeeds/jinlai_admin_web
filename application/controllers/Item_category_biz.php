@@ -166,6 +166,10 @@
 			$this->load->view('templates/footer', $data);
 		} // end trash
 
+        /**
+         * 以下为工具类方法
+         */
+
 	} // end class Item_category_biz
 
 /* End of file Item_category_biz.php */

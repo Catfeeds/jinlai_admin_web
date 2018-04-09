@@ -43,8 +43,6 @@
 	<div class="btn-group btn-group-justified" role=group>
 		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/index?item_id='.$comodity['item_id']) ?>">所有</a>
 	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash?item_id='.$comodity['item_id']) ?>">回收站</a>
-
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create?item_id='.$comodity['item_id']) ?>">创建</a>
 	</div>
 
     <div id=primary_actions class=action_bottom>
@@ -83,7 +81,7 @@
         <?php if (count($items) > 1): ?>
         <div id=bulk_action class=action_bottom>
             <span id="bulk_selector" data-bulk-selector=off>
-                <i class="fa fa-circle-o" aria-hidden=true></i>全选
+                <i class="far fa-circle" aria-hidden=true></i>批量
             </span>
             <span id=exit_bulk>取消</span>
             <ul class=horizontal>
@@ -101,10 +99,10 @@
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                     <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
                     <p><?php echo trim($item['name_first']. ' '.$item['name_second']. ' '.$item['name_third']) ?></p>
-                    <p><?php echo $item['stocks'] ?>单位库存</p>
+                    <p><?php echo $item['stocks'] ?> 单位</p>
                     <p>
                         ￥<?php echo $item['price'] ?>
-                        <?php if ($item['tag_price'] !== '0.00') echo '<del>￥ '.$item['tag_price'].'</del>' ?>
+                        <?php if ($item['tag_price'] !== '0.00') echo ' <del>￥ '.$item['tag_price'].'</del>' ?>
                     </p>
                 </a>
 
@@ -120,7 +118,6 @@
                             ?>
                         <li><a title="复制" href="<?php echo base_url($this->class_name.'/duplicate?id='.$item[$this->id_name]) ?>" target=_blank>复制</a></li>
                         <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-                        <li class=color_primary><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
                         <?php endif ?>
                     </ul>
                 </div>

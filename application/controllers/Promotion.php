@@ -130,6 +130,10 @@
 			$this->load->view('templates/footer', $data);
 		} // end detail
 
+        /**
+         * 以下为工具类方法
+         */
+
 	} // end class Promotion
 
 /* End of file Promotion.php */

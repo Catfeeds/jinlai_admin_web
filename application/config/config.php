@@ -55,6 +55,9 @@ function api_url($api_name)
 	return API_URL. $api_name;
 }
 
+// APPLE开发平台参数
+define('IOS_APP_ID', NULL);
+
 // 微信公众平台参数
 define('WECHAT_APP_ID', 'wxba173a67df14c087');
 define('WECHAT_APP_SECRET', '1b1bf0c279a0d9eb0ec7288787ccb20a');

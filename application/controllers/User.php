@@ -314,7 +314,7 @@ class User extends MY_Controller
     /**
      * 删除
      *
-     * 商家不可删除
+     * 不可删除
      */
     public function delete()
     {
@@ -324,7 +324,7 @@ class User extends MY_Controller
     /**
      * 找回
      *
-     * 商家不可找回
+     * 不可找回
      */
     public function restore()
     {

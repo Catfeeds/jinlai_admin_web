@@ -47,21 +47,41 @@
 		if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 		?>
 
-        <?php if ( empty($item['time_delete']) ): ?>
-        <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-        <?php endif ?>
+            <?php if ( empty($item['time_delete']) ): ?>
+            <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
+            <?php endif ?>
 
-        <?php if ( empty($item['time_publish']) ): ?>
-        <li><a title="上架" href="<?php echo base_url($this->class_name.'/publish?ids='.$item[$this->id_name]) ?>" target=_blank>上架</a></li>
-        <?php else: ?>
-            <li><a title="下架" href="<?php echo base_url($this->class_name.'/suspend?ids='.$item[$this->id_name]) ?>" target=_blank>下架</a></li>
-        <?php endif ?>
-
-        <li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
+            <?php if ( empty($item['time_publish']) ): ?>
+            <li><a title="上架" href="<?php echo base_url($this->class_name.'/publish?ids='.$item[$this->id_name]) ?>" target=_blank>上架</a></li>
+            <?php else: ?>
+                <li><a title="下架" href="<?php echo base_url($this->class_name.'/suspend?ids='.$item[$this->id_name]) ?>" target=_blank>下架</a></li>
+            <?php endif ?>
 		<?php endif ?>
 	</ul>
 
 	<dl id=list-info class=dl-horizontal>
+        <dt>状态</dt>
+        <dd><?php echo $item['status'] ?></dd>
+        <?php if ( $item['figure_video_urls'] !== '待审核' && !empty($item['note_admin']) ): ?>
+            <dt>审核意见</dt>
+            <dd class="bg-info text-info"><?php echo $item['note_admin'] ?></dd>
+        <?php endif ?>
+
+        <dt>商品ID</dt>
+        <dd><?php echo $item['item_id'] ?></dd>
+        <dt>系统分类</dt>
+        <dd><?php echo $category['name'] ?></dd>
+
+        <?php if ( !empty($item['category_biz_id']) ): ?>
+            <dt>店内分类</dt>
+            <dd><?php echo $category_biz['name'] ?></dd>
+        <?php endif ?>
+
+        <!--
+        <dt>品牌</dt>
+        <dd><?php echo !empty($item['brand_id'])? $brand['name']: '未设置'; ?></dd>
+        -->
+
         <?php
         // 当前项客户端URL
         $item_url = WEB_URL.$this->class_name.'/detail?id='.$item[$this->id_name];
@@ -132,26 +152,6 @@
 		</dd>
 		-->
 
-		<dt>状态</dt>
-		<dd><?php echo $item['status'] ?></dd>
-		<?php if ( $item['figure_video_urls'] !== '待审核' && !empty($item['note_admin']) ): ?>
-		<dt>审核意见</dt>
-		<dd class="bg-info text-info"><?php echo $item['note_admin'] ?></dd>
-		<?php endif ?>
-
-		<dt>商品ID</dt>
-		<dd><?php echo $item['item_id'] ?></dd>
-		<dt>系统分类</dt>
-		<dd><?php echo $category['name'] ?></dd>
-
-		<?php if ( !empty($item['category_biz_id']) ): ?>
-		<dt>店内分类</dt>
-		<dd><?php echo $category_biz['name'] ?></dd>
-		<?php endif ?>
-
-		<dt>品牌</dt>
-		<dd><?php echo !empty($item['brand_id'])? $brand['name']: '未设置'; ?></dd>
-
 		<?php if ( !empty($item['code_biz']) ): ?>
 		<dt>商家自定义货号</dt>
 		<dd><?php echo $item['code_biz'] ?></dd>
@@ -162,23 +162,23 @@
 		<dt>商品宣传语/卖点</dt>
 		<dd><?php echo !empty($item['slogan'])? $item['slogan']: '未设置'; ?></dd>
 		<dt>标签价/原价</dt>
-		<dd><?php echo ($item['tag_price'] !== '0.00')? '<del>￥ '.$item['tag_price'].'</del>': '未设置'; ?></dd>
+		<dd><?php echo ($item['tag_price'] !== '0.00')? '<del>￥ '.$item['tag_price'].'</del>': 'N/A'; ?></dd>
 		<dt>商城价/现价</dt>
 		<dd><strong>￥ <?php echo $item['price'] ?></strong></dd>
 
-		<?php $unit_name = !empty($item['unit_name'])? $item['unit_name']: '份（默认单位）' ?>
 		<dt>库存量</dt>
 		<dd>
+            <?php $unit_name = !empty($item['unit_name'])? $item['unit_name']: '份（默认单位）' ?>
             <strong><?php echo $item['stocks'].' '. $unit_name ?></strong>
-            <p class="help-block">若商品存在规格，则可销售库存量以各规格相应库存量为准</p>
+            <p class=help-block>若商品存在规格，则可销售库存量以各规格相应库存量为准</p>
         </dd>
 
         <dt>物流信息</dt>
         <dd>
             <ul class="list-horizontal row">
-                <li class="col-xs-12 col-sm-4">毛重 <?php echo ($item['weight_gross'] !== '0.00')? $item['weight_gross'].' KG': '-' ?></li>
-                <li class="col-xs-12 col-sm-4">净重 <?php echo ($item['weight_net'] !== '0.00')? $item['weight_net'].' KG': '-' ?></li>
-                <li class="col-xs-12 col-sm-4">体积重 <?php echo ($item['weight_volume'] !== '0.00')? $item['weight_volume'].' KG': '-' ?></li>
+                <li class="col-xs-12 col-sm-4">毛重 <?php echo ($item['weight_gross'] !== '0.00')? $item['weight_gross'].' KG': 'N/A' ?></li>
+                <li class="col-xs-12 col-sm-4">净重 <?php echo ($item['weight_net'] !== '0.00')? $item['weight_net'].' KG': 'N/A' ?></li>
+                <li class="col-xs-12 col-sm-4">体积重 <?php echo ($item['weight_volume'] !== '0.00')? $item['weight_volume'].' KG': 'N/A' ?></li>
             </ul>
         </dd>
 
@@ -201,14 +201,11 @@
         <dt>是否可用优惠券</dt>
         <dd><?php echo ($item['coupon_allowed'] === '1')? '是': '否'; ?></dd>
 
-        <dt>店内活动</dt>
-		<dd>
-			<?php if ( ! empty($item['promotion_id']) ): ?>
-			<strong><?php echo $promotion['name'] ?></strong>
-			<?php else: ?>
-			不参加
-			<?php endif ?>
-		</dd>
+        <dt>单品活动</dt>
+        <dd>
+            <?php echo empty($item['promotion_id'])? '无': '<strong>'.$promotion['name'].'</strong>' ?>
+            <p class=help-block>单品活动与其它非单品店内活动可以累加</p>
+        </dd>
 	</dl>
 
 	<section id=skus class=well>

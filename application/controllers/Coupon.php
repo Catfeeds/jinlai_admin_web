@@ -224,6 +224,10 @@
 			endif;
 		} // end create
 
+        /**
+         * 以下为工具类方法
+         */
+
 	} // end class Coupon
 
 /* End of file Coupon.php */
