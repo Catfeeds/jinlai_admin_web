@@ -612,6 +612,31 @@
 			endif;
 		} // end restore
 
+        // 获取平台文章列表
+        protected function list_article_category($params = NULL)
+        {
+            // 默认获取未删除项
+            if ( empty($params) ) $params['time_delete'] = 'NULL';
+
+            // 从API服务器获取相应列表信息
+            $url = api_url('article_category/index');
+            $result = $this->curl->go($url, $params, 'array');
+
+            return ($result['status'] === 200)? $result['content']: NULL;
+        } // end list_item
+
+        // 获取特定平台文章信息
+        protected function get_article_category($id)
+        {
+            $params['id'] = $id;
+
+            // 从API服务器获取相应信息
+            $url = api_url('article_category/detail');
+            $result = $this->curl->go($url, $params, 'array');
+
+            return ($result['status'] === 200)? $result['content']: NULL;
+        } // end get_item
+
         // 获取商家列表
         protected function list_biz($params = NULL)
         {

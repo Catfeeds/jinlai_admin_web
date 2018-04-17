@@ -34,32 +34,34 @@
 </div>
 
 <div id=content class=container>
-    <?php
-    // 需要特定角色和权限进行该操作
-    $current_role = $this->session->role; // 当前用户角色
-    $current_level = $this->session->level; // 当前用户级别
-    $role_allowed = array('管理员', '经理');
-    $level_allowed = 30;
-    ?>
-    <ul id=item-actions class=list-unstyled>
-        <?php
-        // 需要特定角色和权限进行该操作
-        if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
-            ?>
-            <li><a href="<?php echo base_url('article/create?category_id='.$item[$this->id_name]) ?>">创建文章</a></li>
-            <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
-        <?php endif ?>
-    </ul>
+	<?php if ( empty($item) ): ?>
+	<p><?php echo $error ?></p>
+
+	<?php
+		else:
+			// 需要特定角色和权限进行该操作
+			$current_role = $this->session->role; // 当前用户角色
+			$current_level = $this->session->level; // 当前用户级别
+			$role_allowed = array('管理员', '经理');
+			$level_allowed = 30;
+			if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
+			?>
+		    <ul id=item-actions class=list-unstyled>
+				<li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
+		    </ul>
+			<?php endif ?>
 
 	<dl id=list-info class=dl-horizontal>
-		<dt>文章分类ID</dt>
-		<dd><?php echo $item['category_id'] ?></dd>
-		<dt>所属分类ID</dt>
-		<dd><?php echo empty($item['parent_id'])? 'N/A': $item['parent_id'] ?></dd>
+		<dt><?php echo $this->class_name_cn ?>ID</dt>
+		<dd><?php echo $item[$this->id_name] ?></dd>
+
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
-		<dt>自定义域名</dt>
-		<dd><?php echo $item['url_name'] ?></dd>
+		<dt>内容</dt>
+		<dd><?php echo $item['value'] ?></dd>
+		<dt>说明</dt>
+		<dd><?php echo $item['description'] ?></dd>
+
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>
@@ -82,4 +84,5 @@
 		</dd>
 		<?php endif ?>
 	</dl>
+	<?php endif ?>
 </div>

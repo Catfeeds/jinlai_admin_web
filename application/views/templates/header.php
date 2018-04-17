@@ -5,6 +5,17 @@
 	$title = isset($title)? $title: SITE_NAME.' - '.SITE_SLOGAN;
     $keywords = (isset($keywords)? $keywords.',': NULL). SITE_KEYWORDS;
     $description = (isset($description)? $description: NULL). SITE_DESCRIPTION;
+
+    // 生成body的class
+    $body_class = ( isset($class) )? $class: NULL;
+    $body_class .= ($this->user_agent['is_wechat'] === TRUE)? ' is_wechat': NULL;
+    $body_class .= ($this->user_agent['is_ios'] === TRUE)? ' is_ios': NULL;
+    $body_class .= ($this->user_agent['is_android'] === TRUE)? ' is_android': NULL;
+    $body_class .= ($this->user_agent['is_mobile'])? ' is_mobile': NULL; // 移动端设备
+
+    $body_class .= ($this->user_agent['is_macos'] === TRUE)? ' is_macos': NULL;
+    $body_class .= ($this->user_agent['is_windows'] === TRUE)? ' is_windows': NULL;
+    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备
 ?>
 <!doctype html>
 <html lang=zh-cn>
@@ -15,7 +26,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180409">
+		<meta name=version content="revision20180417">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -27,161 +38,19 @@
         <?php endif ?>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-        <?php
-            if (!empty($this->session->stuff_id) && empty($this->stuff)):
-        ?>
+        <?php if (!empty($this->session->stuff_id) && empty($this->stuff)): ?>
         <script>
             alert('员工关系状态异常，请重新登录')
             location.href = "<?php echo base_url('logout') ?>";
         </script>
         <?php exit();endif; ?>
 
-		<?php if ($this->user_agent['is_wechat']): ?>
-		<script src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
-		<script>
-			<?php
-				function curl($url, $params = NULL, $return = 'array', $method = 'get')
-				{
-				    $curl = curl_init();
-				    curl_setopt($curl, CURLOPT_URL, $url);
-
-				    // 设置cURL参数，要求结果保存到字符串中还是输出到屏幕上。
-				    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-				    curl_setopt($curl, CURLOPT_ENCODING, 'UTF-8');
-			
-					// 需要通过POST方式发送的数据
-					if ($method === 'post'):
-						$params['app_type'] = 'biz'; // 应用类型默认为biz
-						curl_setopt($curl, CURLOPT_POST, count($params));
-						curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
-					endif;
-			
-				    // 运行cURL，请求API
-					$result = curl_exec($curl);
-			
-					// 输出CURL请求头以便调试
-					//var_dump(curl_getinfo($curl));
-
-					// 关闭URL请求
-				    curl_close($curl);
-
-					// 转换返回的json数据为相应格式并返回
-					if ($return === 'object'):
-						$result = json_decode($result);
-					elseif ($return === 'array'):
-						$result = json_decode($result, TRUE);
-					endif;
-
-					return $result;
-				}
-
-				// 获取access_token
-				function get_access_token()
-				{
-					$params = NULL;
-					$url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.WECHAT_APP_ID.'&secret='.WECHAT_APP_SECRET;
-					$result = curl($url, $params, 'array');
-					return $result['access_token'];
-				}
-
-				// 获取jsapi_ticket
-				function get_jsapi_ticket($access_token)
-				{
-					$params = NULL;
-					$url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token='.$access_token.'&type=jsapi';
-					$result = curl($url, $params, 'array');
-					return $result['ticket'];
-				}
-
-				$access_token = get_access_token();
-				$wesign['timestamp'] = time();
-				$wesign['noncestr'] = 'Wm3WZYTPz0wzccnW';
-				$wesign['jsapi_ticket'] = get_jsapi_ticket($access_token);
-				$current_url = 'https://'. $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-				if (strpos($current_url, '#') !== FALSE) $current_url = substr($current_url, 0, strpos($current_url, '#'));
-				$wesign['url'] = $current_url;
-
-				// 微信JSAPI签名过程
-				function wechat_sign_generate($params)
-				{
-					// 对参与签名的参数进行排序
-					ksort($params);
-
-					// 拼接字符串
-					$param_string = '';
-					foreach ($params as $key => $value)
-						$param_string .= '&'. $key.'='.$value;
-					$param_string = trim($param_string, '&'); // 清除开头的“&”
-				
-					// 计算字符串SHA1值
-					$sign = SHA1($param_string);
-					return $sign;
-				}
-			?>
-
-			wx.config({
-			    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-			    appId: '<?php echo WECHAT_APP_ID ?>', // 必填，公众号的唯一标识
-			    timestamp: <?php echo $wesign['timestamp'] ?>, // 必填，生成签名的时间戳
-			    nonceStr: '<?php echo $wesign['noncestr'] ?>', // 必填，生成签名的随机串
-			    signature: '<?php echo wechat_sign_generate($wesign) ?>',// 必填，签名，见附录1
-			    jsApiList: [
-					'onMenuShareTimeline',
-					'onMenuShareAppMessage',
-					'hideMenuItems',
-				] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
-			});
-
-			wx.ready(function(){
-				// 隐藏部分按钮
-				wx.hideMenuItems({
-				    menuList:[
-				    	'menuItem:share:qq', 'menuItem:share:QZone', 'menuItem:share:facebook', 'menuItem:copyUrl', 'menuItem:readMode', 'menuItem:openWithQQBrowser', 'menuItem:openWithSafari', 'menuItem:share:email',
-				    ] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
-				});
-
-				// 分享到朋友圈
-				wx.onMenuShareTimeline({
-				    title: '<?php echo $title ?>', // 分享标题
-				    link: '<?php echo 'https://'. $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ?>', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-				    imgUrl: null, // 分享图标
-				    success: function () {
-				        // 用户确认分享后执行的回调函数
-						alert('分享成功');
-				    },
-				    cancel: function () {
-				        // 用户取消分享后执行的回调函数
-						alert('您未完成分享');
-				    }
-				});
-
-				// 分享给朋友
-				wx.onMenuShareAppMessage({
-				    title: '<?php echo $title ?>', // 分享标题
-				    desc: '<?php echo $description ?>', // 分享描述
-				    link: '<?php echo 'https://'. $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'] ?>', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-				    imgUrl: null, // 分享图标
-				    type: '', // 分享类型,music、video或link，不填默认为link
-				    dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-				    success: function () {
-				        // 用户确认分享后执行的回调函数
-						alert('分享成功');
-				    },
-				    cancel: function () {
-				        // 用户取消分享后执行的回调函数
-						alert('您未完成分享');
-				    }
-				});
-			});
-		</script>
-		<?php endif ?>
-
 		<script src="<?php echo CDN_URL ?>js/jquery-3.3.1.min.js"></script>
         <script src="/js/common.js"></script>
 		<script defer src="<?php echo CDN_URL ?>js/js.cookie.js"></script>
 		<script defer src="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.9/fontawesome-all.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.9/fa-v4-shims.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.10/fontawesome-all.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.10/fa-v4-shims.min.js"></script>
         <?php if (isset($this->session->time_expire_login) ): ?>
 		<script defer src="/js/file-upload.js"></script>
         <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
@@ -210,23 +79,14 @@
         <?php else: ?>
         <link rel=apple-touch-icon href="<?php echo CDN_URL ?>icon/jinlai_client/icon120@3x.png">
         <meta name=format-detection content="telephone=yes, address=no, email=no">
-        <!--<meta name=apple-itunes-app content="app-id=<?php //echo IOS_APP_ID ?>">-->
+            <?php if ($this->user_agent['is_ios']): ?>
+            <meta name=apple-itunes-app content="app-id=<?php echo IOS_APP_ID ?>">
+            <?php endif ?>
         <?php endif ?>
 	</head>
 <?php
 	// 将head内容立即输出，让用户浏览器立即开始请求head中各项资源，提高页面加载速度
 	ob_flush();flush();
-
-    // 生成body的class
-	$body_class = ( isset($class) )? $class: NULL;
-    $body_class .= ($this->user_agent['is_wechat'] === TRUE)? ' is_wechat': NULL;
-    $body_class .= ($this->user_agent['is_ios'] === TRUE)? ' is_ios': NULL;
-    $body_class .= ($this->user_agent['is_android'] === TRUE)? ' is_android': NULL;
-    $body_class .= ($this->user_agent['is_mobile'])? ' is_mobile': NULL; // 移动端设备
-
-    $body_class .= ($this->user_agent['is_macos'] === TRUE)? ' is_macos': NULL;
-    $body_class .= ($this->user_agent['is_windows'] === TRUE)? ' is_windows': NULL;
-    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备
 ?>
 
 <!-- 内容开始 -->
@@ -274,21 +134,42 @@
                             <ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('region') ?>">地区</a></li>
                                 <li><a href="<?php echo base_url('region/create') ?>">创建地区</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('meta') ?>">系统参数</a></li>
+                                <li><a href="<?php echo base_url('meta/create') ?>">创建系统参数</a></li>
+                            </ul>
+                        </li>
+
+                        <li class=dropdown>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>平台文章 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <ul class=dropdown-menu>
+                                <li><a href="<?php echo base_url('article_category') ?>">文章分类</a></li>
+                                <li><a href="<?php echo base_url('article_category/create') ?>">创建文章分类</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('article') ?>">文章</a></li>
+                                <li><a href="<?php echo base_url('article/create') ?>">创建文章</a></li>
                             </ul>
                         </li>
 
                         <li class=dropdown>
                             <a href=# class=dropdown-toggle data-toggle=dropdown>营销 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
                             <ul class=dropdown-menu>
+                                <li><a href="<?php echo base_url('coupon_template') ?>">所有优惠券模板</a></li>
+                                <li><a href="<?php echo base_url('coupon_template/create') ?>">创建优惠券模板</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('coupon_combo') ?>">所有优惠券包</a></li>
+                                <li><a href="<?php echo base_url('coupon_combo/create') ?>">创建优惠券包</a></li>
+
+                                <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('vote') ?>">投票活动</a></li>
                                 <li><a href="<?php echo base_url('vote/create') ?>">创建投票活动</a></li>
 
                                 <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('promotion') ?>">平台活动</a></li>
                                 <li><a href="<?php echo base_url('promotion/create') ?>">创建平台活动</a></li>
-
-                                <li role=separator class=divider></li>
-                                <li><a href="<?php echo base_url('promotion_biz') ?>">商家活动</a></li>
                             </ul>
                         </li>
 
@@ -296,10 +177,20 @@
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>商家 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('biz') ?>">商家</a></li>
+
+                                <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('ornament_biz') ?>">店铺装修</a></li>
 
                                 <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('branch') ?>">门店</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('promotion_biz') ?>">商家活动</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('article_biz') ?>">商家文章</a></li>
 
                                 <?php
                                     // 仅获得大于10的权限的管理员可以管理员工
@@ -337,33 +228,6 @@
                                 <li><a  href="<?php echo base_url('refund') ?>">退款/售后</a></li>
 							</ul>
 						</li>
-
-						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>优惠券 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
-							<ul class=dropdown-menu>
-								<li><a href="<?php echo base_url('coupon_template') ?>">所有优惠券模板</a></li>
-								<li><a href="<?php echo base_url('coupon_template/create') ?>">创建优惠券模板</a></li>
-
-								<li role=separator class=divider></li>
-								<li><a href="<?php echo base_url('coupon_combo') ?>">所有优惠券包</a></li>
-								<li><a href="<?php echo base_url('coupon_combo/create') ?>">创建优惠券包</a></li>
-							</ul>
-						</li>
-
-                        <li class=dropdown>
-                            <a href=# class=dropdown-toggle data-toggle=dropdown>文章 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
-                            <ul class=dropdown-menu>
-                                <li><a href="<?php echo base_url('article') ?>">平台文章</a></li>
-                                <li><a href="<?php echo base_url('article/create') ?>">创建平台文章</a></li>
-
-                                <li role=separator class=divider></li>
-                                <li><a href="<?php echo base_url('article_category') ?>">平台文章分类</a></li>
-                                <li><a href="<?php echo base_url('article_category/create') ?>">创建平台文章分类</a></li>
-
-                                <li role=separator class=divider></li>
-                                <li><a href="<?php echo base_url('article_biz') ?>">商家文章</a></li>
-                            </ul>
-                        </li>
 
 						<!--
 						<li class=dropdown>

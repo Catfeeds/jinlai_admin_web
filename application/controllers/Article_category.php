@@ -200,6 +200,9 @@
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
+                // 获取平台文章分类
+                $data['categories'] = $this->list_article_category();
+
 				$data['error'] = validation_errors();
 
 				$this->load->view('templates/header', $data);
@@ -289,6 +292,9 @@
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
+                // 获取平台文章分类
+                $data['categories'] = $this->list_article_category();
+
 				$data['error'] .= validation_errors();
 
 				$this->load->view('templates/header', $data);

@@ -19,6 +19,7 @@
 
     }
 </style>
+
 <script defer src="/js/edit.js"></script>
 
 <base href="<?php echo $this->media_root ?>">
@@ -37,46 +38,28 @@
 		$attributes = array('class' => 'form-'.$this->class_name.'-edit form-horizontal', 'role' => 'form');
 		echo form_open_multipart($this->class_name.'/edit?id='.$item[$this->id_name], $attributes);
 	?>
-        <p class=help-block>必填项以“※”符号标示</p>
+		<p class=help-block>必填项以“※”符号标示</p>
 
 		<fieldset>
 			<input name=id type=hidden value="<?php echo $item[$this->id_name] ?>">
 
             <div class=form-group>
-                <label for=parent_id class="col-sm-2 control-label">所属分类</label>
-                <div class="col-sm-10 input-group">
-                    <?php $input_name = 'parent_id' ?>
-                    <select class=form-control name="<?php echo $input_name ?>">
-                        <option value="">请选择</option>
-                        <?php
-                        if ( !empty($categories) ):
-                            $options = $categories;
-                            foreach ($options as $option):
-                                ?>
-                                <option value="<?php echo $option['category_id'] ?>" <?php if ($option['category_id'] === $item[$input_name]) echo 'selected' ?>><?php echo $option['name'] ?></option>
-                            <?php
-                            endforeach;
-                        endif;
-                        ?>
-                    </select>
-
-                    <div class="input-group-addon">
-                        <a href="<?php echo base_url('article_category') ?>">管理</a>
-                    </div>
+                <label for=name class="col-sm-2 control-label">名称 ※</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=name type=text value="<?php echo empty(set_value('name'))? $item['name']: set_value('name') ?>" placeholder="名称" required>
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=description class="col-sm-2 control-label">说明 ※</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=description type=text value="<?php echo empty(set_value('description'))? $item['description']: set_value('description') ?>" placeholder="说明" required>
                 </div>
             </div>
 
             <div class=form-group>
-                <label for=name class="col-sm-2 control-label">名称</label>
+                <label for=value class="col-sm-2 control-label">内容</label>
                 <div class=col-sm-10>
-                    <input class=form-control name=name type=text value="<?php echo $item['name'] ?>" placeholder="名称" required>
-                </div>
-            </div>
-
-            <div class=form-group>
-                <label for=url_name class="col-sm-2 control-label">自定义域名</label>
-                <div class=col-sm-10>
-                    <input class=form-control name=url_name type=text value="<?php echo $item['url_name'] ?>" placeholder="自定义域名">
+                    <textarea class=form-control name=value placeholder="内容" rows="5"><?php echo empty(set_value('value'))? $item['value']: set_value('value') ?></textarea>
                 </div>
             </div>
 		</fieldset>

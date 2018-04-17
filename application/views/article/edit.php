@@ -42,12 +42,29 @@
 		<fieldset>
 			<input name=id type=hidden value="<?php echo $item[$this->id_name] ?>">
 
-			<div class=form-group>
-				<label for=category_id class="col-sm-2 control-label">分类 ※</label>
-				<div class=col-sm-10>
-					<input class=form-control name=category_id type=text value="<?php echo $item['category_id'] ?>" placeholder="分类">
-				</div>
-			</div>
+            <div class=form-group>
+                <label for=category_id class="col-sm-2 control-label">分类 ※</label>
+                <div class="col-sm-10 input-group">
+                    <?php $input_name = 'category_id' ?>
+                    <select class=form-control name="<?php echo $input_name ?>">
+                        <?php
+                        if ( !empty($categories) ):
+                            $options = $categories;
+                            foreach ($options as $option):
+                                ?>
+                                <option value="<?php echo $option['category_id'] ?>" <?php if ($option['category_id'] === $item[$input_name]) echo 'selected' ?>><?php echo $option['name'] ?></option>
+                            <?php
+                            endforeach;
+                        endif;
+                        ?>
+                    </select>
+
+                    <div class="input-group-addon">
+                        <a href="<?php echo base_url('article_category') ?>">管理</a>
+                    </div>
+                </div>
+            </div>
+
 			<div class=form-group>
 				<label for=title class="col-sm-2 control-label">标题 ※</label>
 				<div class=col-sm-10>
@@ -72,7 +89,7 @@
                     <script>
                         $(function(){
                             var editor = new Simditor({
-                                textarea: $('[name=content]'),
+                                textarea: $('textarea[name=content]'), // 若只使用属性选择器，有可能误选中meta等其它含有相应属性的DOM
                                 placeholder: '10 - 20000个字符',
                                 toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', 'fontScale', 'color', '|', 'hr', 'ol', 'ul', 'blockquote', 'table', '|', 'link', 'image', '|', 'indent', 'outdent', 'alignment'],
                                 cleanPaste: true,
