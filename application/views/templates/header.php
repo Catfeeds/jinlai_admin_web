@@ -26,7 +26,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180417">
+		<meta name=version content="revision20180423">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -51,14 +51,13 @@
 		<script defer src="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.js"></script>
         <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.10/fontawesome-all.min.js"></script>
         <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.10/fa-v4-shims.min.js"></script>
-        <?php if (isset($this->session->time_expire_login) ): ?>
-		<script defer src="/js/file-upload.js"></script>
-        <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>jquery/jquery.lazyload.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>jquery/stupidtable.min.js"></script>
-        <?php endif ?>
-
         <script>
+            // AJAX参数
+            var ajax_root = '<?php echo API_URL ?>'
+            var common_params = new Object()
+            common_params.app_type = 'admin' // 默认为管理端请求
+
+            // UserAgent
             var user_agent = new Object();
             user_agent.is_wechat = <?php echo ($this->user_agent['is_wechat'])? 'true': 'false' ?>;
             user_agent.is_ios = <?php echo ($this->user_agent['is_ios'])? 'true': 'false' ?>;
@@ -71,6 +70,10 @@
 		<link rel=stylesheet media=all href="/css/style.css">
         <?php if (isset($this->session->time_expire_login) ): ?>
         <link rel=stylesheet media=all href="/css/file-upload.css">
+        <script defer src="/js/file-upload.js"></script>
+        <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>jquery/jquery.lazyload.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>jquery/stupidtable.min.js"></script>
         <?php endif ?>
 
         <?php if ($this->user_agent['is_desktop']): ?>
