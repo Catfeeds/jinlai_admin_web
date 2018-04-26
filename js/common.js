@@ -29,7 +29,7 @@ $(function(){
         if (current_id === '' && current_level < ms_min_level)
         {
             alert('请选择');
-            next_selector.closest('div').remove();
+            next_selector.closest('div.ms-sub-selector').remove();
         }
         else if (current_level == ms_max_level || current_level >= ms_min_level) // 若为最大级别选择器，或达到了最低级别要求，则赋值到相应字段
         {
@@ -55,7 +55,7 @@ $(function(){
                         var content = result.content
 
                         // 生成数据
-                        var html_options = '<div class=col-xs-4>' +
+                        var html_options = '<div class="ms-sub-selector col-xs-4">' +
                             '   <select class=form-control data-ms-level='+ next_level +'>' +
                             '<option value="">可选择</option>';
                         $.each(
