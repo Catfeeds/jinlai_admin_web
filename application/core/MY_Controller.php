@@ -613,6 +613,31 @@
 		} // end restore
 
         // 获取平台文章列表
+        protected function list_article($params = NULL)
+        {
+            // 默认获取未删除项
+            if ( empty($params) ) $params['time_delete'] = 'NULL';
+
+            // 从API服务器获取相应列表信息
+            $url = api_url('article/index');
+            $result = $this->curl->go($url, $params, 'array');
+
+            return ($result['status'] === 200)? $result['content']: NULL;
+        } // end list_item
+
+        // 获取特定平台文章信息
+        protected function get_article($id)
+        {
+            $params['id'] = $id;
+
+            // 从API服务器获取相应信息
+            $url = api_url('article/detail');
+            $result = $this->curl->go($url, $params, 'array');
+
+            return ($result['status'] === 200)? $result['content']: NULL;
+        } // end get_item
+
+        // 获取平台文章分类列表
         protected function list_article_category($params = NULL)
         {
             // 默认获取未删除项
@@ -625,7 +650,7 @@
             return ($result['status'] === 200)? $result['content']: NULL;
         } // end list_item
 
-        // 获取特定平台文章信息
+        // 获取特定平台文章分类信息
         protected function get_article_category($id)
         {
             $params['id'] = $id;

@@ -192,6 +192,9 @@
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
+                // 获取平台文章
+                $data['articles'] = $this->list_article();
+
 				$data['error'] = validation_errors();
 
 				$this->load->view('templates/header', $data);

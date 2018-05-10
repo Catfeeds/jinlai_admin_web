@@ -55,58 +55,32 @@
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
-        <dt>描述</dt>
-        <dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
-		
-		<dt>主图</dt>
-		<dd class=row>
-			<?php
-				$column_image = 'url_image_main';
-				if ( empty($item[$column_image]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<figure class="col-xs-12 col-sm-6 col-md-4">
-				<img src="<?php echo $item[$column_image] ?>">
-			</figure>
-			<?php endif ?>
-		</dd>
-		
-		<dt>形象图</dt>
-		<dd>
-			<?php
-				$column_images = 'url_image_main';
-				if ( empty($item[$column_images]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<ul class=row>
-				<?php
-					$image_urls = explode(',', $item[$column_images]);
-					foreach($image_urls as $url):
-				?>
-				<li class="col-xs-6 col-sm-4 col-md-3">
-					<img src="<?php echo $url ?>">
-				</li>
-				<?php endforeach ?>
-			</ul>
-			<?php endif ?>
-		</dd>
-		
-		<dt>相关文章ID</dt>
-		<dd><?php echo $item['article_id'] ?></dd>
 		<dt>收信端类型</dt>
 		<dd><?php echo $item['receiver_type'] ?></dd>
-		<dt>用户ID</dt>
-		<dd><?php echo $item['user_id'] ?></dd>
-		<dt>商家ID</dt>
-		<dd><?php echo $item['biz_id'] ?></dd>
+		<dt>收信用户ID</dt>
+        <dd><?php echo empty($item['user_id'])? 'N/A': $item['user_id'] ?></dd>
+		<dt>收信商家ID</dt>
+        <dd><?php echo empty($item['biz_id'])? 'N/A': $item['biz_id'] ?></dd>
+
+        <dt>相关文章ID</dt>
+        <dd><?php echo empty($item['article_id'])? 'N/A': $item['article_id'] ?></dd>
 		<dt>标题</dt>
-		<dd><?php echo $item['title'] ?></dd>
+        <dd><?php echo empty($item['title'])? 'N/A': $item['title'] ?></dd>
 		<dt>摘要</dt>
-		<dd><?php echo $item['excerpt'] ?></dd>
-		<dt>形象图</dt>
-		<dd><?php echo $item['url_image'] ?></dd>
+        <dd><?php echo empty($item['excerpt'])? 'N/A': $item['excerpt'] ?></dd>
+        <dt>形象图</dt>
+        <dd class=row>
+            <?php
+            $column_image = 'url_image';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure class="col-xs-12 col-sm-6 col-md-4">
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
+            <?php endif ?>
+        </dd>
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>
