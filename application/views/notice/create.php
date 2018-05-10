@@ -70,27 +70,36 @@
 					<input class=form-control name=biz_id type=text value="<?php echo set_value('biz_id') ?>" placeholder="商家ID">
 				</div>
 			</div>
+        </fieldset>
+
+        <fieldset>
+            <legend>通知内容</legend>
 
             <div class=form-group>
                 <label for=article_id class="col-sm-2 control-label">相关文章</label>
-                <div class="col-sm-10 input-group">
-                    <?php $input_name = 'article_id' ?>
-                    <select class=form-control name="<?php echo $input_name ?>">
-                        <?php
-                        if ( !empty($articles) ):
-                            $options = $articles;
-                            foreach ($options as $option):
-                                ?>
-                                <option value="<?php echo $option['article_id'] ?>" <?php echo set_select($input_name, $option['article_id']) ?>><?php echo $option['title'] ?></option>
+                <div class=col-sm-10>
+                    <div class=input-group>
+                        <?php $input_name = 'article_id' ?>
+                        <select class=form-control name="<?php echo $input_name ?>">
+                            <?php if ( ! empty($articles) ): ?>
+                            <option value="">可选择</option>
                             <?php
-                            endforeach;
-                        endif;
-                        ?>
-                    </select>
+                                $options = $articles;
+                                foreach ($options as $option):
+                                    ?>
+                                    <option value="<?php echo $option['article_id'] ?>" <?php echo set_select($input_name, $option['article_id']) ?>><?php echo $option['title'] ?></option>
+                            <?php
+                                endforeach;
+                            endif;
+                            ?>
+                        </select>
 
-                    <div class="input-group-addon">
-                        <a href="<?php echo base_url('article') ?>">管理</a>
+                        <div class="input-group-addon">
+                            <a href="<?php echo base_url('article') ?>">管理</a>
+                        </div>
                     </div>
+
+                    <p class="help-block">可选择平台文章作为通知内容，标题、摘要、形象图将根据文章相应数据自动生成。</p>
                 </div>
             </div>
 
@@ -98,6 +107,7 @@
 				<label for=title class="col-sm-2 control-label">标题</label>
 				<div class=col-sm-10>
 					<input class=form-control name=title type=text value="<?php echo set_value('title') ?>" placeholder="最多30个字符">
+                    <p class="help-block">如果已选择了相关文章，则将覆盖自动生成的标题，以下各项也是。</p>
 				</div>
 			</div>
 			<div class=form-group>

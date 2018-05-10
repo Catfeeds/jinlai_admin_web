@@ -14,7 +14,7 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'notice_id', 'article_id', 'receiver_type', 'user_id', 'biz_id', 'title', 'excerpt', 'url_image', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',  'time_create_min', 'time_create_max',
+			'receiver_type', 'user_id', 'biz_id', 'article_id', 'title', 'excerpt', 'url_image', 'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',  'time_create_min', 'time_create_max',
 		);
 
 		public function __construct()
@@ -35,6 +35,7 @@
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
 				'receiver_type' => '收信端类型',
+                'title' => '标题',
 			);
 		} // end __construct
 
@@ -101,7 +102,7 @@
 				$data['item'] = $result['content'];
 
 				// 页面信息
-                $data['title'] = $this->class_name_cn. ' "'.$data['item']['name']. '"';
+                $data['title'] = $this->class_name_cn. ' "'.$data['item']['title']. '"';
                 $data['class'] = $this->class_name.' detail';
 				
 				// 输出视图
@@ -182,10 +183,10 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-            $this->form_validation->set_rules('article_id', '相关文章ID', 'trim|is_natural_no_zero');
             $this->form_validation->set_rules('receiver_type', '目标客户端类型', 'trim|in_list[admin,biz,client]');
             $this->form_validation->set_rules('user_id', '用户ID', 'trim|is_natural_no_zero');
             $this->form_validation->set_rules('biz_id', '商家ID', 'trim|is_natural_no_zero');
+            $this->form_validation->set_rules('article_id', '相关文章ID', 'trim|is_natural_no_zero');
             $this->form_validation->set_rules('title', '标题', 'trim|max_length[30]');
             $this->form_validation->set_rules('excerpt', '摘要', 'trim|max_length[100]');
             $this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
@@ -204,13 +205,13 @@
 			else:
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
-					'creator' => $this->session->user_id,
+					'creator_id' => $this->session->user_id,
 
                     'receiver_type' => empty($this->input->post('receiver_type'))? 'client': $this->input->post('receiver_type'),
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'article_id', 'user_id', 'biz_id', 'title', 'excerpt', 'url_image',
+					'user_id', 'biz_id', 'article_id', 'title', 'excerpt', 'url_image',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);

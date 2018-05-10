@@ -14,14 +14,14 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'user_id', 'biz_id', 'stuff_id', 'from_type', 'to_type', 'type', 'content', 'url_image', 'item_id', 'order_id', 'url_page', 'title', 'time_create', 'time_delete', 'time_edit', 'operator_id', 'sth_min', 'sth_max',
+			'user_id', 'biz_id', 'stuff_id', 'sender_type', 'receiver_type', 'type', 'ids', 'title', 'excerpt', 'url_image', 'content', 'longitude', 'latitude', 'time_create', 'time_delete', 'time_revoke', 'creator_id',  'time_create_min', 'time_create_max',
 		);
 
 		public function __construct()
 		{
 			parent::__construct();
 
-			// （可选）未登录用户转到登录页
+			// 未登录用户转到登录页
 			($this->session->time_expire_login > time()) OR redirect( base_url('login') );
 
 			// 向类属性赋值
@@ -34,8 +34,9 @@
 
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
-				'name' => '名称',
-				'description' => '描述',
+                'sender_type' => '发信端类型',
+                'receiver_type' => '收信端类型',
+				'type' => '类型',
 			);
 		} // end __construct
 
@@ -100,15 +101,15 @@
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['item'] = $result['content'];
-				
-				// 页面信息
-                $data['title'] = $this->class_name_cn. $data['item'][$this->id_name];
-                $data['class'] = $this->class_name.' detail';
 
-                // 输出视图
-                $this->load->view('templates/header', $data);
-                $this->load->view($this->view_root.'/detail', $data);
-                $this->load->view('templates/footer', $data);
+				// 页面信息
+                $data['title'] = $this->class_name_cn. ' "'.$data['item']['name']. '"';
+                $data['class'] = $this->class_name.' detail';
+				
+				// 输出视图
+				$this->load->view('templates/header', $data);
+				$this->load->view($this->view_root.'/detail', $data);
+				$this->load->view('templates/footer', $data);
 
 			else:
                 redirect( base_url('error/code_404') ); // 若缺少参数，转到错误提示页
@@ -168,6 +169,11 @@
 		 */
 		public function create()
 		{
+			// 操作可能需要检查操作权限
+			// $role_allowed = array('管理员', '经理'); // 角色要求
+// 			$min_level = 30; // 级别要求
+// 			$this->basic->permission_check($role_allowed, $min_level);
+
 			// 页面信息
 			$data = array(
 				'title' => '创建'.$this->class_name_cn,
@@ -178,18 +184,19 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-			$this->form_validation->set_rules('user_id', '用户ID', 'trim|required');
-			$this->form_validation->set_rules('biz_id', '商家ID', 'trim|');
-			$this->form_validation->set_rules('stuff_id', '员工ID', 'trim|');
-			$this->form_validation->set_rules('from_type', '发信人身份', 'trim|required');
-			$this->form_validation->set_rules('to_type', '收信人身份', 'trim|');
-			$this->form_validation->set_rules('type', '类型', 'trim|required');
-			$this->form_validation->set_rules('content', '内容', 'trim|');
-			$this->form_validation->set_rules('url_image', '图片URL', 'trim|');
-			$this->form_validation->set_rules('item_id', '商品ID', 'trim|');
-			$this->form_validation->set_rules('order_id', '订单ID', 'trim|');
-			$this->form_validation->set_rules('url_page', '网页URL', 'trim|');
-			$this->form_validation->set_rules('title', '网页标题', 'trim|');
+            $this->form_validation->set_rules('user_id', '收信用户ID', 'trim|is_natural_no_zero');
+            $this->form_validation->set_rules('biz_id', '收信商家ID', 'trim|is_natural_no_zero');
+            $this->form_validation->set_rules('stuff_id', '收信员工ID', 'trim|is_natural_no_zero');
+            $this->form_validation->set_rules('sender_type', '发信端类型', 'trim|in_list[admin,biz,client]');
+            $this->form_validation->set_rules('receiver_type', '收信端类型', 'trim|required|in_list[admin,biz,client]');
+            $this->form_validation->set_rules('type', '类型', 'trim|required');
+            $this->form_validation->set_rules('ids', '内容ID们', 'trim|max_length[255]');
+            $this->form_validation->set_rules('title', '标题', 'trim|max_length[30]');
+            $this->form_validation->set_rules('excerpt', '摘要', 'trim|max_length[100]');
+            $this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('content', '内容', 'trim|max_length[5000]');
+            $this->form_validation->set_rules('longitude', '经度', 'trim|max_length[10]');
+            $this->form_validation->set_rules('latitude', '纬度', 'trim|max_length[10]');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -202,11 +209,16 @@
 			else:
 				// 需要创建的数据；逐一赋值需特别处理的字段
 				$data_to_create = array(
-					'user_id' => $this->session->user_id,
+					'creator_id' => $this->session->user_id,
+
+                    'sender_type' => $this->app_type,
+                    'receiver_type' => empty($this->input->post('receiver_type'))? 'biz': $this->input->post('receiver_type'),
+
+                    'type' => empty($this->input->post('type'))? 'text': $this->input->post('type'),
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'biz_id', 'stuff_id', 'from_type', 'to_type', 'type', 'content', 'url_image', 'item_id', 'order_id', 'url_page', 'title',
+                    'user_id', 'biz_id', 'stuff_id', 'ids', 'title', 'excerpt', 'url_image', 'content', 'longitude', 'latitude',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
@@ -239,25 +251,33 @@
 			endif;
 		} // end create
 
-        /**
+		/**
          * 删除
          *
-         * 商家不可删除
+         * 不可删除
          */
         public function delete()
         {
-            exit('商家不可删除'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+            exit('不可删除'.$this->class_name_cn);
         } // end delete
 
         /**
          * 找回
          *
-         * 商家不可找回
+         * 不可找回
          */
         public function restore()
         {
-            exit('商家不可找回'.$this->class_name_cn.'；您意图违规操作的记录已被发送到安全中心。');
+            exit('不可恢复'.$this->class_name_cn);
         } // end restore
+
+        /**
+         * TODO 撤回
+         */
+        public function revoke()
+        {
+
+        } // end revoke
 		
 		/**
 		 * 以下为工具类方法

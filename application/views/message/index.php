@@ -56,7 +56,7 @@
 
         <ul class=horizontal>
             <li>
-                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>"><i class="far fa-plus"></i></a>
+                <a class=bg_primary href="<?php echo base_url($this->class_name.'/create') ?>"><i class="far fa-plus"></i></a>
             </li>
         </ul>
     </div>
@@ -88,8 +88,8 @@
             <li>
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                     <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
-                    <p>收信端类型 <?php echo $item['receiver_type'] ?></p>
-                    <p>标题 <?php echo $item['title'] ?></p>
+                    <p><?php echo $item['type'] ?></p>
+                    <p><?php echo $item['sender_type'].' -> '.$item['receiver_type'] ?></p>
                 </a>
 
                 <div class=item-actions>
