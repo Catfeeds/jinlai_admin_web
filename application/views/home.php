@@ -23,6 +23,11 @@
 </style>
 
 <div id=content class=container>
+    <blockquote>
+        IP <?php echo $this->input->ip_address() ?>
+        UserAgent <?php echo $_SERVER['HTTP_USER_AGENT'] ?>
+    </blockquote>
+
     <div id="shortcut">
         <h2>快捷方式</h2>
         <h3>"进来商城匠心商家评选"相关</h3>

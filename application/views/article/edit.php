@@ -46,7 +46,7 @@
                 <label for=category_id class="col-sm-2 control-label">分类 ※</label>
                 <div class="col-sm-10 input-group">
                     <?php $input_name = 'category_id' ?>
-                    <select class=form-control name="<?php echo $input_name ?>">
+                    <select class=form-control name="<?php echo $input_name ?>" required>
                         <?php
                         if ( !empty($categories) ):
                             $options = $categories;

@@ -42,21 +42,18 @@
         <p class=help-block>必填项以“※”符号标示</p>
 
 		<fieldset>
-            <?php if ( ! empty($this->input->get('category_id'))): ?>
-            <input name=category_id type=hidden value="<?php echo $this->input->get('category_id') ?>">
 
-            <?php else: ?>
             <div class=form-group>
                 <label for=category_id class="col-sm-2 control-label">分类 ※</label>
                 <div class="col-sm-10 input-group">
                     <?php $input_name = 'category_id' ?>
-                    <select class=form-control name="<?php echo $input_name ?>">
+                    <select class=form-control name="<?php echo $input_name ?>" required>
                         <?php
                         if ( !empty($categories) ):
                             $options = $categories;
                             foreach ($options as $option):
                                 ?>
-                                <option value="<?php echo $option['category_id'] ?>" <?php echo set_select($input_name, $option['category_id']) ?>><?php echo $option['name'] ?></option>
+                                <option value="<?php echo $option['category_id'] ?>" <?php echo ( !empty($this->input->get('category_id')) && $this->input->get('category_id') === $option['category_id'])? 'selected': set_select($input_name, $option['category_id']) ?>><?php echo $option['name'] ?></option>
                             <?php
                             endforeach;
                         endif;
@@ -68,7 +65,6 @@
                     </div>
                 </div>
             </div>
-            <?php endif ?>
 
 			<div class=form-group>
 				<label for=title class="col-sm-2 control-label">标题 ※</label>

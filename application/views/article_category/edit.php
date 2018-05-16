@@ -47,7 +47,7 @@
                 <div class="col-sm-10 input-group">
                     <?php $input_name = 'parent_id' ?>
                     <select class=form-control name="<?php echo $input_name ?>">
-                        <option value="">请选择</option>
+                        <option value="">可选择</option>
                         <?php
                         if ( !empty($categories) ):
                             $options = $categories;

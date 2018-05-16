@@ -26,7 +26,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180511">
+		<meta name=version content="revision20180516">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -188,7 +188,6 @@
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>商家 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
-                                <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('biz') ?>">商家</a></li>
 
                                 <li role=separator class=divider></li>
