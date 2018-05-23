@@ -26,7 +26,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180516">
+		<meta name=version content="revision20180523">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -49,8 +49,8 @@
         <script src="/js/common.js"></script>
 		<script defer src="<?php echo CDN_URL ?>js/js.cookie.js"></script>
 		<script defer src="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.10/fontawesome-all.min.js"></script>
-        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.10/fa-v4-shims.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.13/fontawesome-all.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.13/fa-v4-shims.min.js"></script>
         <script>
             // AJAX参数
             var ajax_root = '<?php echo API_URL ?>'
@@ -133,7 +133,7 @@
 						<li><a title="回到首页" href="<?php echo base_url() ?>">首页</a></li>
 
                         <li class=dropdown>
-                            <a href=# class=dropdown-toggle data-toggle=dropdown>设置 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>设置 <i class="far fa-angle-down" aria-hidden="true"></i></a>
                             <ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('region') ?>">地区</a></li>
                                 <li><a href="<?php echo base_url('region/create') ?>">创建地区</a></li>
@@ -153,7 +153,7 @@
                         </li>
 
                         <li class=dropdown>
-                            <a href=# class=dropdown-toggle data-toggle=dropdown>平台文章 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>平台文章 <i class="far fa-angle-down" aria-hidden="true"></i></a>
                             <ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('article_category') ?>">文章分类</a></li>
                                 <li><a href="<?php echo base_url('article_category/create') ?>">创建文章分类</a></li>
@@ -165,7 +165,7 @@
                         </li>
 
                         <li class=dropdown>
-                            <a href=# class=dropdown-toggle data-toggle=dropdown>营销 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>营销 <i class="far fa-angle-down" aria-hidden="true"></i></a>
                             <ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('coupon_template') ?>">所有优惠券模板</a></li>
                                 <li><a href="<?php echo base_url('coupon_template/create') ?>">创建优惠券模板</a></li>
@@ -186,7 +186,7 @@
 
 				<?php if ($this->session->role === '管理员'): ?>
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>商家 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>商家 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('biz') ?>">商家</a></li>
 
@@ -214,7 +214,7 @@
 						</li>
 
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>商品 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>商品 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
 								<li><a href="<?php echo base_url('item_category') ?>">平台分类</a></li>
 								<li><a href="<?php echo base_url('item_category/create') ?>">创建平台分类</a></li>
@@ -228,7 +228,7 @@
 						</li>
 
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>订单 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>订单 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
 								<li><a href="<?php echo base_url('order') ?>">订单</a></li>
                                 <li><a href="<?php echo base_url('order?status=待接单') ?>">待接单订单</a></li>
@@ -241,14 +241,14 @@
 
 						<!--
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>余额 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>余额 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
 								<li><a href="<?php echo base_url('balance') ?>">所有余额</a></li>
 							</ul>
 						</li>
 						
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>素材 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>素材 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
 								<li><a href="<?php echo base_url('material') ?>">所有素材</a></li>
 							</ul>
@@ -259,7 +259,7 @@
                         <?php if ( $this->session->role === '管理员' && $this->session->level > 30): ?>
                         <!--
 						<li class=dropdown>
-							<a href=# class=dropdown-toggle data-toggle=dropdown>积分 <i class="fa fa-angle-down" aria-hidden="true"></i></a>
+							<a href=# class=dropdown-toggle data-toggle=dropdown>积分 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
 								<li><a href="<?php echo base_url('credit') ?>">所有积分</a></li>
 							</ul>

@@ -45,20 +45,20 @@
             <div class=form-group>
                 <label for=name class="col-sm-2 control-label">名称 ※</label>
                 <div class=col-sm-10>
-                    <input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="名称" required>
+                    <input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="最多30个字符" required>
                 </div>
             </div>
             <div class=form-group>
                 <label for=description class="col-sm-2 control-label">说明 ※</label>
                 <div class=col-sm-10>
-                    <input class=form-control name=description type=text value="<?php echo set_value('description') ?>" placeholder="说明" required>
+                    <textarea class=form-control name=description placeholder="请说明该参数的用途，最多100个字符" rows=3 required><?php echo set_value('description') ?></textarea>
                 </div>
             </div>
 
             <div class=form-group>
                 <label for=value class="col-sm-2 control-label">内容</label>
                 <div class=col-sm-10>
-                    <textarea class=form-control name=value placeholder="内容" rows="5"><?php echo set_value('value') ?></textarea>
+                    <textarea class=form-control name=value placeholder="最多255个字符" rows=5><?php echo set_value('value') ?></textarea>
                 </div>
             </div>
 		</fieldset>

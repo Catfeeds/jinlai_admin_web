@@ -14,7 +14,6 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'name', 'value', 'description',
 			'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
@@ -30,7 +29,7 @@
 		 */
 		protected $names_edit_required = array(
 			'id',
-			'name', 'value', 'description',
+			'name', 'description',
 		);
 
 		public function __construct()
@@ -200,9 +199,9 @@
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
 			// 验证规则 https://www.codeigniter.com/user_guide/libraries/form_validation.html#rule-reference
-			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
-			$this->form_validation->set_rules('value', '内容', 'trim|max_length[255]');
-			$this->form_validation->set_rules('description', '说明', 'trim|max_length[255]');
+            $this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
+            $this->form_validation->set_rules('value', '内容', 'trim|max_length[255]');
+            $this->form_validation->set_rules('description', '说明', 'trim|required|max_length[255]');
 
 
 			// 若表单提交不成功
@@ -291,9 +290,9 @@
 
 			// 待验证的表单项
 			$this->form_validation->set_error_delimiters('', '；');
-			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
+            $this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
             $this->form_validation->set_rules('value', '内容', 'trim|max_length[255]');
-            $this->form_validation->set_rules('description', '说明', 'trim|max_length[255]');
+            $this->form_validation->set_rules('description', '说明', 'trim|required|max_length[255]');
 
 
 			// 若表单提交不成功
