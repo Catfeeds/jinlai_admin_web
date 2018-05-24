@@ -23,10 +23,6 @@
 </style>
 
 <div id=content class=container>
-    <blockquote>
-        IP <?php echo $this->input->ip_address() ?>
-        UserAgent <?php echo $_SERVER['HTTP_USER_AGENT'] ?>
-    </blockquote>
 
     <div id="shortcut">
         <h2>快捷方式</h2>

@@ -23,6 +23,8 @@ ul>li>a {width:100%;height:100%;display:block;}
 a {font-size:26px;color:#3e3a39;text-decoration:none;/* 清理BootStrap样式 */}
 	a:hover {color:#999;}
 
+	.style-inline {display:inline !important;}
+
 #maincontainer p>a {color:#3e3a39;padding:0 0.5rem;font-weight:transparent;}
 #content {padding:0 20px;}
 
@@ -112,7 +114,7 @@ noscript {color:#032f62;background-color:#dbedff;padding:16px;border:1px solid r
 	#header i {font-size:40px;width:40px;height:40px;text-align:center;vertical-align:middle;}
 	#return {position:absolute;top:24px;left:20px;}
 
-#footer {text-align:center;display:none;}
+#footer {}
 
 #beta-reminder {text-align:center;font-size:smaller;}
 	#beta-reminder>p {container:95%;margin:0 auto;}
@@ -139,6 +141,11 @@ noscript {color:#032f62;background-color:#dbedff;padding:16px;border:1px solid r
 #qrcode {background-color:#fff;padding:40px;border-radius:40px;}
 
 .amap-logo {display:none;}
+
+#footer a {font-size:inherit;}
+
+#totop {color:#fff;background-color:rgba(0,0,0,.6);position:fixed;bottom:22px;right:22px;width:66px;height:66px;line-height:66px;display:block;text-align:center;}
+    #totop:hover {background-color:#333;}
 
 /* 宽度在750像素以上的设备 */
 @media only screen and (min-width:751px)

@@ -26,7 +26,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180523">
+		<meta name=version content="revision20180524">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -129,6 +129,26 @@
 				</div>
 
 				<div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <?php
+                            if ( $this->session->time_expire_login > time() ):
+                            $display_name = !empty($this->session->nickname)? $this->session->nickname: $this->session->lastname.$this->session->firstname;
+                        ?>
+                        <li>
+                            <a href="<?php echo base_url('mine') ?>">
+                                <i class="far fa-user-circle"></i>
+                                <?php echo $display_name ?>
+                                <?php echo $this->session->role. 'lv.'. $this->session->level ?>
+                            </a>
+                        </li>
+                        <li><a href="<?php echo base_url('logout') ?>"><i class="far fa-sign-out"></i></a></li>
+
+                        <?php else: ?>
+                        <li><a href="<?php echo base_url('login') ?>"><i class="far fa-sign-in"></i> 登录</a></li>
+
+                        <?php endif ?>
+                    </ul>
+
 				    <ul class="nav navbar-nav">
 						<li><a title="回到首页" href="<?php echo base_url() ?>">首页</a></li>
 
@@ -246,7 +266,7 @@
 								<li><a href="<?php echo base_url('balance') ?>">所有余额</a></li>
 							</ul>
 						</li>
-						
+
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>素材 <i class="far fa-angle-down" aria-hidden="true"></i></a>
 							<ul class=dropdown-menu>
@@ -268,15 +288,6 @@
 						<?php endif ?>
 
 			<?php endif ?>
-					</ul>
-
-					<ul class="nav navbar-nav navbar-right">
-						<?php if ( !isset($this->session->time_expire_login) ): ?>
-						<li><a href="<?php echo base_url('login') ?>">登录</a></li>
-						<?php else: ?>
-						<li><a href="<?php echo base_url('mine') ?>">个人中心</a></li>
-						<li><a href="<?php echo base_url('logout') ?>">退出</a></li>
-						<?php endif ?>
 					</ul>
 
 				</div>

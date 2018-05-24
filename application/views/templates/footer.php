@@ -3,6 +3,14 @@
 <!-- End #maincontainer -->
 
 		<footer id=footer role=contentinfo>
+            <div class="container">
+                <ul id="quick-reference">
+                    <li>IP <?php echo $this->input->ip_address() ?></li>
+                    <li>UserAgent <?php echo $_SERVER['HTTP_USER_AGENT'] ?></li>
+                    <li>企业邮箱（阿里云）https://qiye.aliyun.com <a class="style-inline" href="https://qiye.aliyun.com"><i class="far fa-external-link"></i></a></li>
+                </ul>
+            </div>
+
 			<div id=copyright>
 				<div class=container>
 					<p>&copy;<?php echo date('Y') ?>
@@ -14,9 +22,9 @@
 					<?php endif ?>
 				</div>
 			</div>
-
-			<a id=totop title="回到页首" href="#"><i class="far fa-chevron-up" aria-hidden=true></i></a>
 		</footer>
+
+        <a id=totop title="回到页首" href="#"><i class="far fa-chevron-up" aria-hidden=true></i></a>
 
 		<script>
 			$(function(){
