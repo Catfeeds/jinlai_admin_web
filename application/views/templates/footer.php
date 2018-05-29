@@ -7,7 +7,7 @@
                 <ul id="quick-reference">
                     <li>IP <?php echo $this->input->ip_address() ?></li>
                     <li>UserAgent <?php echo $_SERVER['HTTP_USER_AGENT'] ?></li>
-                    <li>企业邮箱（阿里云）https://qiye.aliyun.com <a class="style-inline" href="https://qiye.aliyun.com"><i class="far fa-external-link"></i></a></li>
+                    <li>企业邮箱（阿里云）https://qiye.aliyun.com <a class="style-inline" href="https://qiye.aliyun.com"  target=_blank><i class="far fa-external-link"></i></a></li>
                 </ul>
             </div>
 
@@ -18,7 +18,7 @@
 					<a title="<?php echo SITE_DESCRIPTION ?>" href="<?php echo base_url() ?>"><?php echo SITE_NAME ?></a>
 
 					<?php if ( !empty(ICP_NUMBER)): ?>
-					<a title="工业和信息化部网站备案系统" href="http://www.miitbeian.gov.cn/" target=_blank rel=nofollow><?php echo ICP_NUMBER ?></a>
+					<a title="工业和信息化部网站备案系统" href="http://www.miitbeian.gov.cn/" target=_blank><?php echo ICP_NUMBER ?></a>
 					<?php endif ?>
 				</div>
 			</div>
