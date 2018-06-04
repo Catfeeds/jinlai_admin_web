@@ -14,7 +14,7 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'parent_id', 'nature', 'level', 'name', 'description', 'url_name', 'url_image',
+			'parent_id', 'nature', 'level',
 			'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id',
 		);
 
@@ -22,7 +22,7 @@
 		 * 可被编辑的字段名
 		 */
 		protected $names_edit_allowed = array(
-			'parent_id', 'name', 'description', 'url_name', 'url_image',
+			'parent_id', 'name', 'description', 'url_name', 'url_image', 'url_image_index', 'url_image_detail',
 		);
 
 		/**
@@ -208,6 +208,9 @@
 			$this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
             $this->form_validation->set_rules('url_name', '自定义域名', 'trim|alpha_dash|max_length[30]');
 			$this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_image_index', '列表页形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_image_detail', '详情页形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('item_id', '主推商品ID', 'trim|is_natural_no_zero');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -227,7 +230,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'parent_id', 'nature', 'name', 'description', 'url_name', 'url_image',
+					'parent_id', 'nature', 'name', 'description', 'url_name', 'url_image', 'url_image_index', 'url_image_detail', 'item_id',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
@@ -302,6 +305,9 @@
             $this->form_validation->set_rules('description', '描述', 'trim|max_length[100]');
             $this->form_validation->set_rules('url_name', '自定义域名', 'trim|alpha_dash|max_length[30]');
             $this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_image_index', '列表页形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('url_image_detail', '详情页形象图', 'trim|max_length[255]');
+            $this->form_validation->set_rules('item_id', '主推商品ID', 'trim|is_natural_no_zero');
 
 			// 若表单提交不成功
 			if ($this->form_validation->run() === FALSE):
@@ -322,7 +328,7 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'parent_id', 'nature', 'name', 'description', 'url_name', 'url_image',
+					'parent_id', 'nature', 'name', 'description', 'url_name', 'url_image', 'url_image_index', 'url_image_detail', 'item_id',
 				);
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);

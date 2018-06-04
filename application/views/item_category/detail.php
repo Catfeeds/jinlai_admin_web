@@ -66,7 +66,13 @@
         <dd><?php echo $item['level'] ?></dd>
 		
 		<?php if ($item['level'] > 1): ?>
-        <dt>所属分类ID</dt>
+        <dt>所属顶级分类ID</dt>
+        <dd>
+            ID<?php echo $item['ancestor_id'] ?>
+            <a href="<?php echo base_url('item_category/detail?id='.$item['ancestor_id']) ?>">查看</a>
+        </dd>
+
+        <dt>所属上级分类ID</dt>
 		<dd>
             ID<?php echo $item['parent_id'] ?>
             <a href="<?php echo base_url('item_category/detail?id='.$item['parent_id']) ?>">查看</a>
@@ -88,13 +94,59 @@
 				$column_image = 'url_image';
 				if ( empty($item[$column_image]) ):
 			?>
-			<p>未上传</p>
+			N/A
 			<?php else: ?>
 			<figure class="col-xs-12 col-sm-6 col-md-4">
 				<img src="<?php echo $item[$column_image] ?>">
 			</figure>
 			<?php endif ?>
 		</dd>
+
+        <dt>列表页形象图</dt>
+        <dd class=row>
+            <?php
+                $column_name = 'url_image_index';
+                if ( !empty($item[$column_name]) ):
+            ?>
+                <ul class=row>
+                <?php
+                $slides = explode(',', $item[$column_name]);
+                foreach($slides as $slide):
+                    ?>
+                    <li class="col-xs-12 col-sm-6 col-md-4">
+                        <figure>
+                            <img src="<?php echo $slide ?>">
+                        </figure>
+                    </li>
+                <?php endforeach ?>
+                </ul>
+            <?php else: ?>
+                N/A
+            <?php endif ?>
+        </dd>
+
+        <dt>详情页形象图</dt>
+        <dd class=row>
+            <?php
+            $column_name = 'url_image_detail';
+            if ( !empty($item[$column_name]) ):
+                ?>
+                <ul class=row>
+                    <?php
+                    $slides = explode(',', $item[$column_name]);
+                    foreach($slides as $slide):
+                        ?>
+                        <li class="col-xs-12 col-sm-6 col-md-4">
+                            <figure>
+                                <img src="<?php echo $slide ?>">
+                            </figure>
+                        </li>
+                    <?php endforeach ?>
+                </ul>
+            <?php else: ?>
+                N/A
+            <?php endif ?>
+        </dd>
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>

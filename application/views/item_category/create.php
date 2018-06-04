@@ -55,7 +55,7 @@
             </div>
 
             <div class=form-group>
-                <label for=parent_id class="col-sm-2 control-label">所属分类 ※</label>
+                <label for=parent_id class="col-sm-2 control-label">所属分类</label>
                 <div class=col-sm-10>
                     <input name=parent_id type=hidden value="">
 
@@ -77,13 +77,20 @@
                     </div>
                 </div>
             </div>
-			
+
 			<div class=form-group>
 				<label for=name class="col-sm-2 control-label">名称 ※</label>
 				<div class=col-sm-10>
 					<input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="名称" required>
 				</div>
 			</div>
+
+            <div class=form-group>
+                <label for=item_id class="col-sm-2 control-label">主推商品</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=item_id type=text value="<?php echo set_value('item_id') ?>" placeholder="请填写商品ID">
+                </div>
+            </div>
 			
 			<div class=form-group>
 				<label for=description class="col-sm-2 control-label">描述</label>
@@ -107,8 +114,31 @@
                     $name_to_upload = 'url_image';
                     generate_html($name_to_upload, $this->class_name, FALSE, 1);
                     ?>
+                    <p class="help-block">将显示在分类列表页中列表项</p>
 				</div>
 			</div>
+
+            <div class=form-group>
+                <label for=url_image_index class="col-sm-2 control-label">列表页形象图</label>
+                <div class=col-sm-10>
+                    <?php
+                    $name_to_upload = 'url_image_index';
+                    generate_html($name_to_upload, $this->class_name, FALSE, 4);
+                    ?>
+                    <p class="help-block">将显示在分类列表页中当前分类的页面的顶端</p>
+                </div>
+            </div>
+
+            <div class=form-group>
+                <label for=url_image_detail class="col-sm-2 control-label">详情页形象图</label>
+                <div class=col-sm-10>
+                    <?php
+                    $name_to_upload = 'url_image_detail';
+                    generate_html($name_to_upload, $this->class_name, FALSE, 4);
+                    ?>
+                    <p class="help-block">将显示在当前分类的详情页顶端</p>
+                </div>
+            </div>
 		</fieldset>
 
 		<div class=form-group>

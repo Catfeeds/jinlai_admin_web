@@ -31,55 +31,57 @@ $(function(){
             alert('请选择');
             next_selector.closest('div.ms-sub-selector').remove();
         }
-        else if (current_level == ms_max_level || current_level >= ms_min_level) // 若为最大级别选择器，或达到了最低级别要求，则赋值到相应字段
-        {
-            $('[name='+ ms_name +']').val(current_id);
-        }
-        else if (current_level < ms_max_level)
-        {
-            // 初始化参数
-            params = common_params;
-            params.level = next_level;
-            params.parent_id = current_id;
+        else {
 
-            // AJAX获取结果并生成相关HTML
-            $.post(
-                ajax_root + ms_api_url, // 拼合完整API路径
-                params,
-                function(result)
-                {
-                    //console.log(result); // 输出回调数据到控制台
+            if (current_level == ms_max_level || current_level >= ms_min_level) // 若为最大级别选择器，或达到了最低级别要求，则赋值到相应字段
+            {
+                console.log('最大级别选择器，或达到了最低级别要求');
+                $('[name=' + ms_name + ']').val(current_id);
+            }
 
-                    if (result.status == 200)
-                    {
-                        var content = result.content
+            if (current_level < ms_max_level) {
+                // 初始化参数
+                params = common_params;
+                params.level = next_level;
+                params.parent_id = current_id;
+                console.log(params);
 
-                        // 生成数据
-                        var html_options = '<div class="ms-sub-selector col-xs-4">' +
-                            '   <select class=form-control data-ms-level='+ next_level +'>' +
-                            '<option value="">可选择</option>';
-                        $.each(
-                            content,
-                            function(i, item){
-                                html_options += '<option value=' + item.category_id + '>' + item.name + '</option>'
-                            }
-                        );
+                // AJAX获取结果并生成相关HTML
+                $.post(
+                    ajax_root + ms_api_url, // 拼合完整API路径
+                    params,
+                    function (result) {
+                        console.log(result); // 输出回调数据到控制台
 
-                        html_options += '   </select>' +
-                            '</div>';
+                        if (result.status == 200) {
+                            var content = result.content
 
-                        // 清除现有下级选择器（若有）并生成数据
-                        next_selector.closest('div').remove();
-                        ms_selector.append(html_options);
-                    }
-                    else
-                    {
-                        // 若失败，进行提示
-                        alert(result.content.error.message);
-                    }
-                },
-                "JSON"
-            );
+                            // 生成数据
+                            var html_options = '<div class="ms-sub-selector col-xs-4">' +
+                                '   <select class=form-control data-ms-level=' + next_level + '>' +
+                                '<option value="">可选择</option>';
+                            $.each(
+                                content,
+                                function (i, item) {
+                                    html_options += '<option value=' + item.category_id + '>' + item.name + '</option>'
+                                }
+                            );
+
+                            html_options += '   </select>' +
+                                '</div>';
+
+                            // 清除现有下级选择器（若有）并生成数据
+                            next_selector.closest('div').remove();
+                            ms_selector.append(html_options);
+                        }
+                        else {
+                            // 若失败，进行提示
+                            alert(result.content.error.message);
+                        }
+                    },
+                    "JSON"
+                );
+            }
         }
 
         return false;
