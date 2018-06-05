@@ -44,12 +44,11 @@
 		<fieldset>
             <div class=form-group>
                 <?php $input_name = 'receiver_type' ?>
-                <label for="<?php echo $input_name ?>" class="col-sm-2 control-label">收信端类型</label>
+                <label for="<?php echo $input_name ?>" class="col-sm-2 control-label">收信端类型 ※</label>
                 <div class=col-sm-10>
                     <select class=form-control name="<?php echo $input_name ?>" required>
-                        <option value="" <?php echo set_select($input_name, '') ?>>请选择</option>
                         <?php
-                        $options = array('admin','biz','client');
+                        $options = array('client','biz','admin',);
                         foreach ($options as $option):
                             ?>
                             <option value="<?php echo $option ?>" <?php echo set_select($input_name, $option) ?>><?php echo $option ?></option>
@@ -59,13 +58,14 @@
             </div>
 
 			<div class=form-group>
-				<label for=user_id class="col-sm-2 control-label">收信用户ID</label>
+				<label for=user_id class="col-sm-2 control-label">收信用户</label>
 				<div class=col-sm-10>
 					<input class=form-control name=user_id type=text value="<?php echo set_value('user_id') ?>" placeholder="用户ID">
 				</div>
 			</div>
+
 			<div class=form-group>
-				<label for=biz_id class="col-sm-2 control-label">收信商家ID</label>
+				<label for=biz_id class="col-sm-2 control-label">收信商家</label>
 				<div class=col-sm-10>
 					<input class=form-control name=biz_id type=text value="<?php echo set_value('biz_id') ?>" placeholder="商家ID">
 				</div>
@@ -76,10 +76,10 @@
             <legend>通知内容</legend>
 
             <div class=form-group>
-                <label for=article_id class="col-sm-2 control-label">相关文章</label>
+                <?php $input_name = 'article_id' ?>
+                <label for="<?php echo $input_name ?>" class="col-sm-2 control-label">相关文章</label>
                 <div class=col-sm-10>
                     <div class=input-group>
-                        <?php $input_name = 'article_id' ?>
                         <select class=form-control name="<?php echo $input_name ?>">
                             <?php if ( ! empty($articles) ): ?>
                             <option value="">可选择</option>
@@ -87,7 +87,7 @@
                                 $options = $articles;
                                 foreach ($options as $option):
                                     ?>
-                                    <option value="<?php echo $option['article_id'] ?>" <?php echo set_select($input_name, $option['article_id']) ?>><?php echo $option['title'] ?></option>
+                                    <option value="<?php echo $option[$input_name] ?>" <?php echo set_select($input_name, $option[$input_name]) ?>><?php echo $option['title'] ?></option>
                             <?php
                                 endforeach;
                             endif;
@@ -110,14 +110,16 @@
                     <p class="help-block">如果已选择了相关文章，则将覆盖自动生成的标题，以下各项也是。</p>
 				</div>
 			</div>
+
 			<div class=form-group>
 				<label for=excerpt class="col-sm-2 control-label">摘要</label>
 				<div class=col-sm-10>
 					<textarea class=form-control name=excerpt rows=5 placeholder="最多100个字符"><?php echo set_value('excerpt') ?></textarea>
 				</div>
 			</div>
+
             <div class=form-group>
-                <label for=url_image_main class="col-sm-2 control-label">形象图</label>
+                <label for=url_image class="col-sm-2 control-label">形象图</label>
                 <div class=col-sm-10>
                     <?php
                     require_once(APPPATH. 'views/templates/file-uploader.php');

@@ -73,9 +73,6 @@
 				$data['error'] = $result['content']['error']['message'];
 			endif;
 
-			// 将需要显示的数据传到视图以备使用
-			$data['data_to_display'] = $this->data_to_display;
-
 			// 输出视图
 			$this->load->view('templates/header', $data);
 			$this->load->view($this->view_root.'/index', $data);

@@ -26,7 +26,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180604">
+		<meta name=version content="revision20180605">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -142,18 +142,19 @@
                                 <li><a href="<?php echo base_url('meta') ?>">系统参数</a></li>
                                 <li><a href="<?php echo base_url('meta/create') ?>">创建系统参数</a></li>
 
-                                <li role=separator class=divider></li>
-                                <li><a href="<?php echo base_url('notice') ?>">系统通知</a></li>
-                                <li><a href="<?php echo base_url('notice/create') ?>">创建系统通知</a></li>
-
-                                <li role=separator class=divider></li>
-                                <li><a href="<?php echo base_url('message') ?>">聊天消息</a></li>
-                                <li><a href="<?php echo base_url('message/create') ?>">创建聊天消息</a></li>
+                                <?php
+                                // 仅获得大于10的权限的管理员可以管理员工
+                                if ($this->session->role === '管理员' && $this->session->level >= 10):
+                                    ?>
+                                    <li role=separator class=divider></li>
+                                    <li><a href="<?php echo base_url('stuff') ?>">员工</a></li>
+                                    <li><a href="<?php echo base_url('stuff/create') ?>">创建员工</a></li>
+                                <?php endif ?>
                             </ul>
                         </li>
 
                         <li class=dropdown>
-                            <a href=# class=dropdown-toggle data-toggle=dropdown>平台文章 <i class="far fa-angle-down" aria-hidden="true"></i></a>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>营销 <i class="far fa-angle-down" aria-hidden="true"></i></a>
                             <ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('article_category') ?>">文章分类</a></li>
                                 <li><a href="<?php echo base_url('article_category/create') ?>">创建文章分类</a></li>
@@ -161,12 +162,8 @@
                                 <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('article') ?>">文章</a></li>
                                 <li><a href="<?php echo base_url('article/create') ?>">创建文章</a></li>
-                            </ul>
-                        </li>
 
-                        <li class=dropdown>
-                            <a href=# class=dropdown-toggle data-toggle=dropdown>营销 <i class="far fa-angle-down" aria-hidden="true"></i></a>
-                            <ul class=dropdown-menu>
+                                <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('coupon_template') ?>">所有优惠券模板</a></li>
                                 <li><a href="<?php echo base_url('coupon_template/create') ?>">创建优惠券模板</a></li>
 
@@ -201,15 +198,6 @@
 
                                 <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('article_biz') ?>">商家文章</a></li>
-
-                                <?php
-                                    // 仅获得大于10的权限的管理员可以管理员工
-                                    if ($this->session->role === '管理员' && $this->session->level > 10):
-                                ?>
-                                    <li role=separator class=divider></li>
-                                    <li><a href="<?php echo base_url('stuff') ?>">员工</a></li>
-                                    <li><a href="<?php echo base_url('stuff/create') ?>">创建员工</a></li>
-                                <?php endif ?>
 							</ul>
 						</li>
 
@@ -256,7 +244,7 @@
 						-->
 
 
-                        <?php if ( $this->session->role === '管理员' && $this->session->level > 30): ?>
+                        <?php if ( $this->session->role === '管理员' && $this->session->level >= 30): ?>
                         <!--
 						<li class=dropdown>
 							<a href=# class=dropdown-toggle data-toggle=dropdown>积分 <i class="far fa-angle-down" aria-hidden="true"></i></a>
@@ -266,6 +254,18 @@
 						</li>
 						-->
 						<?php endif ?>
+
+                        <li class=dropdown>
+                            <a href=# class=dropdown-toggle data-toggle=dropdown>消息 <i class="far fa-angle-down"></i></a>
+                            <ul class=dropdown-menu>
+                                <li><a href="<?php echo base_url('message') ?>">聊天</a></li>
+                                <li><a href="<?php echo base_url('message/create') ?>">发起聊天</a></li>
+
+                                <li role="separator" class="divider"></li>
+                                <li><a href="<?php echo base_url('notice') ?>">通知</a></li>
+                                <li><a href="<?php echo base_url('notice/create') ?>">发送通知</a></li>
+                            </ul>
+                        </li>
 
 			<?php endif ?>
 					</ul>

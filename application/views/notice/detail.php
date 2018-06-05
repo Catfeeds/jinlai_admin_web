@@ -1,13 +1,24 @@
 <link rel=stylesheet media=all href="/css/detail.css">
 <style>
+    #list-info {background-color:#fff;}
+    #content {background-color:transparent;}
 
+    .notice-item {margin-bottom:20px;}
+
+    .notice-time {font-size:24px;color:#a6a6a6;text-align:center;height:24px;line-height:24px;margin:44px auto 16px;}
+    .notice-content {background-color:#fff;border:1px solid #e9e9e9;border-radius:30px;padding:38px 38px 40px;overflow:hidden;}
+    .notice-content h2 {font-size:30px;color:#3f3f3f;}
+    .notice-body {overflow:hidden;margin-top:18px;}
+    .notice-figure {float:left;width:100px;height:100px;border-radius:10px;}
+    .notice-excerpt {font-size:26px;color:#a6a6a6;margin-top:18px;max-height:96px;line-height:48px;text-overflow:ellipsis;word-break:break-all;}
+    .has-figure .notice-excerpt {padding-left:134px;max-height:80px;line-height:40px;}
 
 	/* 宽度在750像素以上的设备 */
 	@media only screen and (min-width:751px)
 	{
-		
+
 	}
-	
+
 	/* 宽度在960像素以上的设备 */
 	@media only screen and (min-width:961px)
 	{
@@ -57,19 +68,16 @@
 
 		<dt>收信端类型</dt>
 		<dd><?php echo $item['receiver_type'] ?></dd>
-		<dt>收信用户</dt>
-        <dd><?php echo empty($item['user_id'])? 'N/A': 'ID '.$item['user_id'] ?></dd>
-		<dt>收信商家</dt>
-        <dd><?php echo empty($item['biz_id'])? 'N/A': 'ID '.$item['biz_id'] ?></dd>
 
-        <dt>相关文章</dt>
-        <dd>
-            <?php echo empty($item['article_id'])? 'N/A': 'ID '.$item['article_id'] ?>
+        <?php if ($item['receiver_type'] === 'client'): ?>
+        <dt>收信用户</dt>
+        <dd><?php echo 'ID '.$item['user_id'] ?></dd>
+        <?php endif ?>
 
-            <?php if ( ! empty($item['article_id'])): ?>
-            <a href="<?php echo base_url('article/detial?id='.$item['article_id']) ?>" target="_blank">查看</a>
-            <?php endif ?>
-        </dd>
+        <?php if ($item['receiver_type'] === 'biz'): ?>
+        <dt>收信商家</dt>
+        <dd><?php echo 'ID '.$item['biz_id'] ?></dd>
+        <?php endif ?>
 
 		<dt>标题</dt>
         <dd><?php echo empty($item['title'])? 'N/A': $item['title'] ?></dd>
@@ -88,7 +96,49 @@
                 </figure>
             <?php endif ?>
         </dd>
+
+        <dt>相关文章</dt>
+        <dd>
+            <?php echo empty($item['article_id'])? 'N/A': 'ID '.$item['article_id'] ?>
+
+            <?php if ( ! empty($item['article_id'])): ?>
+                <a href="<?php echo base_url('article/detial?id='.$item['article_id']) ?>" target="_blank">查看</a>
+            <?php endif ?>
+        </dd>
 	</dl>
+
+    <div id=preview>
+        <h2>预览</h2>
+
+        <div class=notice-item>
+            <div class=notice-time><?php echo date('Y-m-d H:i', $item['time_create']) ?></div>
+
+            <?php $content_class = empty($item['url_image'])? 'notice-content': 'notice-content has-figure' ?>
+            <div class="<?php echo $content_class ?>">
+                <?php if ( ! empty($item['article_id'])): ?>
+                <a href="<?php echo base_url('article/detail?id='.$item['article_id']) ?>">
+                    <?php endif ?>
+
+                    <h2><?php echo $item['title'] ?> [<?php echo $item[$this->id_name] ?>]</h2>
+                    <div class="notice-body">
+                        <?php if ( ! empty($item['url_image'])): ?>
+                            <figure class="notice-figure centered_xy">
+                                <img src="<?php echo $item['url_image'] ?>">
+                            </figure>
+                        <?php endif ?>
+
+                        <?php if ( ! empty($item['excerpt'])): ?>
+                            <p class=notice-excerpt><?php echo $item['excerpt'] ?></p>
+                        <?php endif ?>
+                    </div>
+
+                    <?php if ( ! empty($item['article_id'])): ?>
+                </a>
+            <?php endif ?>
+            </div>
+
+        </div>
+    </div>
 
 	<dl id=list-record class=dl-horizontal>
 		<dt>创建时间</dt>

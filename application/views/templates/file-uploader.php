@@ -19,7 +19,7 @@
                     <i class="adjuster remove far fa-minus"></i>
                     <i class="adjuster left far fa-arrow-left"></i>
                     <i class="adjuster right far fa-arrow-right"></i>
-                    <figure>
+                    <figure class="centered_xy">
                         <img src="'.$url.'">
                     </figure>
                 </li>';
