@@ -337,7 +337,7 @@
             $text = trim($text, $seperator);
 
             // 拆分文本为数组并清理可被转换为布尔型FALSE的数组元素（空数组、空字符、NULL、0、’0‘等）
-            $array = array_filter( explode(',', $text) );
+            $array = array_filter( explode($seperator, $text) );
 
             return $array;
         } // end explode_csv

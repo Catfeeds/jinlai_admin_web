@@ -58,10 +58,10 @@ define('SESSION_PERIOD', 2592000); // session有效期秒数，此处设为30天
 define('ENCRYPTION_KEY', ''); // 秘钥用于加密相关功能，可为空
 
 // 原生应用scheme
-//define('APP_SCHEME', 'jinlaiadmin');
+define('APP_SCHEME', 'jinlaiadmin');
 
 // APPLE开发平台参数
-//define('IOS_APP_ID', NULL);
+define('IOS_APP_ID', NULL);
 
 // 微信公众平台参数
 define('WECHAT_APP_ID', 'wxba173a67df14c087');
