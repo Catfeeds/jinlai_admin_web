@@ -23,12 +23,16 @@
 
 <script defer src="/js/detail.js"></script>
 
+<?php
+// 通用URL参数
+$common_params = '?vote_id='.$item['vote_id'];
+?>
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
 	<ol class="breadcrumb container">
 		<li><a href="<?php echo base_url() ?>">首页</a></li>
-		<li><a href="<?php echo base_url($this->class_name) ?>"><?php echo $this->class_name_cn ?></a></li>
+		<li><a href="<?php echo base_url($this->class_name.$common_params) ?>"><?php echo $this->class_name_cn ?></a></li>
 		<li class=active><?php echo $title ?></li>
 	</ol>
 </div>
@@ -67,7 +71,7 @@
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
-        <?php if ($status === '正常'): ?>
+        <?php if ($item['status'] === '正常'): ?>
 
         <?php
         // 当前项客户端URL
@@ -98,15 +102,20 @@
 
         <dt>所属标签ID</dt>
         <dd>
+            <?php if (empty($item['tag_id'])): ?>
+            N/A
+            <?php else: ?>
             <?php echo $item['tag_id'] ?>
             <a href="<?php echo base_url('vote_tag/detail?id='.$item['tag_id']) ?>">查看标签</a>
+            <?php endif ?>
         </dd>
 
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
+
 		<dt>描述</dt>
 		<dd>
-            <p><?php echo $item['description'] ?></p>
+            <div><?php echo empty($item['description'])? 'N/A': $item['description'] ?></div>
         </dd>
 
         <dt>形象图</dt>

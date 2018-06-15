@@ -14,7 +14,7 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-			'vote_id', 'tag_id', 'index_id', 'name', 'description', 'url_image', 'ballot_overall',
+			'vote_id', 'tag_id', 'index_id', 'name', 'ballot_overall',
             'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'status', 'time_create_min', 'time_create_max',
 		);
 
@@ -33,11 +33,16 @@
 			'name',
 		);
 
+        /**
+         * @var string 所属投票活动ID
+         */
+        public $vote_id;
+
 		public function __construct()
 		{
 			parent::__construct();
 
-			// （可选）未登录用户转到登录页
+			// 未登录用户转到登录页
 			($this->session->time_expire_login > time()) OR redirect( base_url('login') );
 
 			// 向类属性赋值
@@ -47,6 +52,8 @@
 			$this->id_name = 'option_id'; // 还有这里，OK，这就可以了
 			$this->view_root = $this->class_name; // 视图文件所在目录
 			$this->media_root = MEDIA_URL. $this->class_name.'/'; // 媒体文件所在目录
+
+            $this->vote_id = empty($this->input->get_post('vote_id'))? NULL: $this->input->get_post('vote_id');
 
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
@@ -61,7 +68,7 @@
 		public function index()
 		{
             // 检查是否已传入必要参数
-			$vote_id = $this->input->get_post('vote_id')? $this->input->get_post('vote_id'): NULL;
+			$vote_id = $this->vote_id;
 			if ( !empty($vote_id) ):
                 $params['vote_id'] = $vote_id;
             else:
@@ -72,6 +79,7 @@
 			$data = array(
 				'title' => $this->class_name_cn. '列表',
 				'class' => $this->class_name.' index',
+                'vote_id' => $this->vote_id,
 			);
 
 			// 筛选条件
@@ -152,6 +160,14 @@
 		 */
 		public function trash()
 		{
+            // 检查是否已传入必要参数
+            $vote_id = $this->vote_id;
+            if ( !empty($vote_id) ):
+                $params['vote_id'] = $vote_id;
+            else:
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endif;
+
 			// 操作可能需要检查操作权限
 			$role_allowed = array('管理员', '经理'); // 角色要求
 			$min_level = 30; // 级别要求
@@ -161,6 +177,7 @@
 			$data = array(
 				'title' => $this->class_name_cn. '回收站',
 				'class' => $this->class_name.' trash',
+                'vote_id' => $this->vote_id,
 			);
 
 			// 筛选条件
@@ -205,7 +222,7 @@
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
             // 检查是否已传入必要参数
-            $vote_id = $this->input->get_post('vote_id')? $this->input->get_post('vote_id'): NULL;
+            $vote_id = $this->vote_id;
             if ( empty($vote_id) )
                 redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
 

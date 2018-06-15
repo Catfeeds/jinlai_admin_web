@@ -80,8 +80,21 @@
 		<dd><?php echo $item['name'] ?></dd>
         <dt>自定义URL</dt>
         <dd><?php echo $item['url_name'] ?></dd>
+
 		<dt>描述</dt>
-		<dd><?php echo $item['description'] ?></dd>
+        <dd>
+            <div><?php echo empty($item['description'])? 'N/A': $item['description'] ?></div>
+        </dd>
+
+        <dt>补充描述</dt>
+        <dd>
+            <div><?php echo empty($item['extra'])? 'N/A': $item['extra'] ?></div>
+        </dd>
+
+        <dt>自定义样式</dt>
+        <dd>
+            <div class="well"><?php echo empty($item['content_css'])? 'N/A': $item['content_css'] ?></div>
+        </dd>
 
         <dt>形象图</dt>
         <dd>
@@ -131,8 +144,11 @@
             <?php endif ?>
         </dd>
 
-		<dt>可报名</dt>
+		<dt>用户可报名</dt>
 		<dd><?php echo $item['signup_allowed'] ?></dd>
+
+        <dt>选项需审核</dt>
+        <dd><?php echo $item['option_censor'] ?></dd>
 
         <dt>投票规则</dt>
         <dd>

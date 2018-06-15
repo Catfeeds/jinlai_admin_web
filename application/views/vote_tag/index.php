@@ -23,6 +23,10 @@
 
 <script defer src="/js/index.js"></script>
 
+<?php
+    // 通用URL参数
+    $common_params = '?vote_id='.$vote_id;
+?>
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -39,13 +43,14 @@
 	$current_level = $this->session->level; // 当前用户级别
 	$role_allowed = array('管理员', '经理');
 	$level_allowed = 30;
+
 	if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
-	?>
-	<div class="btn-group btn-group-justified" role=group>
-		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
-	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
-	</div>
+    ?>
+    <div class="btn-group btn-group-justified" role=group>
+        <a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.$common_params) ?>">所有</a>
+        <a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash'.$common_params) ?>">回收站</a>
+        <a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create'.$common_params) ?>">创建</a>
+    </div>
 	
     <div id=primary_actions class=action_bottom>
         <?php if (count($items) > 1): ?>
@@ -56,7 +61,7 @@
 
         <ul class=horizontal>
             <li>
-                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
+                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create'.$common_params) ?>">创建</a>
             </li>
         </ul>
     </div>
@@ -101,8 +106,8 @@
                         // 需要特定角色和权限进行该操作
                         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                             ?>
-                        <li><a title="删除" href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
-                        <li class=color_primary><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
+                        <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
                         <?php endif ?>
                     </ul>
                 </div>

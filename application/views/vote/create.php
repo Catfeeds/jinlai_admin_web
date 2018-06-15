@@ -61,12 +61,26 @@
 			<div class=form-group>
 				<label for=description class="col-sm-2 control-label">描述</label>
 				<div class=col-sm-10>
-					<textarea class=form-control name=description rows=10 placeholder="描述"><?php echo set_value('description') ?></textarea>
+                    <textarea class=form-control name=description rows=5 placeholder="最多255个字符"><?php echo set_value('description') ?></textarea>
 				</div>
 			</div>
+
+            <div class=form-group>
+                <label for=extra class="col-sm-2 control-label">补充描述</label>
+                <div class=col-sm-10>
+                    <textarea class=form-control name=extra rows=5 placeholder="最多5000个字符"><?php echo set_value('extra') ?></textarea>
+                </div>
+            </div>
         </fieldset>
 
         <fieldset>
+            <div class=form-group>
+                <label for=content_css class="col-sm-2 control-label">自定义样式</label>
+                <div class=col-sm-10>
+                    <textarea class=form-control name=content_css rows=5 placeholder="CSS；无需<style>标签，最多5000个字符"><?php echo set_value('content_css') ?></textarea>
+                </div>
+            </div>
+
 			<div class=form-group>
 				<label for=url_image class="col-sm-2 control-label">形象图</label>
 				<div class=col-sm-10>
@@ -123,7 +137,7 @@
 
         <fieldset>
 			<div class=form-group>
-				<label for=signup_allowed class="col-sm-2 control-label">可报名</label>
+				<label for=signup_allowed class="col-sm-2 control-label">用户可报名</label>
 				<div class=col-sm-10>
                     <select name=signup_allowed required>
                         <option value="否" <?php if (set_value('signup_allowed') === '否') echo 'selected' ?>>否</option>
@@ -131,6 +145,16 @@
                     </select>
 				</div>
 			</div>
+
+            <div class=form-group>
+                <label for=option_censor class="col-sm-2 control-label">候选项需审核</label>
+                <div class=col-sm-10>
+                    <select name=option_censor required>
+                        <option value="否" <?php if (set_value('option_censor') === '否') echo 'selected' ?>>否</option>
+                        <option value="是" <?php if (set_value('option_censor') === '是') echo 'selected' ?>>是</option>
+                    </select>
+                </div>
+            </div>
 			
 			<div class=form-group>
 				<label for=max_user_total class="col-sm-2 control-label">每选民最高总选票数</label>

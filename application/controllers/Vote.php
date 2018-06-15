@@ -14,7 +14,7 @@
 		 * 可作为列表筛选条件的字段名；可在具体方法中根据需要删除不需要的字段并转换为字符串进行应用，下同
 		 */
 		protected $names_to_sort = array(
-            'name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end',
+            'name', 'description', 'signup_allowed', 'option_censor', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end',
             'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'time_create_min', 'time_create_max',
 		);
 
@@ -22,7 +22,7 @@
 		 * 可被编辑的字段名
 		 */
 		protected $names_edit_allowed = array(
-            'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'time_start', 'time_end',
+            'name', 'url_name', 'description', 'extra', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'option_censor', 'max_user_total', 'max_user_daily', 'max_user_daily_each', 'content_css', 'time_start', 'time_end',
 		);
 
 		/**
@@ -207,16 +207,20 @@
 			$this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
             $this->form_validation->set_rules('url_name', 'URL名称', 'trim|min_length[5]|max_length[30]|alpha_dash');
 			$this->form_validation->set_rules('description', '描述', 'trim|max_length[255]');
+            $this->form_validation->set_rules('extra', '补充描述', 'trim|max_length[5000]');
 			$this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_audio', '背景音乐', 'trim|max_length[255]');
 			$this->form_validation->set_rules('url_video', '形象视频', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_video_thumb', '形象视频缩略图', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_default_option_image', '选项默认占位图', 'trim|max_length[255]');
 
-			$this->form_validation->set_rules('signup_allowed', '可报名', 'trim|required|in_list[否,是]');
+            $this->form_validation->set_rules('signup_allowed', '用户可报名', 'trim|required|in_list[否,是]');
+            $this->form_validation->set_rules('option_censor', '候选项需审核', 'trim|required|in_list[否,是]');
+
             $this->form_validation->set_rules('max_user_total', '每选民最高总选票数', 'trim|is_natural|greater_than_equal_to[0]|less_than_equal_to[999]');
             $this->form_validation->set_rules('max_user_daily', '每选民最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
             $this->form_validation->set_rules('max_user_daily_each', '每选民同选项最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
+            $this->form_validation->set_rules('content_css', '自定义样式', 'trim|max_length[5000]');
 			
 			$this->form_validation->set_rules('time_start', '开始时间', 'trim|exact_length[16]|callback_time_start');
 			$this->form_validation->set_rules('time_end', '结束时间', 'trim|exact_length[16]|callback_time_end');
@@ -244,8 +248,8 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-                    'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed',
-				);
+                    'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed','content_css',
+                );
 				foreach ($data_need_no_prepare as $name)
 					$data_to_create[$name] = $this->input->post($name);
 
@@ -273,7 +277,7 @@
 					$this->load->view('templates/footer', $data);
 
 				endif;
-				
+
 			endif;
 		} // end create
 
@@ -316,16 +320,19 @@
             $this->form_validation->set_rules('name', '名称', 'trim|required|max_length[30]');
             $this->form_validation->set_rules('url_name', 'URL名称', 'trim|min_length[5]|max_length[30]|alpha_dash');
             $this->form_validation->set_rules('description', '描述', 'trim|max_length[255]');
+            $this->form_validation->set_rules('extra', '补充描述', 'trim|max_length[5000]');
             $this->form_validation->set_rules('url_image', '形象图', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_audio', '背景音乐', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_video', '形象视频', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_video_thumb', '形象视频缩略图', 'trim|max_length[255]');
             $this->form_validation->set_rules('url_default_option_image', '选项默认占位图', 'trim|max_length[255]');
 
-			$this->form_validation->set_rules('signup_allowed', '可报名', 'trim|required|in_list[否,是]');
+            $this->form_validation->set_rules('signup_allowed', '用户可报名', 'trim|required|in_list[否,是]');
+            $this->form_validation->set_rules('option_censor', '候选项需审核', 'trim|required|in_list[否,是]');
 			$this->form_validation->set_rules('max_user_total', '每选民最高总选票数', 'trim|is_natural|greater_than_equal_to[0]|less_than_equal_to[999]');
 			$this->form_validation->set_rules('max_user_daily', '每选民最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
 			$this->form_validation->set_rules('max_user_daily_each', '每选民同选项最高日选票数', 'trim|greater_than[0]|less_than_equal_to[99]');
+            $this->form_validation->set_rules('content_css', '自定义样式', 'trim|max_length[5000]');
 			
 			$this->form_validation->set_rules('time_start', '开始时间', 'trim|exact_length[16]|callback_time_start');
 			$this->form_validation->set_rules('time_end', '结束时间', 'trim|exact_length[16]|callback_time_end');
@@ -355,8 +362,8 @@
 				);
 				// 自动生成无需特别处理的数据
 				$data_need_no_prepare = array(
-					'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'option_orders',
-				);
+					'name', 'url_name', 'description', 'url_image', 'url_audio', 'url_video', 'url_video_thumb', 'url_default_option_image', 'signup_allowed', 'option_orders', 'content_css',
+                );
 				foreach ($data_need_no_prepare as $name)
 					$data_to_edit[$name] = $this->input->post($name);
 
@@ -369,7 +376,7 @@
 					$data['class'] = 'success';
 					$data['content'] = $result['content']['message'];
 					$data['operation'] = 'edit';
-					$data['id'] = $result['content']['id']; // 修改后的信息ID
+					$data['id'] = $id; // 修改后的信息ID
 
 					$this->load->view('templates/header', $data);
 					$this->load->view($this->view_root.'/result', $data);

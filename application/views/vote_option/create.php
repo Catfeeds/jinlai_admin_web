@@ -23,12 +23,16 @@
 
 <script defer src="/js/create.js"></script>
 
+<?php
+// 通用URL参数
+$common_params = '?vote_id='.$vote_id;
+?>
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
 	<ol class="breadcrumb container">
 		<li><a href="<?php echo base_url() ?>">首页</a></li>
-		<li><a href="<?php echo base_url($this->class_name) ?>"><?php echo $this->class_name_cn ?></a></li>
+		<li><a href="<?php echo base_url($this->class_name.$common_params) ?>"><?php echo $this->class_name_cn ?></a></li>
 		<li class=active><?php echo $title ?></li>
 	</ol>
 </div>
@@ -49,7 +53,7 @@
                 <div class=col-sm-10>
                     <input class=form-control name=index_id type=number min="1" step="1" max=65535 value="<?php echo set_value('index_id') ?>" placeholder="整数数字">
 
-                    <p class=help-block>输入索引序号后，活动页面上各候选项将按序号数字大小排序</p>
+                    <p class=help-block>输入索引序号后，活动页面上各候选项将按序号数字大小排序；也可以在活动修改页批量调序。</p>
                 </div>
             </div>
 			
@@ -67,19 +71,23 @@
 				</div>
 			</div>
 
-            <?php if ( ! empty($tags)): ?>
             <div class=form-group>
                 <?php $input_name = 'tag_id' ?>
                 <label for="<?php echo $input_name ?>" class="col-sm-2 control-label">参选分类</label>
                 <div class=col-sm-10>
+                    <?php if ( ! empty($tags)): ?>
                     <select name=<?php echo $input_name ?> required>
                     <?php foreach($tags as $tag): ?>
                         <option value="<?php echo $tag[$input_name] ?>"><?php echo $tag['name'] ?></option>
                     <?php endforeach ?>
                     </select>
+
+                    <?php else: ?>
+                    <p class="form-control-static"><a href="<?php echo base_url('vote_tag/create'.$common_params) ?>">添加候选项标签</a>后，即可为候选项指定所属标签（即分类）</p>
+
+                    <?php endif ?>
                 </div>
             </div>
-            <?php endif ?>
 			
 			<div class=form-group>
 				<label for=url_image class="col-sm-2 control-label">形象图</label>

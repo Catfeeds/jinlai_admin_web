@@ -10,15 +10,14 @@
 
     // 生成body的class
     $body_class = ( isset($class) )? $class: NULL;
-    $body_class .= ($this->user_agent['is_wechat'] === TRUE)? ' is_wechat': NULL;
-    $body_class .= ($this->user_agent['is_ios'] === TRUE)? ' is_ios': NULL;
-    $body_class .= ($this->user_agent['is_android'] === TRUE)? ' is_android': NULL;
+    $body_class .= ($this->user_agent['is_wechat'])? ' is_wechat': NULL;
+    $body_class .= ($this->user_agent['is_ios'])? ' is_ios': NULL;
+    $body_class .= ($this->user_agent['is_android'])? ' is_android': NULL;
     $body_class .= ($this->user_agent['is_mobile'])? ' is_mobile': NULL; // 移动端设备
 
-    $body_class .= ($this->user_agent['is_macos'] === TRUE)? ' is_macos': NULL;
-    $body_class .= ($this->user_agent['is_windows'] === TRUE)? ' is_windows': NULL;
-    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备
-?>
+    $body_class .= ($this->user_agent['is_macos'])? ' is_macos': NULL;
+    $body_class .= ($this->user_agent['is_windows'])? ' is_windows': NULL;
+    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备?>
 <!doctype html>
 <html lang=zh-cn>
 	<head>
@@ -28,7 +27,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180614">
+		<meta name=version content="revision20180615">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -70,6 +69,7 @@
         <link rel=stylesheet media=all href="<?php echo CDN_URL ?>bootstrap/v3.3.7/bootstrap.min.css">
         <link rel=stylesheet media=all href="<?php echo CDN_URL ?>css/flat-ui.min.css">
 		<link rel=stylesheet media=all href="/css/style.css">
+
         <?php if (isset($this->session->time_expire_login) ): ?>
         <link rel=stylesheet media=all href="/css/file-upload.css">
         <script defer src="/js/file-upload.js"></script>

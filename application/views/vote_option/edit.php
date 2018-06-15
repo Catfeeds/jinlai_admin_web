@@ -22,12 +22,16 @@
 
 <script defer src="/js/edit.js"></script>
 
+<?php
+// 通用URL参数
+$common_params = '?vote_id='.$vote_id;
+?>
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
 	<ol class="breadcrumb container">
 		<li><a href="<?php echo base_url() ?>">首页</a></li>
-		<li><a href="<?php echo base_url($this->class_name) ?>"><?php echo $this->class_name_cn ?></a></li>
+		<li><a href="<?php echo base_url($this->class_name.$common_params) ?>"><?php echo $this->class_name_cn ?></a></li>
 		<li class=active><?php echo $title ?></li>
 	</ol>
 </div>
@@ -48,7 +52,7 @@
                 <div class=col-sm-10>
                     <input class=form-control name=index_id type=number min="1" step="1" max=65535 value="<?php echo $item['index_id'] ?>" placeholder="整数数字">
 
-                    <p class=help-block>输入索引序号后，活动页面上各候选项将按序号数字从大到小排序</p>
+                    <p class=help-block>输入索引序号后，活动页面上各候选项将按序号数字从大到小排序；也可以在<a href="<?php echo base_url('vote/edit'.$common_params) ?>">活动修改页批量调序</a>。</p>
                 </div>
             </div>
 			

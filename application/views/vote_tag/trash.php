@@ -23,6 +23,10 @@
 
 <script defer src="/js/trash.js"></script>
 
+<?php
+// 通用URL参数
+$common_params = '?vote_id='.$vote_id;
+?>
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -42,11 +46,11 @@
 	$level_allowed = 30;
 	if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 	?>
-	<div class="btn-group btn-group-justified" role=group>
-		<a class="btn btn-default" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
-	  	<a class="btn btn-primary" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
-	</div>
+    <div class="btn-group btn-group-justified" role=group>
+        <a class="btn btn-default" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.$common_params) ?>">所有</a>
+        <a class="btn btn-primary" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash'.$common_params) ?>">回收站</a>
+        <a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create'.$common_params) ?>">创建</a>
+    </div>
 	<?php endif ?>
 
 	<?php if ( empty($items) ): ?>

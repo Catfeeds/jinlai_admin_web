@@ -18,6 +18,11 @@
             'time_create', 'time_delete', 'time_edit', 'creator_id', 'operator_id', 'status', 'time_create_min', 'time_create_max',
 		);
 
+        /**
+         * @var string 所属投票活动ID
+         */
+        public $vote_id;
+
 		public function __construct()
 		{
 			parent::__construct();
@@ -33,6 +38,8 @@
 			$this->view_root = $this->class_name; // 视图文件所在目录
 			$this->media_root = MEDIA_URL. $this->class_name.'/'; // 媒体文件所在目录
 
+            $this->vote_id = empty($this->input->get_post('vote_id'))? NULL: $this->input->get_post('vote_id');
+
 			// 设置需要自动在视图文件中生成显示的字段
 			$this->data_to_display = array(
 				'vote_id' => '投票ID',
@@ -45,11 +52,20 @@
 		 */
 		public function index()
 		{
-			// 页面信息
-			$data = array(
-				'title' => $this->class_name_cn. '列表',
-				'class' => $this->class_name.' index',
-			);
+            // 检查是否已传入必要参数
+            $vote_id = $this->vote_id;
+            if ( !empty($vote_id) ):
+                $params['vote_id'] = $vote_id;
+            else:
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endif;
+
+            // 页面信息
+            $data = array(
+                'title' => $this->class_name_cn. '列表',
+                'class' => $this->class_name.' index',
+                'vote_id' => $this->vote_id,
+            );
 
 			// 筛选条件
 			$condition['time_delete'] = 'NULL';
@@ -88,6 +104,14 @@
 		 */
 		public function trash()
 		{
+            // 检查是否已传入必要参数
+            $vote_id = $this->vote_id;
+            if ( !empty($vote_id) ):
+                $params['vote_id'] = $vote_id;
+            else:
+                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endif;
+
 			// 操作可能需要检查操作权限
 			$role_allowed = array('管理员', '经理'); // 角色要求
 			$min_level = 30; // 级别要求
@@ -97,6 +121,7 @@
 			$data = array(
 				'title' => $this->class_name_cn. '回收站',
 				'class' => $this->class_name.' trash',
+                'vote_id' => $this->vote_id,
 			);
 
 			// 筛选条件
@@ -140,11 +165,13 @@
 // 			$min_level = 30; // 级别要求
 // 			$this->basic->permission_check($role_allowed, $min_level);
 
-            // 检查是否已传入必要参数
-            $vote_id = $this->input->get_post('vote_id');
-            $option_id = $this->input->get_post('option_id');
-            if (empty($vote_id) || empty($option_id))
-                redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            // 检查必要参数是否已传入
+            $required_params = array('vote_id', 'option_id');
+            foreach ($required_params as $param):
+                ${$param} = $this->input->post_get($param);
+                if ( empty( ${$param} ) )
+                    redirect( base_url('error/code_400') ); // 若缺少参数，转到错误提示页
+            endforeach;
 
 			// 页面信息
 			$data = array(

@@ -23,6 +23,10 @@
 
 <script defer src="/js/index.js"></script>
 
+<?php
+    // 通用URL参数
+    $common_params = '?vote_id='.$vote_id;
+?>
 <base href="<?php echo $this->media_root ?>">
 
 <div id=breadcrumb>
@@ -39,14 +43,13 @@
 	$current_level = $this->session->level; // 当前用户级别
 	$role_allowed = array('管理员', '经理');
 	$level_allowed = 30;
-	//if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 
-        $url_to_create = base_url($this->class_name.'/create?vote_id='.$vote['vote_id']); // 创建数据项的URL
+	if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 	?>
 	<div class="btn-group btn-group-justified" role=group>
-		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
-	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash?vote_id='.$vote['vote_id']) ?>">回收站</a>
-		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo $url_to_create ?>">创建</a>
+		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'?vote_id='.$vote_id) ?>">所有</a>
+	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash?vote_id='.$vote_id) ?>">回收站</a>
+		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create'.$common_params) ?>">创建</a>
 	</div>
 	
     <div id=primary_actions class=action_bottom>
@@ -58,11 +61,11 @@
 
         <ul class=horizontal>
             <li>
-                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo $url_to_create ?>">创建</a>
+                <a class=bg_primary title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create'.$common_params) ?>">创建</a>
             </li>
         </ul>
     </div>
-	<?php //endif ?>
+	<?php endif ?>
 
 	<?php if ( empty($items) ): ?>
 	<blockquote>
