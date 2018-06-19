@@ -59,7 +59,7 @@
 		<ul class="list-horizontal row">
 			<li class="col-xs-12 col-sm-6 col-md-3"><?php echo $item['time_edit'] ?></li>
 		</ul>
-        <?php if ( !empty($item['excerpt']) ): ?>
+        <?php if ( ! empty($item['excerpt']) ): ?>
             <div class="excerpt well"><?php echo $item['excerpt'] ?></div>
         <?php endif ?>
 	</header>
@@ -69,7 +69,7 @@
 	<dl id=list-info class=dl-horizontal>
         <?php
         // 当前项客户端URL
-        $item_url = WEB_URL.$this->class_name.'/detail'. (empty($item['url_name'])? '?id='.$item[$this->id_name]: '/'.$item['url_name']);
+        $item_url = WEB_URL.$this->class_name. (empty($item['url_name'])? '/detail?id='.$item[$this->id_name]: '/'.$item['url_name']);
         ?>
 
         <dt><?php echo $this->class_name_cn ?>链接</dt>
