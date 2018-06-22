@@ -85,7 +85,7 @@
 				<label for=url_image class="col-sm-2 control-label">形象图</label>
 				<div class=col-sm-10>
                     <?php
-                    require_once(APPPATH. 'views/templates/file-uploader.php');
+                    require_once(VIEWS_PATH. 'templates/file-uploader.php');
                     $name_to_upload = 'url_image';
                     generate_html($name_to_upload, $this->class_name, FALSE);
                     ?>
@@ -101,14 +101,15 @@
 					<input class=form-control name=url_audio type=hidden value="<?php echo set_value('url_audio') ?>" placeholder="背景音乐">
 				</div>
 			</div>
-
-			<div class=form-group>
-				<label for=url_video class="col-sm-2 control-label">形象视频</label>
-				<div class=col-sm-10>
-					<input class=form-control name=url_video type=hidden value="<?php echo set_value('url_video') ?>" placeholder="形象视频">
-				</div>
-			</div>
 			-->
+            <input class=form-control name=url_audio type=hidden value="<?php echo set_value('url_audio') ?>" placeholder="背景音乐">
+
+            <div class=form-group>
+                <label for=url_video class="col-sm-2 control-label">形象视频</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=url_video type=text value="<?php echo set_value('url_video') ?>" placeholder="形象视频">
+                </div>
+            </div>
 
             <div class=form-group>
                 <label for=url_video_thumb class="col-sm-2 control-label">形象视频缩略图</label>

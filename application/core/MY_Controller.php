@@ -355,7 +355,7 @@
 
 				// 将字符串格式转换为数组格式
 				if ( !is_array($ids) ):
-					$ids = explode(',', $ids);
+                    $ids = $this->explode_csv($ids);
 				endif;
 
 			elseif ( !empty($this->input->post('ids[]')) ):

@@ -17,7 +17,8 @@
 
     $body_class .= ($this->user_agent['is_macos'])? ' is_macos': NULL;
     $body_class .= ($this->user_agent['is_windows'])? ' is_windows': NULL;
-    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备?>
+    $body_class .= ($this->user_agent['is_desktop'])? ' is_desktop': NULL; // 非移动端设备
+?>
 <!doctype html>
 <html lang=zh-cn>
 	<head>
@@ -27,7 +28,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180619">
+		<meta name=version content="revision20180622">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -53,16 +54,24 @@
         <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.13/fontawesome-all.min.js"></script>
         <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.13/fa-v4-shims.min.js"></script>
         <script>
+            // 当前用户信息
+            var user_id = <?php echo empty($this->session->user_id)? 'null': $this->session->user_id ?>;
+
+            // 全局参数
+            var api_url = '<?php echo API_URL ?>'; // API根URL
+            var base_url = '<?php echo BASE_URL ?>'; // 页面根URL
+            var media_url = '<?php echo MEDIA_URL ?>'; // 媒体文件根URL
+            var class_name = '<?php echo $this->class_name ?>';
+            var class_name_cn = '<?php echo $this->class_name_cn ?>';
+
             // AJAX参数
             var ajax_root = '<?php echo API_URL ?>'
             var common_params = new Object()
             common_params.app_type = 'admin' // 默认为管理端请求
+            common_params.user_id = user_id
 
             // UserAgent
-            var user_agent = new Object();
-            user_agent.is_wechat = <?php echo ($this->user_agent['is_wechat'])? 'true': 'false' ?>;
-            user_agent.is_ios = <?php echo ($this->user_agent['is_ios'])? 'true': 'false' ?>;
-            user_agent.is_android = <?php echo ($this->user_agent['is_android'])? 'true': 'false' ?>;
+            var user_agent = <?php echo json_encode($this->user_agent) ?>;
         </script>
 
         <link rel=stylesheet media=all href="<?php echo CDN_URL ?>css/reset.css">
@@ -71,10 +80,8 @@
 		<link rel=stylesheet media=all href="/css/style.css">
 
         <?php if (isset($this->session->time_expire_login) ): ?>
-        <link rel=stylesheet media=all href="/css/file-upload.css">
-        <script defer src="/js/file-upload.js"></script>
-        <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
         <script defer src="<?php echo CDN_URL ?>jquery/jquery.lazyload.min.js"></script>
+        <script defer src="<?php echo CDN_URL ?>jquery/jquery.qrcode.min.js"></script>
         <script defer src="<?php echo CDN_URL ?>jquery/stupidtable.min.js"></script>
         <?php endif ?>
 
@@ -84,9 +91,10 @@
         <?php else: ?>
         <link rel=apple-touch-icon href="<?php echo CDN_URL ?>icon/jinlai_client/icon120@3x.png">
         <meta name=format-detection content="telephone=yes, address=no, email=no">
-            <?php if ($this->user_agent['is_ios'] && !empty(IOS_APP_ID)): ?>
-                <meta name=apple-itunes-app content="app-id=<?php echo IOS_APP_ID ?>">
-            <?php endif ?>
+        <?php endif ?>
+
+        <?php if (!empty(IOS_APP_ID) && $this->user_agent['is_ios']): ?>
+        <meta name=apple-itunes-app content="app-id=<?php echo IOS_APP_ID ?>">
         <?php endif ?>
 	</head>
 <?php

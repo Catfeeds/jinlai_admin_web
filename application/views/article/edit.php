@@ -19,6 +19,7 @@
 
     }
 </style>
+
 <script defer src="/js/edit.js"></script>
 
 <base href="<?php echo $this->media_root ?>">
@@ -116,7 +117,7 @@
 				<label for=url_images class="col-sm-2 control-label">形象图</label>
                 <div class=col-sm-10>
                     <?php
-                    require_once(APPPATH. 'views/templates/file-uploader.php');
+                    require_once(VIEWS_PATH. 'templates/file-uploader.php');
                     $name_to_upload = 'url_images';
                     generate_html($name_to_upload, $this->class_name, FALSE, 1, $item[$name_to_upload]);
                     ?>
@@ -124,6 +125,25 @@
                     <p class=help-block>请上传大小在2M以内，边长不超过2048px的jpg/png图片</p>
                 </div>
 			</div>
+
+            <div class=form-group>
+				<label for=url_video class="col-sm-2 control-label">形象视频</label>
+				<div class=col-sm-10>
+					<input class=form-control name=url_video type=text value="<?php echo $item['url_video'] ?>" placeholder="形象视频">
+				</div>
+			</div>
+
+            <div class=form-group>
+                <label for=url_video_thumb class="col-sm-2 control-label">形象视频缩略图</label>
+                <div class=col-sm-10>
+                    <?php
+                    $name_to_upload = 'url_video_thumb';
+                    generate_html($name_to_upload, $this->class_name, FALSE, 1, $item[$name_to_upload]);
+                    ?>
+
+                    <p class=help-block>需要与视频尺寸一致</p>
+                </div>
+            </div>
 		</fieldset>
 
 		<div class=form-group>
