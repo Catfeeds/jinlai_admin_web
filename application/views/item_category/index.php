@@ -120,6 +120,50 @@
             <?php endforeach ?>
         </ul>
 
+        <!-- 顶级分类 -->
+        <h2>顶级分类</h2>
+        <ul data-level=1></ul>
+
+        <!-- 次级分类 -->
+        <h2>次级分类</h2>
+        <ul data-level=2></ul>
+
+        <!-- 末级分类 -->
+        <h2>末级分类</h2>
+        <ul data-level=3></ul>
+
 	</form>
 	<?php endif ?>
 </div>
+
+<script>
+    /*
+    $(function(){
+        var items = <?php echo json_encode($items) ?>;
+
+        // 顶级分类列表
+        var list_level_1 = $('ul[data-level=1]');
+
+        // 次级分类列表
+        var list_level_2 = $('ul[data-level=2]');
+
+        // 末级分类列表
+        var list_level_3 = $('ul[data-level=3]');
+
+        $.each(items, function(index, item){
+            var item_dom = '<li>' +
+                    '<a href="'+ base_url+'detail?id='+item.category_id +'">' +
+                    item.name +
+                    '</a>' +
+                    '<div class=item-actions>' +
+                    '   <span>' +
+                    '       <input name=ids[] class=form-control type=checkbox value="' + item.category_id + '">' +
+                    '   </span>' +
+                    '</div>' +
+                '</li>';
+
+            $('ul[data-level='+ item.level +']').append(item_dom);
+        });
+    });
+    */
+</script>
