@@ -42,7 +42,8 @@
 	if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 	?>
 	<div class="btn-group btn-group-justified" role=group>
-		<a class="btn btn-primary" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
+		<a class="btn <?php echo (empty($this->input->get()))? 'btn-primary': 'btn-default' ?>" title="所有<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name) ?>">所有</a>
+        <a class="btn <?php echo ($this->input->get('available') == 1)? 'btn-primary': 'btn-default' ?>" title="有在售商品的商品分类" href="<?php echo base_url($this->class_name.'?available=1') ?>">在售中</a>
 	  	<a class="btn btn-default" title="<?php echo $this->class_name_cn ?>回收站" href="<?php echo base_url($this->class_name.'/trash') ?>">回收站</a>
 		<a class="btn btn-default" title="创建<?php echo $this->class_name_cn ?>" href="<?php echo base_url($this->class_name.'/create') ?>">创建</a>
 	</div>
@@ -120,17 +121,18 @@
             <?php endforeach ?>
         </ul>
 
-        <!-- 顶级分类 -->
+        <!--
+
         <h2>顶级分类</h2>
         <ul data-level=1></ul>
 
-        <!-- 次级分类 -->
         <h2>次级分类</h2>
         <ul data-level=2></ul>
 
-        <!-- 末级分类 -->
         <h2>末级分类</h2>
         <ul data-level=3></ul>
+
+        -->
 
 	</form>
 	<?php endif ?>

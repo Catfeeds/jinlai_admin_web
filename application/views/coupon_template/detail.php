@@ -67,8 +67,30 @@
             <figure class="qrcode col-xs-12 col-sm-6 col-md-3" data-qrcode-string="<?php echo $item_url ?>"></figure>
         </dd>
 
+        <?php
+        // 当前项客户端URL
+        $create_url = WEB_URL.'coupon/create?template_id='.$item[$this->id_name];
+        ?>
+        <dt>领券链接</dt>
+        <dd>
+            <span><?php echo $create_url ?></span>
+            <a href="<?php echo $create_url ?>" target=_blank>查看</a>
+        </dd>
+
+        <dt><?php echo $this->class_name_cn ?>二维码</dt>
+        <dd>
+            <figure class="qrcode col-xs-12 col-sm-6 col-md-3" data-qrcode-string="<?php echo $create_url ?>"></figure>
+        </dd>
+
 		<dt>优惠券模板ID</dt>
 		<dd><?php echo $item['template_id'] ?></dd>
+
+        <dt>可见性</dt>
+        <dd>
+            <?php echo $item['scope'] == 'public'? '公开': '非公开' ?>
+            <p>非公开领取的优惠券，将无法从领券中心领取</p>
+        </dd>
+
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>说明</dt>
