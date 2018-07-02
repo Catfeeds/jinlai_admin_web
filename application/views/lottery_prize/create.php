@@ -148,90 +148,48 @@
 		<fieldset>
 			<legend>基本信息</legend>
 
-									<div class=form-group>
-							<label for=prize_id class="col-sm-2 control-label">奖项ID</label>
-							<div class=col-sm-10>
-								<input class=form-control name=prize_id type=text value="<?php echo set_value('prize_id') ?>" placeholder="奖项ID">
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=lottery_id class="col-sm-2 control-label">所属抽奖ID</label>
-							<div class=col-sm-10>
-								<input class=form-control name=lottery_id type=text value="<?php echo set_value('lottery_id') ?>" placeholder="所属抽奖ID">
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=index_id class="col-sm-2 control-label">索引序号 ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=index_id type=text value="<?php echo set_value('index_id') ?>" placeholder="索引序号" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=name class="col-sm-2 control-label">名称</label>
-							<div class=col-sm-10>
-								<input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="名称">
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=description class="col-sm-2 control-label">描述 ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=description type=text value="<?php echo set_value('description') ?>" placeholder="描述" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=url_image class="col-sm-2 control-label">形象图URL ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=url_image type=text value="<?php echo set_value('url_image') ?>" placeholder="形象图URL" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=rate class="col-sm-2 control-label">中奖率 ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=rate type=text value="<?php echo set_value('rate') ?>" placeholder="中奖率" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=stock class="col-sm-2 control-label">奖品总数 ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=stock type=text value="<?php echo set_value('stock') ?>" placeholder="奖品总数" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=time_create class="col-sm-2 control-label">创建时间</label>
-							<div class=col-sm-10>
-								<input class=form-control name=time_create type=text value="<?php echo set_value('time_create') ?>" placeholder="创建时间">
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=time_delete class="col-sm-2 control-label">删除时间 ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=time_delete type=text value="<?php echo set_value('time_delete') ?>" placeholder="删除时间" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=time_edit class="col-sm-2 control-label">最后操作时间</label>
-							<div class=col-sm-10>
-								<input class=form-control name=time_edit type=text value="<?php echo set_value('time_edit') ?>" placeholder="最后操作时间">
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=creator_id class="col-sm-2 control-label">创建者ID</label>
-							<div class=col-sm-10>
-								<input class=form-control name=creator_id type=text value="<?php echo set_value('creator_id') ?>" placeholder="创建者ID">
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=operator_id class="col-sm-2 control-label">最后操作者ID ※</label>
-							<div class=col-sm-10>
-								<input class=form-control name=operator_id type=text value="<?php echo set_value('operator_id') ?>" placeholder="最后操作者ID" required>
-							</div>
-						</div>
-						<div class=form-group>
-							<label for=status class="col-sm-2 control-label">状态</label>
-							<div class=col-sm-10>
-								<input class=form-control name=status type=text value="<?php echo set_value('status') ?>" placeholder="状态">
-							</div>
-						</div>
+            <div class=form-group>
+                <label for=lottery_id class="col-sm-2 control-label">所属抽奖ID ※</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=lottery_id type=text value="<?php echo set_value('lottery_id') ?>" placeholder="所属抽奖ID">
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=index_id class="col-sm-2 control-label">索引序号</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=index_id type=text value="<?php echo set_value('index_id') ?>" placeholder="索引序号" required>
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=name class="col-sm-2 control-label">名称 ※</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=name type=text value="<?php echo set_value('name') ?>" placeholder="名称" required>
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=description class="col-sm-2 control-label">描述</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=description type=text value="<?php echo set_value('description') ?>" placeholder="描述">
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=url_image class="col-sm-2 control-label">形象图URL</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=url_image type=text value="<?php echo set_value('url_image') ?>" placeholder="形象图URL" required>
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=rate class="col-sm-2 control-label">中奖率</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=rate type=text value="<?php echo set_value('rate') ?>" placeholder="中奖率" required>
+                </div>
+            </div>
+            <div class=form-group>
+                <label for=stock class="col-sm-2 control-label">奖品总数</label>
+                <div class=col-sm-10>
+                    <input class=form-control name=stock type=text value="<?php echo set_value('stock') ?>" placeholder="奖品总数" required>
+                </div>
+            </div>
 
 		</fieldset>
 

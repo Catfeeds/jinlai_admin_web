@@ -55,73 +55,37 @@
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
-        <dt>描述</dt>
-        <dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
-		
-		<dt>主图</dt>
-		<dd class=row>
-			<?php
-				$column_image = 'url_image_main';
-				if ( empty($item[$column_image]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<figure class="col-xs-12 col-sm-6 col-md-4">
-				<img src="<?php echo $item[$column_image] ?>">
-			</figure>
-			<?php endif ?>
-		</dd>
-		
-		<dt>形象图</dt>
-		<dd>
-			<?php
-				$column_images = 'url_image_main';
-				if ( empty($item[$column_images]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<ul class=row>
-				<?php
-					$image_urls = explode(',', $item[$column_images]);
-					foreach($image_urls as $url):
-				?>
-				<li class="col-xs-6 col-sm-4 col-md-3">
-					<img src="<?php echo $url ?>">
-				</li>
-				<?php endforeach ?>
-			</ul>
-			<?php endif ?>
-		</dd>
-		
-				<dt>奖项ID</dt>
-		<dd><?php echo $item['prize_id'] ?></dd>
 		<dt>所属抽奖ID</dt>
-		<dd><?php echo $item['lottery_id'] ?></dd>
+		<dd>
+            <a href="<?php echo base_url('lottery/detail?id='.$item['lottery_id']) ?>" target="_blank">
+                <?php echo $item['lottery_id'] ?> 查看
+            </a>
+        </dd>
 		<dt>索引序号</dt>
 		<dd><?php echo $item['index_id'] ?></dd>
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>描述</dt>
 		<dd><?php echo $item['description'] ?></dd>
-		<dt>形象图URL</dt>
-		<dd><?php echo $item['url_image'] ?></dd>
+
+        <dt>形象图</dt>
+        <dd class=row>
+            <?php
+            $column_image = 'url_image';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure class="col-xs-12 col-sm-6 col-md-4">
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
+            <?php endif ?>
+        </dd>
+
 		<dt>中奖率</dt>
-		<dd><?php echo $item['rate'] ?></dd>
+		<dd><?php echo $item['rate']*100 ?>%</dd>
 		<dt>奖品总数</dt>
 		<dd><?php echo $item['stock'] ?></dd>
-		<dt>创建时间</dt>
-		<dd><?php echo $item['time_create'] ?></dd>
-		<dt>删除时间</dt>
-		<dd><?php echo $item['time_delete'] ?></dd>
-		<dt>最后操作时间</dt>
-		<dd><?php echo $item['time_edit'] ?></dd>
-		<dt>创建者ID</dt>
-		<dd><?php echo $item['creator_id'] ?></dd>
-		<dt>最后操作者ID</dt>
-		<dd><?php echo $item['operator_id'] ?></dd>
-		<dt>状态</dt>
-		<dd><?php echo $item['status'] ?></dd>
-
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>

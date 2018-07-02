@@ -92,9 +92,7 @@
 			</ul>
 			<?php endif ?>
 		</dd>
-		
-				<dt>抽奖ID</dt>
-		<dd><?php echo $item['lottery_id'] ?></dd>
+
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>自定义URL</dt>
@@ -129,17 +127,6 @@
 		<dd><?php echo $item['time_start'] ?></dd>
 		<dt>结束时间</dt>
 		<dd><?php echo $item['time_end'] ?></dd>
-		<dt>创建时间</dt>
-		<dd><?php echo $item['time_create'] ?></dd>
-		<dt>删除时间</dt>
-		<dd><?php echo $item['time_delete'] ?></dd>
-		<dt>最后操作时间</dt>
-		<dd><?php echo $item['time_edit'] ?></dd>
-		<dt>创建者ID</dt>
-		<dd><?php echo $item['creator_id'] ?></dd>
-		<dt>最后操作者ID</dt>
-		<dd><?php echo $item['operator_id'] ?></dd>
-
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>

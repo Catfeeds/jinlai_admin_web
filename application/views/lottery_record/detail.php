@@ -46,79 +46,53 @@
 			$level_allowed = 30;
 			if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
+            <!--
 		    <ul id=item-actions class=list-unstyled>
 				<li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		    </ul>
+		    -->
 			<?php endif ?>
 
 	<dl id=list-info class=dl-horizontal>
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
-        <dt>描述</dt>
-        <dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
-		
-		<dt>主图</dt>
-		<dd class=row>
-			<?php
-				$column_image = 'url_image_main';
-				if ( empty($item[$column_image]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<figure class="col-xs-12 col-sm-6 col-md-4">
-				<img src="<?php echo $item[$column_image] ?>">
-			</figure>
-			<?php endif ?>
-		</dd>
-		
-		<dt>形象图</dt>
-		<dd>
-			<?php
-				$column_images = 'url_image_main';
-				if ( empty($item[$column_images]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<ul class=row>
-				<?php
-					$image_urls = explode(',', $item[$column_images]);
-					foreach($image_urls as $url):
-				?>
-				<li class="col-xs-6 col-sm-4 col-md-3">
-					<img src="<?php echo $url ?>">
-				</li>
-				<?php endforeach ?>
-			</ul>
-			<?php endif ?>
-		</dd>
-		
-				<dt>抽奖记录ID</dt>
-		<dd><?php echo $item['record_id'] ?></dd>
 		<dt>所属抽奖ID</dt>
-		<dd><?php echo $item['lottery_id'] ?></dd>
+		<dd>
+            <a href="<?php echo base_url('lottery/detail?id='.$item['lottery_id']) ?>" target="_blank">
+                <?php echo $item['lottery_id'] ?> 查看
+            </a>
+        </dd>
 		<dt>所获奖项ID</dt>
-		<dd><?php echo $item['prize_id'] ?></dd>
-		<dt>用户ID</dt>
-		<dd><?php echo $item['user_id'] ?></dd>
+		<dd>
+            <a href="<?php echo base_url('lottery_prize/detail?id='.$item['prize_id']) ?>" target="_blank">
+                <?php echo $item['prize_id'] ?> 查看
+            </a>
+        </dd>
+		<dt>获奖用户ID</dt>
+        <dd>
+            <a href="<?php echo base_url('user/detail?id='.$item['user_id']) ?>" target="_blank">
+                <?php echo $item['user_id'] ?> 查看
+            </a>
+        </dd>
 		<dt>抽奖日期</dt>
 		<dd><?php echo $item['date_create'] ?></dd>
 		<dt>抽奖时间</dt>
-		<dd><?php echo $item['time_create'] ?></dd>
+		<dd><?php echo date('Y-m-d H:i:s', $item['time_create']) ?></dd>
 		<dt>删除时间</dt>
 		<dd><?php echo $item['time_delete'] ?></dd>
 		<dt>最后操作时间</dt>
 		<dd><?php echo $item['time_edit'] ?></dd>
-		<dt>创建者ID</dt>
+		<dt>抽奖者ID</dt>
 		<dd><?php echo $item['creator_id'] ?></dd>
 		<dt>最后操作者ID</dt>
 		<dd><?php echo $item['operator_id'] ?></dd>
 		<dt>状态</dt>
 		<dd><?php echo $item['status'] ?></dd>
-
 	</dl>
 
-	<dl id=list-record class=dl-horizontal>
+	<!--
+    <dl id=list-record class=dl-horizontal>
 		<dt>创建时间</dt>
 		<dd>
 			<?php echo $item['time_create'] ?>
@@ -138,5 +112,6 @@
 		</dd>
 		<?php endif ?>
 	</dl>
+	-->
 	<?php endif ?>
 </div>

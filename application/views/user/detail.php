@@ -85,6 +85,8 @@
         <dd><?php echo empty($item['gender'])? '未设置': $item['gender'] ?></dd>
         <dt>生日</dt>
         <dd><?php echo empty($item['dob'])? '未填写': $item['dob'] ?></dd>
+        <dt>手机号</dt>
+        <dd class="mobile"><?php echo $item['mobile'] ?></dd>
 
         <?php
         // 部分信息仅本人可见
@@ -107,8 +109,6 @@
         </dd>
         <?php endif ?>
 
-        <dt>手机号</dt>
-		<dd class="mobile"><?php echo $item['mobile'] ?></dd>
 		<dt>电子邮件地址</dt>
 		<dd><?php echo $item['email'] ?></dd>
 		<dt>开户行名称</dt>
