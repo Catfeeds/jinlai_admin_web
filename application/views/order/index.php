@@ -57,7 +57,7 @@
     $level_allowed = 30;
     if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
     ?>
-        <div class="btn-group btn-group-justified" role=group>
+        <div class="btn-group btn-group-justified" role=group style="z-index:99;">
             <div class=btn-group role=group>
                 <button type=button class="btn btn-default dropdown-toggle" data-toggle=dropdown aria-haspopup=true aria-expanded=false>
                     全部 <span class="caret"></span>
@@ -86,13 +86,8 @@
             <a class="btn <?php echo $this->input->get('status') === '待发货'? 'btn-primary': 'btn-default' ?>" title="待发货商品订单" href="<?php echo base_url($this->class_name. '?status=待发货') ?>">待发货</a>
         </div>
     <?php endif ?>
-    
-	<?php if ( empty($this->session->biz_id) ): ?>
-	<blockquote>
-		<p>您需要成为已入驻企业的员工，或者提交入驻申请，才可进行订单管理</p>
-	</blockquote>
 	
-	<?php elseif ( empty($items) ): ?>
+	<?php if ( empty($items) ): ?>
 	<blockquote>
 		<p>这里空空如也，快点推广您的店铺和产品，让进来用户下单吧</p>
 	</blockquote>
@@ -104,57 +99,7 @@
         </blockquote>
         <?php endif ?>
 
-        <?php
-            $status = $this->input->get('status');
-            if (!empty($status) && count($items) > 1):
-        ?>
-        <div id=primary_actions class=action_bottom>
-            <span id=enter_bulk>
-                <i class="fa fa-pencil-square-o" aria-hidden=true></i>批量
-            </span>
-        </div>
-        <?php endif ?>
-
 	<form method=get target=_blank>
-        <?php
-            if (!empty($status) && count($items) > 1):
-        ?>
-        <div id=bulk_action class=action_bottom>
-            <span id=bulk_selector data-bulk-selector=off>
-                <i class="fa fa-circle-o" aria-hidden=true></i>全选
-            </span>
-            <span id=exit_bulk>取消</span>
-            <ul class=horizontal>
-                <li>
-                    <button formaction="<?php echo base_url($this->class_name.'/note') ?>" type=submit>备注</button>
-                </li>
-
-                <?php if ($status === '待付款'): ?>
-                <li>
-                    <button formaction="<?php echo base_url($this->class_name.'/refuse') ?>" type=submit>拒绝</button>
-                </li>
-                <li>
-                    <button class=bg_primary formaction="<?php echo base_url($this->class_name.'/reprice') ?>" type=submit>改价</button>
-                </li>
-                <?php endif ?>
-
-                <?php if ($status === '待接单'): ?>
-                <li>
-                    <button formaction="<?php echo base_url($this->class_name.'/refuse') ?>" type=submit>拒绝</button>
-                </li>
-                <li>
-                    <button class=bg_primary formaction="<?php echo base_url($this->class_name.'/accept') ?>" type=submit>接单</button>
-                </li>
-                <?php endif ?>
-
-                <?php if ($status === '待发货'): ?>
-                <li>
-                    <button class=bg_primary formaction="<?php echo base_url($this->class_name.'/deliver') ?>" type=submit>发货</button>
-                </li>
-                <?php endif ?>
-            </ul>
-        </div>
-        <?php endif ?>
 
 		<ul id=item-list class=row>
 			<?php
@@ -173,51 +118,6 @@
                         <li class="col-xs-4">已支付<span<?php echo ($item['total_payed'] !== '0.00' && $item['total_payed'] < $item['total'])? ' style="color:red"': ' style="color:#c9caca"' ?>>￥<?php echo $item['total_payed'] ?></span>
                     </ul>
                 </a>
-
-				<?php
-					if ($status !== '已关闭'):
-						switch ($status):
-							case '待付款':
-								$action_class = 'reprice';
-								break;
-							case '待接单':
-								$action_class = 'accept';
-								break;
-							case '待发货':
-								$action_class = 'deliver';
-								break;
-							default:
-								$action_class = NULL;
-						endswitch;
-				?>
-				<div class="item-actions <?php echo $action_class ?>">
-					<span>
-						<input name=ids[] class=form-control type=checkbox value="<?php echo $item[$this->id_name] ?>">
-					</span>
-
-					<ul class=horizontal>
-                        <?php if ($status === '待付款'): ?>
-                        <li><a title="改价" href="<?php echo base_url($this->class_name.'/reprice?ids='.$item[$this->id_name]) ?>" target=_blank>改价</a></li>
-                        <li><a title="拒绝" href="<?php echo base_url($this->class_name.'/refuse?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>
-                        <?php endif ?>
-
-                        <?php if ($status === '待接单'): ?>
-                        <li><a title="接单" href="<?php echo base_url($this->class_name.'/accept?ids='.$item[$this->id_name]) ?>" target=_blank>接单</a></li>
-                        <li><a title="拒绝" href="<?php echo base_url($this->class_name.'/refuse?ids='.$item[$this->id_name]) ?>" target=_blank>拒绝</a></li>
-                        <?php endif ?>
-
-                        <?php if ($status === '已拒绝' && !empty($item['time_pay']) && ($item['refund_status'] === '退款中')): ?>
-                        <li><a title="退款列表" href="<?php echo base_url('refund/index?order_id='.$item[$this->id_name]) ?>" target=_blank>处理退款</a></li>
-                        <?php endif ?>
-
-                        <?php if ($status === '待发货'): ?>
-                        <li><a title="发货" href="<?php echo base_url($this->class_name.'/deliver?ids='.$item[$this->id_name]) ?>" target=_blank>发货</a></li>
-                        <?php endif ?>
-
-                        <li><a title="备注" href="<?php echo base_url($this->class_name.'/note?ids='.$item[$this->id_name]) ?>" target=_blank>备注</a></li>
-					</ul>
-				</div>
-				<?php endif ?>
 			
 			</li>
 			<?php endforeach ?>

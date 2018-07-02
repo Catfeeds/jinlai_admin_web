@@ -25,7 +25,7 @@
     <div id="shortcut">
         <h2>快捷方式</h2>
 
-        <a href="<?php echo base_url('lottery_record?lottery_id=1') ?>">鲜果节抽奖活动中奖纪录</a>
+        <a href="<?php echo base_url('lottery/detail?id=1') ?>">鲜果节抽奖活动</a>
 
         <ul class="list-unstyled row">
             <li class="col-xs-12">

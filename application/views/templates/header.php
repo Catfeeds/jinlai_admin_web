@@ -28,7 +28,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180626">
+		<meta name=version content="revision20180702">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -183,11 +183,15 @@
 
                                 <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('vote') ?>">投票活动</a></li>
-                                <li><a href="<?php echo base_url('vote/create') ?>">创建投票活动</a></li>
+                                <li><a href="<?php echo base_url('vote/create') ?>">BETA 创建投票活动</a></li>
+
+                                <li role=separator class=divider></li>
+                                <li><a href="<?php echo base_url('lottery') ?>">抽奖活动</a></li>
+                                <li><a href="<?php echo base_url('lottery/create') ?>">BETA 创建抽奖活动</a></li>
 
                                 <li role=separator class=divider></li>
                                 <li><a href="<?php echo base_url('promotion') ?>">平台活动</a></li>
-                                <li><a href="<?php echo base_url('promotion/create') ?>">创建平台活动</a></li>
+                                <li><a href="<?php echo base_url('promotion/create') ?>">BETA 创建平台活动</a></li>
                             </ul>
                         </li>
 
@@ -218,7 +222,7 @@
 								<li><a href="<?php echo base_url('item_category/create') ?>">创建平台分类</a></li>
 
 								<li role=separator class=divider></li>
-								<li><a href="<?php echo base_url('freight_template_biz') ?>">所有运费模板</a></li>
+								<li><a href="<?php echo base_url('freight_template_biz') ?>">BETA 所有运费模板</a></li>
 
 								<li role=separator class=divider></li>
 								<li><a href="<?php echo base_url('item') ?>">所有商品</a></li>
@@ -233,7 +237,7 @@
                                 <li><a href="<?php echo base_url('order?status=待发货') ?>">待发货订单</a></li>
 
                                 <li role=separator class=divider></li>
-                                <li><a  href="<?php echo base_url('refund') ?>">退款/售后</a></li>
+                                <li><a  href="<?php echo base_url('refund') ?>">BETA 退款/售后</a></li>
 							</ul>
 						</li>
 
@@ -269,11 +273,11 @@
                             <a href=# class=dropdown-toggle data-toggle=dropdown>消息 <i class="far fa-angle-down"></i></a>
                             <ul class=dropdown-menu>
                                 <li><a href="<?php echo base_url('message') ?>">聊天</a></li>
-                                <li><a href="<?php echo base_url('message/create') ?>">发起聊天</a></li>
+                                <li><a href="<?php echo base_url('message/create') ?>">BETA 发起聊天</a></li>
 
                                 <li role="separator" class="divider"></li>
                                 <li><a href="<?php echo base_url('notice') ?>">通知</a></li>
-                                <li><a href="<?php echo base_url('notice/create') ?>">发送通知</a></li>
+                                <li><a href="<?php echo base_url('notice/create') ?>">BETA 发送通知</a></li>
                             </ul>
                         </li>
 

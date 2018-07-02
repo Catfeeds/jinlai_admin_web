@@ -185,9 +185,9 @@
                 </div>
             </div>
             <div class=form-group>
-                <label for=stock class="col-sm-2 control-label">奖品总数</label>
+                <label for=stocks class="col-sm-2 control-label">奖品总数</label>
                 <div class=col-sm-10>
-                    <input class=form-control name=stock type=text value="<?php echo set_value('stock') ?>" placeholder="奖品总数" required>
+                    <input class=form-control name=stocks type=text value="<?php echo set_value('stocks') ?>" placeholder="奖品总数" required>
                 </div>
             </div>
 

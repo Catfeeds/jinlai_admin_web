@@ -57,11 +57,12 @@
 	<?php endif ?>
 	
 	<ul id=item-actions class=list-unstyled>
+        <li><a href="<?php echo base_url('order/index?user_id='.$item[$this->id_name]) ?>">ta的订单</a></li>
 		<?php
 		// 仅可修改自己的信息
 		if ( $item['user_id'] === $this->session->user_id ):
 		?>
-		<li><a title="编辑" href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
+		<li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		<?php endif ?>
 	</ul>
 
@@ -86,7 +87,9 @@
         <dt>生日</dt>
         <dd><?php echo empty($item['dob'])? '未填写': $item['dob'] ?></dd>
         <dt>手机号</dt>
-        <dd class="mobile"><?php echo $item['mobile'] ?></dd>
+        <dd>
+            <a href="tel:<?php echo $item['mobile'] ?>"><span class="mobile"><?php echo $item['mobile'] ?></span></a>
+        </dd>
 
         <?php
         // 部分信息仅本人可见

@@ -123,6 +123,22 @@
 		} // end detail
 
         /**
+         * 删除
+         */
+        public function delete()
+        {
+            exit('不可删除'.$this->class_name_cn);
+        } // end delete
+
+        /**
+         * 找回
+         */
+        public function restore()
+        {
+            exit('不可恢复'.$this->class_name_cn);
+        } // end restore
+
+        /**
          * 以下为工具类方法
          */
 

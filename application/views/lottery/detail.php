@@ -47,6 +47,7 @@
 			if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
 		    <ul id=item-actions class=list-unstyled>
+                <li><a href="<?php echo base_url('lottery_prize/index?lottery_id='.$item[$this->id_name]) ?>">奖项设置</a></li>
 				<li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		    </ul>
 			<?php endif ?>
@@ -55,60 +56,47 @@
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
-        <dt>描述</dt>
-        <dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
-		
-		<dt>主图</dt>
-		<dd class=row>
-			<?php
-				$column_image = 'url_image_main';
-				if ( empty($item[$column_image]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<figure class="col-xs-12 col-sm-6 col-md-4">
-				<img src="<?php echo $item[$column_image] ?>">
-			</figure>
-			<?php endif ?>
-		</dd>
-		
-		<dt>形象图</dt>
-		<dd>
-			<?php
-				$column_images = 'url_image_main';
-				if ( empty($item[$column_images]) ):
-			?>
-			<p>未上传</p>
-			<?php else: ?>
-			<ul class=row>
-				<?php
-					$image_urls = explode(',', $item[$column_images]);
-					foreach($image_urls as $url):
-				?>
-				<li class="col-xs-6 col-sm-4 col-md-3">
-					<img src="<?php echo $url ?>">
-				</li>
-				<?php endforeach ?>
-			</ul>
-			<?php endif ?>
-		</dd>
-
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>自定义URL</dt>
 		<dd><?php echo $item['url_name'] ?></dd>
-		<dt>描述</dt>
-		<dd><?php echo $item['description'] ?></dd>
+        <dt>描述</dt>
+        <dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
 		<dt>补充描述</dt>
 		<dd><?php echo $item['extra'] ?></dd>
-		<dt>形象图</dt>
-		<dd><?php echo $item['url_image'] ?></dd>
+
+        <dt>形象图</dt>
+        <dd class=row>
+            <?php
+            $column_image = 'url_image';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure class="col-xs-12 col-sm-6 col-md-4">
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
+            <?php endif ?>
+        </dd>
+
 		<dt>背景音乐</dt>
 		<dd><?php echo $item['url_audio'] ?></dd>
 		<dt>形象视频</dt>
 		<dd><?php echo $item['url_video'] ?></dd>
 		<dt>形象视频缩略图</dt>
-		<dd><?php echo $item['url_video_thumb'] ?></dd>
+        <dd class=row>
+            <?php
+            $column_image = 'url_video_thumb';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure class="col-xs-12 col-sm-6 col-md-4">
+                    <img src="<?php echo $item[$column_image] ?>">
+                </figure>
+            <?php endif ?>
+        </dd>
+
 		<dt>每用户最高总抽奖数</dt>
 		<dd><?php echo $item['max_user_total'] ?></dd>
 		<dt>每用户最高日抽奖数</dt>
@@ -124,15 +112,15 @@
 		<dt>自定义样式</dt>
 		<dd><?php echo $item['content_css'] ?></dd>
 		<dt>开始时间</dt>
-		<dd><?php echo $item['time_start'] ?></dd>
+		<dd><?php echo date('Y-m-d h:i:s', $item['time_start']) ?></dd>
 		<dt>结束时间</dt>
-		<dd><?php echo $item['time_end'] ?></dd>
+        <dd><?php echo date('Y-m-d h:i:s', $item['time_end']) ?></dd>
 	</dl>
 
 	<dl id=list-record class=dl-horizontal>
 		<dt>创建时间</dt>
 		<dd>
-			<?php echo $item['time_create'] ?>
+            <?php echo date('Y-m-d h:i:s', $item['time_create']) ?>
 			<a href="<?php echo base_url('stuff/detail?id='.$item['creator_id']) ?>" target=new>查看创建者</a>
 		</dd>
 
