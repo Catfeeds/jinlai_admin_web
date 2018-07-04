@@ -59,11 +59,11 @@
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>自定义URL</dt>
-		<dd><?php echo $item['url_name'] ?></dd>
+        <dd><?php echo empty($item['url_name'])? 'N/A': $item['url_name'] ?></dd>
         <dt>描述</dt>
         <dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
 		<dt>补充描述</dt>
-		<dd><?php echo $item['extra'] ?></dd>
+        <dd><?php echo empty($item['extra'])? 'N/A': $item['extra'] ?></dd>
 
         <dt>形象图</dt>
         <dd class=row>
@@ -79,10 +79,30 @@
             <?php endif ?>
         </dd>
 
-		<dt>背景音乐</dt>
-		<dd><?php echo $item['url_audio'] ?></dd>
-		<dt>形象视频</dt>
-		<dd><?php echo $item['url_video'] ?></dd>
+        <!--
+        <dt>背景音乐</dt>
+        <dd>
+            <?php
+            $column_image = 'url_audio';
+            if ( empty($item[$column_image]) ):
+                ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <audio controls src="<?php echo $item[$column_image] ?>">您的浏览器不支持音频播放</audio>
+            <?php endif ?>
+        </dd>
+
+        <dt>形象视频</dt>
+        <dd>
+            <?php if ( empty($item['url_video']) ): ?>
+                <p>未上传</p>
+            <?php else: ?>
+                <figure id=url_video class=vote-figure>
+                    <video controls alt="<?php echo $item['name'] ?>形象视频" src="<?php echo $item['url_video'] ?>" poster="<?php echo $item['url_video_thumb'] ?>">您的浏览器不支持视频播放</video>
+                </figure>
+            <?php endif ?>
+        </dd>
+
 		<dt>形象视频缩略图</dt>
         <dd class=row>
             <?php
@@ -96,6 +116,7 @@
                 </figure>
             <?php endif ?>
         </dd>
+        -->
 
 		<dt>每用户最高总抽奖数</dt>
 		<dd><?php echo $item['max_user_total'] ?></dd>

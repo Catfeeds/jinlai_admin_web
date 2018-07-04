@@ -104,7 +104,7 @@
                         // 需要特定角色和权限进行该操作
                         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                             ?>
-                        <li><a href="<?php echo base_url('lottery_record/index?prize_id='.$item[$this->id_name]) ?>" target=_blank>中奖纪录</a></li>
+                        <li><a href="<?php echo base_url('lottery_record/index?prize_id='.$item[$this->id_name]) ?>" target=_blank>中奖记录 &gt;</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
                         <?php endif ?>

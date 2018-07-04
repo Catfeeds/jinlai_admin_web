@@ -47,7 +47,7 @@
 			if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
 			?>
 		    <ul id=item-actions class=list-unstyled>
-                <li><a href="<?php echo base_url('lottery_record/index?prize_id='.$item[$this->id_name]) ?>" target=_blank>中奖纪录</a></li>
+                <li><a href="<?php echo base_url('lottery_record/index?prize_id='.$item[$this->id_name]) ?>" target=_blank>中奖记录</a></li>
 				<li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>">编辑</a></li>
 		    </ul>
 			<?php endif ?>
@@ -67,7 +67,7 @@
 		<dt>名称</dt>
 		<dd><?php echo $item['name'] ?></dd>
 		<dt>描述</dt>
-		<dd><?php echo $item['description'] ?></dd>
+		<dd><?php echo empty($item['description'])? 'N/A': $item['description'] ?></dd>
 
         <dt>形象图</dt>
         <dd class=row>

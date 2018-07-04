@@ -86,11 +86,10 @@
         <ul id=item-list class=row>
             <?php foreach ($items as $item): ?>
             <li>
-                <span class=item-status><?php echo $item['status'] ?></span>
+                <!--<span class=item-status><?php echo $item['status'] ?></span>-->
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
                     <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
                     <p><?php echo $item['name'] ?></p>
-                    <p><?php echo trim($item['province']. ''.$item['city']. ''.$item['county']) ?></p>
                 </a>
 
                 <div class=item-actions>
@@ -99,11 +98,12 @@
 		            </span>
 
                     <ul class=horizontal>
+                        <li><a href="<?php echo base_url('lottery_prize?lottery_id='.$item[$this->id_name]) ?>">奖项 &gt;</a></li>
+                        <li><a href="<?php echo base_url('lottery_record?lottery_id='.$item[$this->id_name]) ?>">中奖记录 &gt;</a></li>
                         <?php
                         // 需要特定角色和权限进行该操作
                         if ( in_array($current_role, $role_allowed) && ($current_level >= $level_allowed) ):
                             ?>
-                        <li><a href="<?php echo base_url('lottery_prize/index?lottery_id='.$item[$this->id_name]) ?>">奖项设置</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/delete?ids='.$item[$this->id_name]) ?>" target=_blank>删除</a></li>
                         <li><a href="<?php echo base_url($this->class_name.'/edit?id='.$item[$this->id_name]) ?>" target=_blank>编辑</a></li>
                         <?php endif ?>
