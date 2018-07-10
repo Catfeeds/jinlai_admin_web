@@ -122,6 +122,164 @@
 			endif;
 		} // end detail
 
+
+		/**
+		 * TODO 根据条件导出订单信息为excel
+		 *
+		 * 起止时间、字段等
+		 */
+		public function export(){
+			
+			// 页面信息
+            $data = [
+                'title' => '订单导出'. $this->class_name_cn,
+                'class' => $this->class_name. ' export',
+                'error' => '', // 预设错误提示
+                'order_status' => ['待付款','待接单','待发货','待收货','待评价','已完成','已退款','已拒绝','已取消','已关闭'],
+                'payment_type' => ['现金','银行转账','微信支付','支付宝','余额','待支付'],
+                'biz'   => $this->getallbiz()
+            ];
+			// 待验证的表单项
+			$this->form_validation->set_error_delimiters('', '；');
+            $this->form_validation->set_rules('time_create_min', '开始时间', 'trim|required');
+            $this->form_validation->set_rules('time_create_max', '结束时间', 'trim|required');
+            $this->form_validation->set_rules('user_id', '用户id', 'trim|integer');
+            $this->form_validation->set_rules('order_id', '起始订单id', 'trim|integer|max_length[11]');
+            $this->form_validation->set_rules('limit', '总量', 'trim|integer|max_length[4]');
+            $this->form_validation->set_rules('mobile', '手机号', 'trim|exact_length[11]');
+            $this->form_validation->set_rules('payment_type', '支付方式', 'trim|in_list[现金,银行转账,微信支付,支付宝,余额,待支付]');
+            $this->form_validation->set_rules('status', '订单状态', 'trim|in_list[待付款,待接单,待发货,待收货,待评价,已完成,已退款,已拒绝,已取消,已关闭]');
+            $this->form_validation->set_rules('biz_id', '商家', 'trim|integer');
+            // 若表单提交不成功
+			if ($this->form_validation->run() === FALSE):
+				$data['error'] .= validation_errors();
+				$this->load->view('templates/header', $data);
+				$this->load->view($this->view_root.'/export', $data);
+				$this->load->view('templates/footer', $data);
+
+			else:
+				//起始订单id 
+				$order_id = intval($this->input->post('order_id'));
+				// 筛选参数；逐一赋值需特别处理的字段
+				$data_to_send = array(
+					'time_create_min' => strtotime($this->input->post('time_create_min') . ':00'),
+                    'time_create_max' => strtotime($this->input->post('time_create_max') . ':00'),
+                    'client_type'     => 'biz',
+				);
+				// 自动生成无需特别处理的数据
+				$data_need_no_prepare = array(
+                    'status','user_id','mobile','payment_type','limit','biz_id'
+				);
+				foreach ($data_need_no_prepare as $name)
+					$data_to_send[$name] = $this->input->post($name);
+
+				// 查找是否存在文件缓存
+				$new_condition = sha1(implode('-', $data_to_send));
+				if (isset($_COOKIE[$new_condition]) && file_exists($_COOKIE[$new_condition])) :
+					redirect('/' . $_COOKIE[$new_condition]);
+					exit;
+				endif;
+
+                // 向API服务器发送待创建数据
+				$params = $data_to_send;
+				$url    = api_url($this->class_name. '/index');
+				$result = $this->curl->go($url, $params, 'array');
+				//api返回成功
+				if ($result['status'] == 200):
+					$this->user_id = $this->session->user_id;
+					$data_list = [];
+					$data_filterd = [];
+
+					//增加一步 ，字段过滤,处理订单的item
+					$data_order_show = ['biz_id'=>'商家ID','order_id'=>'订单ID','user_id'=>'用户ID','subtotal'=>'小计','freight'=>'运费 0包邮','total'=>'应支付金额','total_payed'=>'实际支付金额','fullname'=>'收件人姓名','code_ssn'=>'身份证号','mobile'=>'收件人手机号','province'=>'省份','city'=>'城市','county'=>'区/县','street'=>'街道','full_address'=>'收货地址','note_user'=>'用户留言','note_stuff'=>'员工留言','payment_type'=>'支付方式','payment_account'=>'付款账号','payment_id'=>'付款流水号','time_create'=>'用户下单时间','time_cancel'=>'用户取消时间','time_expire'=>'自动过期时间；创建后未付款','time_pay'=>'用户付款时间','time_refuse'=>'商家拒绝时间；系统自动发起退款','time_accept'=>'商家接单时间', 'status'=>'订单状态'];
+					foreach ($result['content'] as  $order) :
+						//从哪开始
+						if ($order['order_id'] < $order_id) :
+							continue;
+						endif;
+						$data_filterd = [];
+						foreach ($order as $key => $value) :
+							if ( !is_array($value) && array_key_exists($key, $data_order_show) ):
+								$data_filterd[$data_order_show[$key]] = $value;
+								//拼接完整收货地址
+								if( $key == 'street') :
+									$data_filterd[$data_order_show['full_address']] = $order['province'] . $order['city'] . $order['county'] . '，' . $order['street'];
+								endif;
+								if ($key == 'biz_id' && isset($data['biz'][$data_filterd['商家ID']]) ) :
+									$data_filterd['商家名称'] = $data['biz'][$data_filterd['商家ID']];
+								endif;
+							elseif ( is_array($value) ) :
+								foreach ($value as $itemcount => $items) :
+									$orderitem = $items['item_id'] . ' ' . $items['name'] . ($items['sku_id'] ? '(【' . $items['sku_id'] . $items['sku_name'] . '】)' : '');
+									$orderitem .= ' x ' . $items['count'];
+									$data_filterd['订单商品' . ($itemcount + 1)] = $orderitem;
+								endforeach;
+							endif;
+						endforeach;
+						$data_list[] = $data_filterd;
+					endforeach;
+					//导出
+					$this->load->library('Excel');
+					$this->excel->export($data_list, $data_to_send['time_create_min'] . '-' . $data_to_send['time_create_max'] . '订单导出', 'save');
+					if ($this->result['status'] == 200) :
+						//文件生成 后 保存 cookie
+						$cookie_condition = sha1(implode('-', $params));
+						setcookie($cookie_condition,  $this->result['content'], time() + 180);
+						redirect('/' . $this->result['content']);
+						exit;
+					else:
+						$data['error'] = $this->result['content']['error']['message'];
+                        $this->load->view('templates/header', $data);
+                        $this->load->view($this->view_root.'/export', $data);
+                        $this->load->view('templates/footer', $data);
+					endif;
+
+				else:
+					if (isset($result['content']['error'])) :
+						$data['error'] = $result['content']['error']['message'];
+					else: 
+						$data['error'] = '导出错误，稍后重试';
+					endif;
+
+                    $this->load->view('templates/header', $data);
+                    $this->load->view($this->view_root.'/export', $data);
+                    $this->load->view('templates/footer', $data);
+				endif;
+			endif;
+		}
+
+		private function getallbiz(){
+			//所有商家信息的缓存
+			$filepath = './temp_files/' . date('Y-m-d') . '_biz_cache.php';
+			if (file_exists($filepath)) :
+				require $filepath;
+				if (isset($data))
+					return $data ;
+			endif;
+			//没有缓存从接口读取
+			$params = ['app_type'=>'admin'];
+			$url    = api_url('biz/index');
+			$result = $this->curl->go($url, $params, 'array');
+
+			$data = [];
+			if (is_array($result) && $result['status'] == 200) :
+				//简化数据
+				foreach ($result['content'] as $key => $value) :
+					if (is_null($value['time_delete'])) {
+						$data[$value['biz_id']] = $value['brief_name'];
+					}
+				endforeach;
+				//保存成文件
+				if (!empty($data)) :
+					$str = "<?php \$data = " . var_export($data, TRUE) . ';';
+					$r = file_put_contents($filepath, $str);
+					if ($r) 
+						return $data;
+
+				endif;
+			endif;
+			return [];
+		}
         /**
          * 删除
          */

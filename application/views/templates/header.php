@@ -235,7 +235,8 @@
 								<li><a href="<?php echo base_url('order') ?>">订单</a></li>
                                 <li><a href="<?php echo base_url('order?status=待接单') ?>">待接单订单</a></li>
                                 <li><a href="<?php echo base_url('order?status=待发货') ?>">待发货订单</a></li>
-
+                                <li><a href="<?php echo base_url('order/export') ?>">订单导出</a></li>
+                                
                                 <li role=separator class=divider></li>
                                 <li><a  href="<?php echo base_url('refund') ?>">BETA 退款/售后</a></li>
 							</ul>
