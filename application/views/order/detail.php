@@ -208,7 +208,7 @@
     </section>
 
 	<?php if ( !empty($item['time_pay']) ): ?>
-	<section>
+	<section id=section-payment>
 		<h2>支付信息</h2>
 		<dl id=list-payment class=dl-horizontal>
 			<dt>付款方式</dt>

@@ -28,7 +28,7 @@
 		<title><?php echo $title ?></title>
 		<meta name=description content="<?php echo $description ?>">
 		<meta name=keywords content="<?php echo $keywords ?>">
-		<meta name=version content="revision20180702">
+		<meta name=version content="revision20180709">
 		<meta name=author content="刘亚杰Kamas,青岛意帮网络科技有限公司产品部&技术部">
 		<meta name=copyright content="进来商城,青岛意帮网络科技有限公司">
 		<meta name=contact content="kamaslau@dingtalk.com">
@@ -55,7 +55,7 @@
         <script defer src="<?php echo CDN_URL ?>font-awesome/v5.0.13/fa-v4-shims.min.js"></script>
         <script>
             // 当前用户信息
-            var user_id = <?php echo empty($this->session->user_id)? 'null': $this->session->user_id ?>;
+            var user_id = '<?php echo $this->session->user_id ?>';
 
             // 全局参数
             var api_url = '<?php echo API_URL ?>'; // API根URL
