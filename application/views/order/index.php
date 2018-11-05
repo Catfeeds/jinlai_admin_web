@@ -16,7 +16,11 @@
         .reprice, .accept, .deliver {background:url('/media/order/daifukuan@3x.png') no-repeat center bottom;height:94px;background-size:100% 26px;margin-left:-20px;margin-right:-20px;padding:0 20px;}
         .accept {background-image:url('/media/order/daijiedan@3x.png');}
         .deliver {background-image:url('/media/order/daifahuo@3x.png');}
-
+    
+    .confirm_btn{display:inline-block;padding:10px 20px;border:1px solid #eee;border-radius: 4px;margin:10px;background-color:#ff3649;color:#FFF;}
+    .page_list{display: flex;justify-content: center;margin-top:10px;}
+    .page_list a{display: inline-block;padding:4px 12px;margin:0 6px;border:1px solid #000;border-radius: 4px;}
+    .page_list a.current{font-weight: bold;}
 	/* 宽度在750像素以上的设备 */
 	@media only screen and (min-width:751px)
 	{
@@ -36,6 +40,7 @@
 
 	}
 </style>
+
 
 <script defer src="/js/index.js"></script>
 
@@ -99,7 +104,7 @@
         </blockquote>
         <?php endif ?>
 
-	<form method=get target=_blank>
+
 
 		<ul id=item-list class=row>
 			<?php
@@ -109,20 +114,68 @@
 			<li>
                 <span class=item-status><?php echo $status ?></span>
                 <a href="<?php echo base_url($this->class_name.'/detail?id='.$item[$this->id_name]) ?>">
-                    <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?></p>
+                    <p><?php echo $this->class_name_cn ?>ID <?php echo $item[$this->id_name] ?>  <?= $item['biz_name'] ?></p>
                     <p>下单时间 <?php echo date('Y-m-d H:i:s', $item['time_create']) ?></p>
 
                     <ul class="order-figures row">
                         <li class="col-xs-4">小计<span>￥<?php echo $item['subtotal'] ?></span></li>
                         <li class="col-xs-4">应支付<span>￥<?php echo $item['total'] ?></span>
                         <li class="col-xs-4">已支付<span<?php echo ($item['total_payed'] !== '0.00' && $item['total_payed'] < $item['total'])? ' style="color:red"': ' style="color:#c9caca"' ?>>￥<?php echo $item['total_payed'] ?></span>
+                        
                     </ul>
+                    
                 </a>
-			
+			     <?php if( $status == '已完成' && $item['is_confirm'] == 0 ):?>
+                    <?php echo form_open(site_url('order/confirm_complete_order'),['method'=>'POST'])?>
+                    <?php echo form_hidden('order_id',$item[$this->id_name])?>
+                    <?php echo form_hidden('status',$status)?>
+                    <button type="button" class="confirm_btn">确认</button>
+                    <?php echo form_close();?>
+                 <?php endif;?>
+                 <?php if( $status == '已完成' && $item['is_confirm'] == 1 ):?>
+                    <p style="color:#0000FF;">已确认</p>
+                 <?php endif;?>
 			</li>
+
 			<?php endforeach ?>
 		</ul>
-
-	</form>
+        <div class="page_list">
+            <?php if( $pages > 3 ):?>
+            <a href="<?=site_url('order').'?status='.$current_status.'&page=1'?>">1</a>
+            <select name="sel" id="" onchange="gotoPage(this.options[this.options.selectedIndex].value)">
+                <?php for($i=1;$i<$pages;$i++):?>
+                <option value="<?=$i?>" <?=$page == $i?'selected':''?>>第<?=$i?>页</option>
+                <?php endfor;?>
+            </select>
+            <a href="<?=site_url('order').'?status='.$current_status.'&page='.$pages?>"><?=$pages?></a>
+            <?php else:?>
+                <?php for($i=1;$i<=$pages;$i++):?>
+                <a href="<?=site_url('order').'?status='.$current_status.'&page='.$i?>"><?=$i?></a>
+                <?php endfor;?>
+            <?php endif;?>
+        </div>
+        
 	<?php endif ?>
 </div>
+<script type="text/javascript">
+    /**
+     * 已完成订单财务确认功能
+     * @author sunxch100@126.com
+     * @date 2018-8-29
+     */
+    //const base_url = 'http://api.517ybang.com';
+    $('button.confirm_btn').on('click',function(e){
+        let _order_id = $(this).attr('order_id');
+        if( confirm('您确定要设置为已确认吗？') ){
+            $(this).parent('form').submit();
+        }else{
+            return;
+        }
+        
+    });
+
+    function gotoPage(page){
+        document.all.sel.options[0].selected=true;
+        location.replace("<?=site_url('order').'?status='.$current_status.'&page='?>"+page);
+    }
+</script>

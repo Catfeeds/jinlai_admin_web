@@ -159,6 +159,7 @@
                                     <li role=separator class=divider></li>
                                     <li><a href="<?php echo base_url('stuff') ?>">员工</a></li>
                                     <li><a href="<?php echo base_url('stuff/create') ?>">创建员工</a></li>
+                                    <li><a href="<?php echo base_url('backend/PageHome/index') ?>">首页管理</a></li>
                                 <?php endif ?>
                             </ul>
                         </li>

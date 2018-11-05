@@ -56,6 +56,16 @@
 				</div>
 			</div>
 			<div class=form-group>
+				<label for=brand_id class="col-sm-2 control-label">订单类别</label>
+				<div class="col-sm-10">
+                    <select class=form-control name="nature">
+                        <option value="" selected="selected">全部</option>
+                        <option value="服务">服务</option>
+                        <option value="商品">商品</option>
+                    </select>
+                </div>
+			</div>
+			<div class=form-group>
 				<label for=brand_id class="col-sm-2 control-label">用户ID</label>
 				<div class="col-sm-10">
 					<input class=form-control name=user_id type=number min=0 step=1 value="<?php echo set_value('user_id') ?>" placeholder="填写用户id">

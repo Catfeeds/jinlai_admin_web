@@ -47,15 +47,14 @@
             <div class=form-group>
                 <label for=category_ids class="col-sm-2 control-label">主营商品类目</label>
                 <div class=col-sm-10>
-                    <?php $input_name = 'category_ids[]' ?>
-                    <select class=form-control name="<?php echo $input_name ?>" multiple required>
+                    <?php $input_name = 'category_id' ?>
+                    <select class=form-control name="<?php echo $input_name ?>"required>
                         <?php
                         $options = $item_categories;
-                        $current_array = explode(',', $item['category_ids']);
                         foreach ($options as $option):
                             if ( empty($option['time_delete']) ):
                                 ?>
-                                <option value="<?php echo $option['category_id'] ?>" <?php if ( in_array($option['category_id'], $current_array) ) echo 'selected'; ?>><?php echo $option['name'] ?></option>
+                                <option value="<?php echo $option['category_id'] ?>" ><?php echo $option['name'] ?></option>
                             <?php
                             endif;
                         endforeach;
@@ -109,7 +108,7 @@
 			</div>
 		</fieldset>
 
-		<fieldset>
+<!-- 		<fieldset>
 			<legend>资质信息</legend>
 
 			<div class=form-group>
@@ -171,7 +170,7 @@
 					<input class=form-control name=tel_protected_fiscal type=tel size=11 value="<?php echo set_value('tel_protected_fiscal') ?>" placeholder="财务联系手机号">
 				</div>
 			</div>
-		</fieldset>
+		</fieldset> -->
 
 		<div class="jumbotron row">
 			<p>继续完善信息可申请认证；未通过认证的商家，货款将暂时由<?php echo SITE_NAME ?>进行存管。<p>

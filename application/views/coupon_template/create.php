@@ -164,7 +164,7 @@
 			-->
 		</fieldset>
 
-        <fieldset>
+       <!--  <fieldset>
             <legend>高级功能（免费试用）</legend>
 
 			<div class=form-group>
@@ -209,7 +209,7 @@
                     </select>
 				</div>
 			</div>
-		</fieldset>
+		</fieldset> -->
 
 		<div class=form-group>
 		    <div class="col-xs-12 col-sm-offset-2 col-sm-2">

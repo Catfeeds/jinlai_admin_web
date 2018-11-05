@@ -253,7 +253,8 @@
 				else:
 					// 若创建失败，则进行提示
 					$data['error'] = $result['content']['error']['message'];
-
+					// 获取平台商品分类
+               		$data['categories'] = $this->list_category();
 					$this->load->view('templates/header', $data);
 					$this->load->view($this->view_root.'/create', $data);
 					$this->load->view('templates/footer', $data);

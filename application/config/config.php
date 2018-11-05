@@ -51,6 +51,9 @@ define('CDN_URL', 'https://cdn-remote'.ROOT_URL); // 生产环境
 define('DEFAULT_IMAGE', NULL); // 默认图片URL
 define('MEDIA_URL', 'https://medias'.ROOT_URL);
 
+define('IS_POST',strtolower($_SERVER["REQUEST_METHOD"]) == 'post');//判断是否是post方法
+define('IS_GET',strtolower($_SERVER["REQUEST_METHOD"]) == 'get');//判断是否是get方法
+
 // COOKIE & SESSION相关
 define('COOKIE_DOMAIN', $_SERVER['SERVER_NAME']); // cookie存储路径；方便起见可让所有子域共享，若需分离可自行配置
 define('SESSION_COOKIE_NAME', 'ci_sessions_admin'); // 用于cookie存储的session名（设置此值后，前后台session互不影响）
@@ -223,7 +226,7 @@ $config['subclass_prefix'] = 'MY_';
 | Note: This will NOT disable or override the CodeIgniter-specific
 |	autoloading (application/config/autoload.php)
 */
-$config['composer_autoload'] = APPPATH.'vendor/autoload.php'; // Composer加载文件;
+$config['composer_autoload'] = TRUE; // Composer加载文件;
 
 /*
 |--------------------------------------------------------------------------

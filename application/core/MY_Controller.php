@@ -87,6 +87,7 @@
 
 		public function __construct()
 	    {
+	    	date_default_timezone_set("PRC");
 	        parent::__construct();
 
 			// 向类属性赋值
@@ -100,9 +101,20 @@
             if ( ! empty($this->session->stuff_id) )
                 $this->stuff = $this->get_stuff($this->session->stuff_id, FALSE);
 
+            $this->assign('assetsUri',BASE_URL.'/public/');
             // 检查当前设备信息
             $this->user_agent_determine();
+
 	    } // end __construct
+	    public function assign($key,$val)
+	    {
+	        $this->ci_smarty->assign($key,$val);
+	    }
+
+	    public function display($html)
+	    {
+	        $this->ci_smarty->display($html);
+	    }
 
         /**
          * 截止3.1.3为止，CI_Controller类无析构函数，所以无需继承相应方法

@@ -174,23 +174,23 @@
                 $this->form_validation->set_rules('name', '商家全称', 'trim|required|min_length[5]|max_length[35]|is_unique[biz.name]');
 				$this->form_validation->set_rules('brief_name', '店铺名称', 'trim|required|max_length[20]|is_unique[biz.brief_name]');
 				$this->form_validation->set_rules('description', '简介', 'trim|max_length[255]');
-				$this->form_validation->set_rules('tel_public', '消费者联系电话', 'trim|required|min_length[10]|max_length[13]|is_unique[biz.tel_public]');
+				$this->form_validation->set_rules('tel_public', '消费者联系电话', 'trim|required|min_length[10]|max_length[13]');
 
-				$this->form_validation->set_rules('fullname_owner', '法人姓名', 'trim|required|max_length[15]');
-				$this->form_validation->set_rules('fullname_auth', '经办人姓名', 'trim|max_length[15]');
+				//$this->form_validation->set_rules('fullname_owner', '法人姓名', 'trim|required|max_length[15]');
+				//$this->form_validation->set_rules('fullname_auth', '经办人姓名', 'trim|max_length[15]');
 
-				$this->form_validation->set_rules('code_license', '工商注册号', 'trim|required|min_length[15]|max_length[18]|is_unique[biz.code_license]');
-				$this->form_validation->set_rules('code_ssn_owner', '法人身份证号', 'trim|required|exact_length[18]|is_unique[biz.code_ssn_owner]');
-				$this->form_validation->set_rules('code_ssn_auth', '经办人身份证号', 'trim|exact_length[18]|is_unique[biz.code_ssn_auth]');
+				//$this->form_validation->set_rules('code_license', '工商注册号', 'trim|required|min_length[15]|max_length[18]|is_unique[biz.code_license]');
+				//$this->form_validation->set_rules('code_ssn_owner', '法人身份证号', 'trim|required|exact_length[18]|is_unique[biz.code_ssn_owner]');
+				//$this->form_validation->set_rules('code_ssn_auth', '经办人身份证号', 'trim|exact_length[18]|is_unique[biz.code_ssn_auth]');
 
-				$this->form_validation->set_rules('url_image_license', '营业执照', 'trim|max_length[255]');
-				$this->form_validation->set_rules('url_image_owner_id', '法人身份证', 'trim|max_length[255]');
-				$this->form_validation->set_rules('url_image_auth_id', '经办人身份证', 'trim|max_length[255]');
-				$this->form_validation->set_rules('url_image_auth_doc', '经办人授权书', 'trim|max_length[255]');
+				//$this->form_validation->set_rules('url_image_license', '营业执照', 'trim|max_length[255]');
+				//$this->form_validation->set_rules('url_image_owner_id', '法人身份证', 'trim|max_length[255]');
+				//$this->form_validation->set_rules('url_image_auth_id', '经办人身份证', 'trim|max_length[255]');
+				//$this->form_validation->set_rules('url_image_auth_doc', '经办人授权书', 'trim|max_length[255]');
 
-				$this->form_validation->set_rules('tel_protected_fiscal', '财务联系手机号', 'trim|exact_length[11]|is_natural');
-				$this->form_validation->set_rules('bank_name', '开户行名称', 'trim|min_length[3]|max_length[20]');
-				$this->form_validation->set_rules('bank_account', '开户行账号', 'trim|max_length[30]');
+				//$this->form_validation->set_rules('tel_protected_fiscal', '财务联系手机号', 'trim|exact_length[11]|is_natural');
+				//$this->form_validation->set_rules('bank_name', '开户行名称', 'trim|min_length[3]|max_length[20]');
+				//$this->form_validation->set_rules('bank_account', '开户行账号', 'trim|max_length[30]');
 
 				$this->form_validation->set_rules('url_image_product', '产品', 'trim|max_length[255]');
 				$this->form_validation->set_rules('url_image_produce', '工厂/产地', 'trim|max_length[255]');
@@ -212,14 +212,11 @@
                         'tel_protected_biz' => $this->session->mobile,
                         'tel_protected_fiscal' => $this->session->mobile,
                         'tel_protected_order' => $this->session->mobile,
+                        'status' => '正常'
 					);
 					// 自动生成无需特别处理的数据
 					$data_need_no_prepare = array(
-                        'category_id', 'url_logo', 'name', 'brief_name',
-						'description', 'bank_name', 'bank_account',
-						'fullname_owner', 'fullname_auth',
-						'code_license', 'code_ssn_owner', 'code_ssn_auth',
-						'url_image_license', 'url_image_owner_id', 'url_image_auth_id', 'url_image_auth_doc',
+                        'category_id', 'url_logo', 'name', 'brief_name','description', 
 						'url_image_produce', 'url_image_retail', 'url_image_product',
 					);
 					foreach ($data_need_no_prepare as $name)
@@ -227,17 +224,19 @@
 
 					// 向API服务器发送待创建数据
 					$params = $data_to_create;
-					$url = api_url($this->class_name. '/create');
+					$url = api_url($this->class_name. '/create?update=yes');
+
 					$result = $this->curl->go($url, $params, 'array');
 					if ($result['status'] === 200):
-						$data['title'] = $this->class_name_cn. '创建成功';
+						$q = $this->db->query('update `stuff` set biz_id=' . $result['content']['id'] . ' where stuff_id=' . $this->session->stuff_id);
+						$data['title'] = $this->class_name_cn. '创建成功' . $q;
 						$data['class'] = 'success';
 						$data['content'] = $result['content']['message'];
 						$data['operation'] = 'create';
 						$data['id'] = $result['content']['id']; // 创建后的信息ID
-
+						
 						// 更新本地商家信息
-                        $this->session->stuff_id = $result['content']['stuff_id'];
+                        //$this->session->stuff_id = $result['content']['stuff_id'];
                         $this->session->biz_id = $result['content']['id'];
 						$this->session->role = '管理员';
 						$this->session->level = '100';

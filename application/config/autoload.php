@@ -39,9 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |  $autoload['packages'] = array(APPPATH.'third_party', '/usr/local/shared');
 |
 */
-$autoload['packages'] = array();
-
-/*
+$autoload['packages'] = array();/*
 | -------------------------------------------------------------------
 |  Auto-load Libraries
 | -------------------------------------------------------------------
@@ -58,7 +56,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-$autoload['libraries'] = array('curl', 'database', 'form_validation', 'image_lib', 'session');
+$autoload['libraries'] = array('curl', 'database', 'form_validation', 'image_lib', 'session','ci_smarty');
 
 /*
 | -------------------------------------------------------------------

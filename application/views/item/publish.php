@@ -69,7 +69,7 @@
 		echo form_open($this->class_name.'/publish', $attributes);
 	?>
 		<fieldset>
-			<input name=ids type=hidden value="<?php echo $ids ?>">
+			<input name=ids type=hidden value="<?php echo implode(',', $ids) ?>">
 
 			<div class=form-group>
 				<label for=password class="col-sm-2 control-label">密码</label>

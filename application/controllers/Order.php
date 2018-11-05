@@ -67,6 +67,19 @@
 			// 从API服务器获取相应列表信息
 			$params = $condition;
 			$url = api_url($this->class_name. '/index');
+
+			if (!isset($_GET['page'])) {
+				$page = 1;
+			} else {
+				$page = abs(intval($_GET['page'])) <= 0 ? 1 : abs(intval($_GET['page']));
+			}
+
+
+			$data['page'] = $page;
+			
+			$params['limit']  = 50;
+			$params['offset'] = ($page - 1) * $params['limit'];
+
 			$result = $this->curl->go($url, $params, 'array');
 			if ($result['status'] === 200):
 				$data['items'] = $result['content'];
@@ -78,6 +91,20 @@
 			// 根据状态筛选值确定页面标题
 			if ( !empty($condition['status'] ) )
 			    $data['title'] = $condition['status']. '订单';
+
+			$url = api_url($this->class_name. '/get_pagination');
+			$result = $this->curl->go($url, ['status'=>$this->input->get('status'),'limit'=>$params['limit'],'offset'=>$params['offset']], 'array');
+
+            $data['pages'] = 1;
+			if ($result['status'] === 200):
+				$count = $result['content'];
+				$pages = ceil($count/$params['limit']);
+				$data['pages'] = $pages;
+			endif;
+
+			$current_status = $this->input->get('status');
+
+			$data['current_status'] = $current_status;
 
 			// 输出视图
 			$this->load->view('templates/header', $data);
@@ -186,6 +213,7 @@
 				$result = $this->curl->go($url, $params, 'array');
 				//api返回成功
 				if ($result['status'] == 200):
+					$refundRercord = $this->getallrefund();
 					$this->user_id = $this->session->user_id;
 					$data_list = [];
 					$data_filterd = [];
@@ -205,18 +233,35 @@
 								if( $key == 'street') :
 									$data_filterd[$data_order_show['full_address']] = $order['province'] . $order['city'] . $order['county'] . '，' . $order['street'];
 								endif;
-								if ($key == 'biz_id' && isset($data['biz'][$data_filterd['商家ID']]) ) :
-									$data_filterd['商家名称'] = $data['biz'][$data_filterd['商家ID']];
+								$bid = intval($order['biz_id']);
+							
+								if ($key == 'biz_id') :
+									if (isset($data['biz'][$bid])) :
+										$data_filterd['商家名称'] = $data['biz'][$bid];
+									else:
+										$data_filterd['商家名称'] = '!商家被删除';
+									endif;
 								endif;
 							elseif ( is_array($value) ) :
+								if (!isset($data_filterd['订单商品'])) {
+									$data_filterd['订单商品'] = '';
+								}
+								$orderitem = '';
 								foreach ($value as $itemcount => $items) :
-									$orderitem = $items['item_id'] . ' ' . $items['name'] . ($items['sku_id'] ? '(【' . $items['sku_id'] . $items['sku_name'] . '】)' : '');
+									$orderitem .= $items['item_id'] . ' ' . $items['name'] . ($items['sku_id'] ? '(【' . $items['sku_id'] . $items['sku_name'] . '】)' : '');
 									$orderitem .= ' x ' . $items['count'];
-									$data_filterd['订单商品' . ($itemcount + 1)] = $orderitem;
+									if (isset($refundRercord[$items['record_id']])) {
+										$orderitem .= '[' . $refundRercord[$items['record_id']] . ']   ';
+									}
+									$data_filterd['订单商品'] = $orderitem;
 								endforeach;
 							endif;
 						endforeach;
-						$data_list[] = $data_filterd;
+						if (empty($orderitemType)) {
+							$data_list[] = $data_filterd;
+						} elseif (strpos( '-' . $data_filterd['订单商品'], $orderitemType)) {
+							$data_list[] = $data_filterd;
+						}
 					endforeach;
 					//导出
 					$this->load->library('Excel');
@@ -247,7 +292,17 @@
 				endif;
 			endif;
 		}
-
+		public function getallrefund(){
+			$url    = api_url('refund/index');
+			$result = $this->curl->go($url, ['app_type'=>'admin'], 'array');
+			if ($result['status'] == 200) {
+				$temp = [];
+				foreach ($result['content'] as $key => $value) {
+					$temp[$value['record_id']] = $value['status'] . '：' . (floatval($value['total_payed']) > 0.0 ? '已退款' . $value['total_payed'] . '元' : '退款待处理');
+				}
+			}
+			return $temp;
+		}
 		private function getallbiz(){
 			//所有商家信息的缓存
 			$filepath = './temp_files/' . date('Y-m-d') . '_biz_cache.php';
@@ -296,6 +351,17 @@
             exit('不可恢复'.$this->class_name_cn);
         } // end restore
 
+        public function confirm_complete_order(){
+        	$order_id = intval($this->input->post('order_id'));
+        	$status = $this->input->post('status');
+        	$params = ['order_id'=>$order_id,'user_id'=>$this->session->user_id];
+			$url    = api_url('order/confirm_complete_order');
+			$result = $this->curl->go($url, $params, 'array');
+
+			$redirect_url = site_url('order').'?status='.$status;
+			
+			redirect($redirect_url);
+        }
         /**
          * 以下为工具类方法
          */

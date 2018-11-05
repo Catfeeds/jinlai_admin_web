@@ -104,6 +104,8 @@
     </section>
 
     <dl id=list-info class=dl-horizontal>
+        <dt>商家名称</dt>
+        <dd><?= $biz_name?></dd>
 		<dt><?php echo $this->class_name_cn ?>ID</dt>
 		<dd><?php echo $item[$this->id_name] ?></dd>
 
